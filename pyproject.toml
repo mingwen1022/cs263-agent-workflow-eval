@@ -1,0 +1,41 @@
+[project]
+name = "cs263-agent-workflow-eval"
+version = "0.1.0"
+description = "CS263 project scaffold for evaluating single-agent and agentic workflow architectures."
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.12.0",
+    "langchain>=1.0.0",
+    "langchain-google-vertexai>=2.0.0",
+    "langchain-ollama>=0.3.0",
+    "langgraph>=1.0.0",
+    "openpyxl>=3.1.0",
+    "pandas>=2.2.0",
+    "pydantic>=2.7.0",
+    "pypdf>=5.0.0",
+    "python-dotenv>=1.0.1",
+    "rich>=13.7.0",
+    "typer>=0.12.0",
+]
+
+[project.scripts]
+check-models = "cs263_agent_eval.scripts.check_models:main"
+run-hard-task = "cs263_agent_eval.scripts.run_hard_task:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.2.0",
+    "ruff>=0.8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

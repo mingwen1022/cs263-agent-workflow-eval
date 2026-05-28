@@ -1,0 +1,10 @@
+entry_id,batch_id,employee_id,correction_type,pay_period,original_amount,corrected_amount,net_change,status,notes
+N1,PC-07,E-119,overtime,2026-01,1200.00,1380.00,180.00,approved,Prior batch correction already processed
+C1,PC-08,E-551,overtime,2026-02,2400.00,2760.00,360.00,pending,Rate miscalculation identified in payroll audit
+C2,PC-08,E-551,bonus,2026-02,0.00,500.00,500.00,pending,Retention bonus omitted from February run
+C3,PC-08,E-551,overtime,2026-03,1800.00,2070.00,270.00,pending,Same rate error extended into March
+C4,PC-08,E-551,expense_reimbursement,2026-03,0.00,340.00,340.00,pending,Approved reimbursement not processed
+C5,PC-08,E-551,overtime,2026-02,2400.00,2760.00,360.00,pending,Duplicate of C1
+C6,PC-08,E-662,overtime,2026-02,1900.00,2185.00,285.00,pending,Different employee correction included in batch
+C7,PC-08,E-551,commission,2026-02,0.00,800.00,800.00,pending,Commission adjustment for Q1 sales quota attainment
+C8,PC-08,E-551,overtime,2026-01,1050.00,1207.50,157.50,pending,January overtime rate correction

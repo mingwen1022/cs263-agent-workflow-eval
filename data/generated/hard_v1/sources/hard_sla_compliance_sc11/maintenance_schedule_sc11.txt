@@ -1,0 +1,18 @@
+Scheduled maintenance windows — April 2026
+
+Maintenance Window 1:
+Date: April 14, 2026
+Time: 01:00 PDT – 05:00 PDT
+Systems affected: payment_api, auth_service
+Announced: 2026-04-07 via status page and customer email
+SLA obligations suspended during this window.
+
+Maintenance Window 2:
+Date: April 28, 2026
+Time: 22:00 PDT – 24:00 PDT (April 29 00:00 PDT)
+Systems affected: reporting_api
+SLA obligations suspended for reporting_api only.
+
+Note: INC-203 (April 14, payment_api) falls within Maintenance Window 1.
+INC-204 (April 21, reporting_api) does not fall in a maintenance window,
+but the incident cause was customer_misconfiguration per ops notes.

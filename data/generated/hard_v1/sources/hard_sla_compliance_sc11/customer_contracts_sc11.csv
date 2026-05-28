@@ -1,0 +1,5 @@
+customer,tier,ack_sla_minutes_p2,ack_sla_minutes_p3,credit_per_breach_usd,account_status,credit_eligible
+apex_corp,gold,10,20,300,active,true
+meridian_tech,gold,10,20,300,active,true
+pinnacle_media,silver,20,30,0,active,false
+harbor_school,bronze,60,90,0,active,false

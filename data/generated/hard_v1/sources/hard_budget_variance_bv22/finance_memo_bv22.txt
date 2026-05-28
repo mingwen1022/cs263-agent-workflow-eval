@@ -1,0 +1,22 @@
+Finance review memo — Q1 2026 budget variance
+
+This memo accompanies the Q1 actuals export for BV-22 review.
+
+Items to note:
+- CC-201-INT rows appear in the export because the international engineering subsidiary
+  uses the same cost center numbering scheme. CC-201-INT is a separate legal entity
+  and is not in scope for this domestic Q1-2026 variance review.
+- TR-B05 requests a transfer between Engineering and Operations for shared
+  infrastructure costs. The requester argues this is an allocation, not a transfer,
+  but the finance system categorizes it as a cross-department transfer request.
+- The Q4-2025 rows in the export are for trending reference only. Do not
+  include them in Q1 variance calculations.
+- Marketing campaigns ran significantly over budget due to an unplanned
+  sponsored content push. The events underspend may partially offset this
+  if a transfer is approved.
+- Engineering external_contractors overspent due to a delayed hiring cycle.
+  An internal transfer from software_tools has been requested.
+- TR-B04 is a duplicate submission of TR-B02 and should be disregarded.
+- TR-B03 requests a cross-department transfer, which is not permitted under
+  the current policy.
+- CFO approval is required for any single transfer exceeding $10,000.

@@ -1,0 +1,50 @@
+{
+  "task_id": "hard_conference_expense_ce44",
+  "task_family": "multi_app_workflow",
+  "difficulty": "hard",
+  "instruction": "Review conference expense claim CE-44 using the available sources. Determine the total reimbursable amount, meal reimbursable total, the reimbursable portion of the conference fee after applying any sponsorship offset, the sponsorship amount deducted, which items are denied and why, which items require a policy exception, which rows should be excluded before analysis, and whether any additional approval is still required. Use only CE-44 expense lines that are active and not voided. Apply receipt corrections, daily meal caps, sponsorship offsets, and pre-approvals found in the sources. Return only a JSON object with these fields: reimbursable_total, meal_reimbursable_total, conference_fee_reimbursable, sponsorship_deducted, denied_items, policy_exceptions, excluded_rows, approval_required. reimbursable_total must be the total payable amount across all approved categories. meal_reimbursable_total must be the total meal reimbursement across all days after applying caps and receipt corrections. conference_fee_reimbursable must be the approved registration amount after applying any sponsorship offset. sponsorship_deducted must be the numeric sponsorship offset amount. denied_items must be an array of short snake_case labels for cost types that are not reimbursable. policy_exceptions must be an array of short snake_case labels for items approvable only because of a specific written pre-approval or exception. excluded_rows must be an array of short snake_case labels for rows that belong to other claims, are voided, sponsored at zero cost, or otherwise out of scope. approval_required must be true only if additional approval is still needed before payment. Do not include explanation outside the JSON.",
+  "allowed_tools": [
+    "list_sources", "read_source", "read_text_source", "read_csv", "read_pdf",
+    "read_docx", "run_calculation", "lookup_vendor_status", "search_employee_directory",
+    "check_public_calendar", "estimate_shipping_cost"
+  ],
+  "source_manifest": "sources/hard_conference_expense_ce44/source_manifest.json",
+  "gold_output": {
+    "reimbursable_total": 1841.00,
+    "meal_reimbursable_total": 151.00,
+    "conference_fee_reimbursable": 1200.00,
+    "sponsorship_deducted": 200.00,
+    "denied_items": ["alcohol", "optional_event_ticket", "guest_meal"],
+    "policy_exceptions": ["conference_fee_above_cap_approved"],
+    "excluded_rows": ["ce41_prior_claim", "ce45_future_claim", "voided_taxi", "sponsored_lunch"],
+    "approval_required": false
+  },
+  "evaluation_criteria": {
+    "exact_fields": ["reimbursable_total", "meal_reimbursable_total", "conference_fee_reimbursable", "sponsorship_deducted", "approval_required"],
+    "numeric_tolerances": {
+      "reimbursable_total": 0.01,
+      "meal_reimbursable_total": 0.01,
+      "conference_fee_reimbursable": 0.01,
+      "sponsorship_deducted": 0.01
+    },
+    "set_fields": ["denied_items", "policy_exceptions", "excluded_rows"],
+    "set_aliases": {
+      "denied_items": {
+        "alcohol": ["alcohol_expense", "alcohol_removed", "alcohol_portion", "alcohol_excluded"],
+        "optional_event_ticket": ["event_ticket", "networking_event", "entertainment_ticket", "optional_entertainment", "social_ticket", "l11"],
+        "guest_meal": ["guest_dinner", "non_employee_meal", "guest_meal_no_approval", "client_meal_no_approval", "l12"]
+      },
+      "policy_exceptions": {
+        "conference_fee_above_cap_approved": ["registration_above_cap", "conference_fee_exception", "registration_cap_exception", "conference_fee_preapproved", "above_cap_registration_approved"]
+      },
+      "excluded_rows": {
+        "ce41_prior_claim": ["ce41", "ce_41", "prior_conference", "n1"],
+        "ce45_future_claim": ["ce45", "ce_45", "future_conference", "n2"],
+        "voided_taxi": ["voided_transport", "voided_cab", "n3", "voided_taxi_receipt"],
+        "sponsored_lunch": ["conference_sponsored_lunch", "l7", "zero_cost_sponsored_meal", "sponsored_meal", "conference_provided_lunch"]
+      }
+    },
+    "required_tool_calls": ["list_sources", "read_source", "run_calculation"],
+    "scoring_notes": "Conference fee: 1400 submitted, dept head approved above-cap, minus 200 sponsorship = 1200 reimbursable. Hotel: 195+195=390 (under 220/night cap). Transport: 52+48=100. Day1 meals: dinner corrected 88-23alcohol=65, exactly at 65 cap. Day2 meals: 24+41=65 at cap (guest meal 55 denied). Day3 meals: 21. Meal total: 65+65+21=151. Total: 1200+390+100+151=1841. Denied: alcohol(23), event ticket(75), guest meal(55). Excluded: N1(CE-41), N2(CE-45), N3(voided taxi), L7(sponsored lunch at 0)."
+  }
+}

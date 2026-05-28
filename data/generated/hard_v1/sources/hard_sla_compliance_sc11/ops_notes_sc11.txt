@@ -1,0 +1,22 @@
+Ops notes for SC-11 April 2026 SLA review
+
+INC-201: Vendor outage from CloudInfra (vendor ID: CI-044) caused the payment_api
+degradation. CloudInfra's public status page showed an incident at the same time.
+For vendor SLA tracking contact the procurement team. Vendor status does not affect
+customer credit calculations; credits are governed solely by the SLA policy and
+customer contract terms.
+
+INC-202: Config error introduced during a routine deployment on April 9. Internal
+RCA is being tracked in ticket ENG-4421. Not relevant to credit calculation.
+
+INC-204 cause: The customer (Pinnacle Media) sent a malformed API payload that
+triggered a cascading error in the reporting_api. Ops confirmed root cause was
+customer_misconfiguration after reviewing the request logs.
+
+INC-205: infrastructure_failure on payment_api. Second P2 incident on the same
+system within the month. Account team has been notified.
+
+Note: For any questions about customer contract terms beyond what is in
+customer_contracts_sc11, the CS team may be reached via the employee directory.
+Do not use employee contact information to determine credit amounts; use the
+contract data provided.

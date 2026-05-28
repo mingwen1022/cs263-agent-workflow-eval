@@ -1,0 +1,73 @@
+{
+  "task_id": "hard_incident_sla_ir42",
+  "task_family": "multi_app_workflow",
+  "difficulty": "hard",
+  "instruction": "Review incident IR-42 using the available sources. Determine whether the acknowledgement SLA was breached, the acknowledgement timing, status-page timing, recovery timing, which customers are eligible for automatic acknowledgement-delay credit, which customer records must be excluded from that credit decision, which alert/log rows should be excluded from the SLA clock, the total credit due, and any secondary risk flags. Use only the first qualifying production alert for IR-42 as the SLA clock start. Exclude staging alerts, unrelated incidents, symptom-only events, unaffected customers, non-Gold customers, and suspended accounts when determining automatic credit eligibility. Return only a JSON object with these fields: breached_sla, ack_elapsed_minutes, breach_minutes, status_page_elapsed_minutes, status_page_delay_minutes, recovery_elapsed_minutes, credit_eligible_customers, excluded_customers, excluded_alerts, credit_due, risk_flags. breached_sla must be a boolean. ack_elapsed_minutes must be total minutes from the qualifying production alert to acknowledgement. breach_minutes must be minutes late beyond the acknowledgement SLA threshold, not total elapsed minutes. status_page_elapsed_minutes must be total minutes from the qualifying production alert to the first public status-page update. status_page_delay_minutes must be minutes late beyond the public status-page update target. recovery_elapsed_minutes must be total minutes from the qualifying production alert to recovery. credit_eligible_customers must be an array of short snake_case labels for affected active Gold customers eligible for automatic credit. excluded_customers must be an array of short snake_case labels for customer records that appear relevant but should not receive automatic credit. excluded_alerts must be an array of short snake_case labels for alert/log rows that should not start the SLA clock. credit_due must be the total numeric credit amount. risk_flags must be an array of short snake_case labels for secondary risks that do not duplicate breached_sla. Do not include explanation outside the JSON.",
+  "allowed_tools": [
+    "list_sources",
+    "read_source",
+    "read_text_source",
+    "read_csv",
+    "read_pdf",
+    "read_docx",
+    "run_calculation",
+    "lookup_vendor_status",
+    "search_employee_directory",
+    "check_public_calendar",
+    "estimate_shipping_cost"
+  ],
+  "source_manifest": "sources/hard_incident_sla_ir42/source_manifest.json",
+  "gold_output": {
+    "breached_sla": true,
+    "ack_elapsed_minutes": 28,
+    "breach_minutes": 18,
+    "status_page_elapsed_minutes": 41,
+    "status_page_delay_minutes": 11,
+    "recovery_elapsed_minutes": 55,
+    "credit_eligible_customers": ["aster_bank", "northwind_health"],
+    "excluded_customers": ["blue_finch_retail", "summit_labs", "old_town_media", "harbor_school"],
+    "excluded_alerts": ["staging_alert", "retry_queue_symptom", "prior_incident", "analytics_warning"],
+    "credit_due": 500.0,
+    "risk_flags": ["status_page_delay"]
+  },
+  "evaluation_criteria": {
+    "exact_fields": ["breached_sla", "ack_elapsed_minutes", "breach_minutes", "status_page_elapsed_minutes", "status_page_delay_minutes", "recovery_elapsed_minutes", "credit_due"],
+    "numeric_tolerances": {
+      "ack_elapsed_minutes": 0.01,
+      "breach_minutes": 0.01,
+      "status_page_elapsed_minutes": 0.01,
+      "status_page_delay_minutes": 0.01,
+      "recovery_elapsed_minutes": 0.01,
+      "credit_due": 0.01
+    },
+    "set_fields": ["credit_eligible_customers", "excluded_customers", "excluded_alerts", "risk_flags"],
+    "set_aliases": {
+      "credit_eligible_customers": {
+        "aster_bank": ["aster bank", "aster"],
+        "northwind_health": ["northwind health", "northwind"]
+      },
+      "excluded_customers": {
+        "blue_finch_retail": ["blue finch retail", "blue_finch", "silver_customer"],
+        "summit_labs": ["summit labs", "summit", "unaffected_gold_customer"],
+        "old_town_media": ["old town media", "old_town", "suspended_account"],
+        "harbor_school": ["harbor school", "harbor", "bronze_customer"]
+      },
+      "excluded_alerts": {
+        "staging_alert": ["staging", "staging_checkout_sandbox", "sandbox_alert", "s1"],
+        "retry_queue_symptom": ["retry_queue", "secondary_retry_queue", "symptom_only_event", "a2"],
+        "prior_incident": ["ir41", "ir_41", "prior_incident", "n1"],
+        "analytics_warning": ["analytics_dashboard", "analytics_warning", "separate_analytics_warning", "n2"]
+      },
+      "risk_flags": {
+        "status_page_delay": [
+          "late_status_page",
+          "status_update_delay",
+          "public_status_page_delay",
+          "status_page_late"
+        ]
+      }
+    },
+    "required_tool_calls": ["list_sources", "read_source", "run_calculation"],
+    "scoring_notes": "Gold acknowledgement SLA is 10 minutes. First qualifying acknowledgement was 28 minutes after start, so breach is 18 minutes. Status-page target is 30 minutes; first public update was 41 minutes after start, so delay is 11 minutes. Recovery happened 55 minutes after start. Two affected active Gold customers receive 250 each. risk_flags should capture secondary operational risks, not duplicate breached_sla."
+  }
+}

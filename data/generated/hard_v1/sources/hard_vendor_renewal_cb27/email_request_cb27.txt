@@ -1,0 +1,16 @@
+Subject: Renewal decision needed for CloudBox CB-27
+
+Please recommend whether we should renew CloudBox on Standard or Premium for the
+next monthly term. The team wants the least expensive option that still satisfies
+the new support requirement. Return the recommended plan, projected monthly cost,
+monthly savings compared with staying on the current Standard usage billing, the
+renewal deadline, and any risk flags.
+The usage export may include other accounts, sandbox usage, archive usage, or
+forecast-only rows. Use only rows marked as in scope for the CB-27 renewal.
+
+Thread noise:
+
+- Legal asked whether Enterprise would require a security addendum. Do not choose
+  Enterprise unless the other sources show it is needed.
+- A sales representative mentioned a "possible future promotion" but did not attach
+  approved pricing. Do not use unapproved future promotions.

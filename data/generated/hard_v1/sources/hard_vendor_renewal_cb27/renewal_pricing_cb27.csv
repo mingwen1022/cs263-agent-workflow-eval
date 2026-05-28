@@ -1,0 +1,7 @@
+plan,region,currency,billing_period,base_monthly_fee,included_seats,extra_seat_fee,included_storage_tb,extra_storage_tb_fee,support_response
+standard,us,USD,monthly,1200.00,100,18.00,5,90.00,next_business_day
+standard,eu,EUR,monthly,1320.00,100,20.00,5,95.00,next_business_day
+premium,us,USD,monthly,2100.00,150,12.00,10,60.00,four_hours
+premium,pilot,USD,monthly,1900.00,120,15.00,8,75.00,four_hours
+enterprise,us,USD,monthly,3100.00,300,8.00,25,40.00,one_hour
+starter,us,USD,monthly,700.00,50,25.00,2,120.00,email_only

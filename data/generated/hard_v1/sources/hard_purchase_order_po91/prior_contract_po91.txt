@@ -1,0 +1,25 @@
+Active contract: TechSoft Master Agreement — CC-104
+Contract ID: TSMA-2024-104
+Effective: 2024-07-01 through 2026-12-31
+
+Licensed product: TechSoft Core Platform
+Maximum seat count: 60 seats (current contract term)
+Per-seat price locked at: $450.00
+
+Analytics Add-On Module:
+Pre-approved quantity: up to 20 seats at $200.00 per seat.
+This add-on was approved in the 2025 contract amendment and does not require
+a separate Procurement Committee review for quantities at or below 20 seats.
+
+Standard Support Plan: The base-tier annual standard support plan is approved
+under this agreement and falls within the approved "support" procurement category.
+It is distinct from premium support upgrades.
+
+Premium support upgrade and training packages are not covered under this agreement
+and require separate procurement approval per policy.
+
+Note: PO-88 included a $4,500 carried-forward support credit from a prior billing
+dispute. That credit is tracked separately and does not apply to PO-91 line items.
+
+Budget encumbrance note: the Q4 placeholder entry visible in the PO export system
+is a draft line for planning purposes only. It has not been submitted or approved.

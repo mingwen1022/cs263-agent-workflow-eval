@@ -1,0 +1,49 @@
+{
+  "task_id": "hard_sla_compliance_sc11",
+  "task_family": "multi_app_workflow",
+  "difficulty": "hard",
+  "instruction": "Review the April 2026 incident log for SLA credit eligibility using the available sources. For each incident, determine whether a credit-eligible customer experienced an acknowledgement SLA breach. Calculate the total credit amount owed after applying per-customer monthly caps. Identify which customers are eligible to receive credits, which customers or incidents are excluded, and any system risk flags. Use only customer-facing incidents; exclude internal-only incidents, maintenance-window incidents, and customer-caused incidents. Return only a JSON object with these fields: total_credit_amount, credit_eligible_customers, excluded_customers, excluded_incidents, breach_incidents, risk_flags. total_credit_amount must be the total credit amount after applying monthly caps. credit_eligible_customers must be an array of short snake_case labels for Gold customers who receive credits this month. excluded_customers must be an array of short snake_case labels for customers who are affected but not eligible for automatic credit. excluded_incidents must be an array of short snake_case labels for incidents excluded from credit calculation. breach_incidents must be an array of short snake_case labels for incidents where a Gold customer SLA was breached. risk_flags must be an array of short snake_case labels for reliability risks. Do not include explanation outside the JSON.",
+  "allowed_tools": [
+    "list_sources", "read_source", "read_text_source", "read_csv", "read_pdf",
+    "read_docx", "run_calculation", "lookup_vendor_status", "search_employee_directory",
+    "check_public_calendar", "estimate_shipping_cost"
+  ],
+  "source_manifest": "sources/hard_sla_compliance_sc11/source_manifest.json",
+  "gold_output": {
+    "total_credit_amount": 1000.0,
+    "credit_eligible_customers": ["apex_corp", "meridian_tech"],
+    "excluded_customers": ["pinnacle_media", "harbor_school"],
+    "excluded_incidents": ["inc203_maintenance_window", "inc204_customer_caused", "n1_internal_only"],
+    "breach_incidents": ["inc201_apex_meridian", "inc205_apex_meridian"],
+    "risk_flags": ["payment_api_repeat_p2_breach"]
+  },
+  "evaluation_criteria": {
+    "exact_fields": ["total_credit_amount"],
+    "numeric_tolerances": {"total_credit_amount": 0.01},
+    "set_fields": ["credit_eligible_customers", "excluded_customers", "excluded_incidents", "breach_incidents", "risk_flags"],
+    "set_aliases": {
+      "credit_eligible_customers": {
+        "apex_corp": ["apex", "apex_corporation"],
+        "meridian_tech": ["meridian", "meridian_technology"]
+      },
+      "excluded_customers": {
+        "pinnacle_media": ["pinnacle", "silver_customer_pinnacle"],
+        "harbor_school": ["harbor", "bronze_customer_harbor"]
+      },
+      "excluded_incidents": {
+        "inc203_maintenance_window": ["inc203", "inc_203", "maintenance_window_incident", "april14_maintenance"],
+        "inc204_customer_caused": ["inc204", "inc_204", "customer_caused_incident", "customer_misconfiguration_incident"],
+        "n1_internal_only": ["n1", "internal_incident", "internal_dashboard_incident", "no_customer_impact"]
+      },
+      "breach_incidents": {
+        "inc201_apex_meridian": ["inc201", "inc_201", "april3_payment_breach"],
+        "inc205_apex_meridian": ["inc205", "inc_205", "april28_payment_breach"]
+      },
+      "risk_flags": {
+        "payment_api_repeat_p2_breach": ["repeat_p2_breach", "payment_api_reliability_risk", "multiple_p2_breaches", "payment_api_p2_flag", "apex_corp_payment_api_risk", "meridian_tech_payment_api_risk", "payment_api_repeat_breach", "repeated_payment_api_p2"]
+      }
+    },
+    "required_tool_calls": ["list_sources", "read_source", "run_calculation"],
+    "scoring_notes": "INC-201 (P2): start 14:22, ack 14:37 = 15 min > 10 min SLA. Breaches for Apex (+300) and Meridian (+300). Harbor School bronze, no credit. INC-202 (P3): start 09:05, ack 09:19 = 14 min < 20 min P3 SLA => no breach. INC-203: in maintenance window (April 14 01:00-05:00), excluded. INC-204: customer-caused, excluded. INC-205 (P2): start 16:00, ack 16:18 = 18 min > 10 min SLA. Apex (+300) and Meridian (+300). Running totals before cap: Apex=600, Meridian=600. Monthly cap $500 per customer: Apex=min(600,500)=500, Meridian=min(600,500)=500. Total=1000. Breach incidents: INC-201 and INC-205. Risk: payment_api had 2 P2 breaches in April => repeat flag."
+  }
+}

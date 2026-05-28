@@ -1,0 +1,17 @@
+Access history and security notes for E-443 (contractor)
+
+Prior access grants:
+- 2025-11: usage_reports read access — granted, no issues
+- 2026-01: internal_audit_logs read access — requested as contractor, denied per policy;
+  supervised session arranged with engineer instead
+
+Prior violations:
+- 2026-02: E-443 was observed querying customer records outside the approved
+  anonymized dataset during a QA session. A data handling warning was issued.
+  The warning is on file and is within the lookback period for PII access decisions.
+
+Current contractor engagement: active through 2026-09-30.
+
+Note: AR-28 in the same batch is a prior approved request for E-771 (analyst in
+finance) and is not part of this review. AR-30 is a pending request from a
+different employee (E-551) in a separate batch.

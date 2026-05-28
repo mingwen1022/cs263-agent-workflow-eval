@@ -1,0 +1,20 @@
+Subject: PO-91 approval request — TechSoft renewal and expansion
+
+Please review PO-91 for the TechSoft platform renewal and seat expansion. We need
+the core licenses, the analytics module (which was pre-approved in the contract),
+and the standard support plan renewed before end of quarter.
+
+We also included a premium support upgrade and a training package — these would be
+nice to have but I understand they may need separate approval. Please flag them if
+that is the case.
+
+Budget note: CC-104 should have sufficient room for the approved items. Please
+confirm the remaining budget after approval.
+
+Note from finance:
+- The PO-88 carryover line visible in the export is an old credit tracking entry,
+  not part of PO-91.
+- The Q4 placeholder row was added by the system for planning visibility; it is
+  not a live purchase request.
+
+Let me know if any approvals are missing before this goes to the Director.

@@ -1,0 +1,7 @@
+customer,customer_id,service_tier,affected_by_ir42,region,contract_status
+Aster Bank,C-1007,gold,true,us-east,active
+Northwind Health,C-1442,gold,true,us-west,active
+Blue Finch Retail,C-2044,silver,true,us-east,active
+Summit Labs,C-3301,gold,false,eu-west,active
+Old Town Media,C-1188,gold,true,us-east,suspended
+Harbor School,C-2933,bronze,true,us-west,active

@@ -1,0 +1,8 @@
+line_id,po_number,department,cost_center,category,vendor,description,quantity,unit_price,total,status
+N1,PO-88,IT,CC-104,software,TechSoft,Carried-forward support renewal,1,4500.00,4500.00,carried_forward
+L1,PO-91,IT,CC-104,software_licenses,TechSoft,Core platform seats,40,450.00,18000.00,pending
+L2,PO-91,IT,CC-104,software_licenses,TechSoft,Analytics add-on module,20,200.00,4000.00,pending
+L3,PO-91,IT,CC-104,support,TechSoft,Annual standard support plan,1,2800.00,2800.00,pending
+L4,PO-91,IT,CC-104,support_upgrade,TechSoft,Premium support upgrade tier,1,3500.00,3500.00,pending
+L5,PO-91,IT,CC-104,training,TechSoft,Platform certified training,3,900.00,2700.00,pending
+N2,PO-92,IT,CC-104,software_licenses,TechSoft,Q4 renewal placeholder,20,450.00,9000.00,draft
