@@ -1,0 +1,990 @@
+{
+  "task_id": "hard_household_moveout_deposit_hm37",
+  "system_name": "small_single",
+  "created_at": "20260530T235706Z",
+  "trace_url": "https://smith.langchain.com/o/6e10ea75-a811-49d0-9ace-7d3c13f768c2/projects/p/29d09956-365b-453f-9f3a-a71eed8ec154/r/019e7b50-0970-7380-8b30-095fa3f036fc?trace_id=019e7b50-0970-7380-8b30-095fa3f036fc&start_time=2026-05-30T23:55:03.408829",
+  "task_instruction": "Review the household move-out settlement HM-37 using the available sources. Calculate the final security-deposit, utility, and side-adjustment settlement for Unit 4B roommates Alex, Bri, and Chen. Use only the final lease/housemate rules, final property statement, valid deposit ledger rows, inspection evidence, utilities through 2026-03-31, and final approved side-adjustment workbook rows. Exclude preliminary estimates, withdrawn charges, other-unit rows, voided deposit rows, preexisting damage, weather-related damage, personal subscriptions, unapproved purchases, post-move-out utility periods, draft workbook rows, old draft workbook tabs, personal side expenses, duplicate side expenses, and side expenses without all-roommate approval. Return only a JSON object with these fields: landlord_deduction_total, refund_pool, alex_landlord_deduction_share, bri_landlord_deduction_share, chen_landlord_deduction_share, alex_utility_adjustment, bri_utility_adjustment, chen_utility_adjustment, alex_final_refund, bri_final_refund, chen_final_refund, side_adjustment_total, alex_side_adjustment, bri_side_adjustment, chen_side_adjustment, alex_final_payout, bri_final_payout, chen_final_payout, approved_deduction_ids, excluded_property_statement_ids, valid_deposit_people, excluded_deposit_row_ids, included_utility_bill_ids, excluded_utility_bill_ids, included_side_adjustment_ids, excluded_side_adjustment_ids, refund_check_to_lead_tenant, preliminary_estimate_conflict, roommate_reimbursement_needed. Field definitions: landlord_deduction_total is the sum of final landlord security-deposit deductions only. refund_pool is total valid security deposit minus landlord_deduction_total before roommate utility and side adjustments. Each *_landlord_deduction_share is that roommate's share of landlord deductions under the housemate allocation rules. Each *_utility_adjustment is amount paid by that roommate for included utilities minus that roommate's responsibility for included utilities; positive means the roommate should receive more from the settlement, negative means the roommate should receive less. Each *_final_refund is that roommate's valid deposit contribution minus landlord deduction share plus utility adjustment, before side adjustments. side_adjustment_total is the total amount of included final side-adjustment rows. Each *_side_adjustment is amount paid by that roommate for included side adjustments minus that roommate's responsibility for included side adjustments. Each *_final_payout is that roommate's final_refund plus side_adjustment. approved_deduction_ids must contain the item_id values from final_property_statement_hm37.csv for final landlord deductions accepted into the settlement. excluded_property_statement_ids must contain the item_id values from final_property_statement_hm37.csv that are excluded from the settlement. valid_deposit_people must contain the person names from deposit_contributions_hm37.csv whose rows are valid_final for Unit 4B. excluded_deposit_row_ids must contain the row_id values from deposit_contributions_hm37.csv that are excluded from the settlement. included_utility_bill_ids must contain bill_id values from final_utilities_hm37.csv included in the roommate utility settlement. excluded_utility_bill_ids must contain bill_id values from final_utilities_hm37.csv excluded from the roommate utility settlement. included_side_adjustment_ids must contain adjustment_id values from side_adjustment_workbook_hm37.xlsx included in the roommate side-adjustment settlement. excluded_side_adjustment_ids must contain adjustment_id values from side_adjustment_workbook_hm37.xlsx excluded from the roommate side-adjustment settlement. refund_check_to_lead_tenant, preliminary_estimate_conflict, and roommate_reimbursement_needed must be booleans directly determined from the sources. Numeric fields must be dollar amounts rounded to two decimals. ID array fields must use exact source IDs, not free-form descriptive labels. For every array field, include all and only the source IDs directly supported by the sources; do not add speculative, generic, duplicate, or unsupported labels. Do not include explanation outside the JSON.",
+  "task_instruction_zh": "审查 HM-37 合租退租结算，根据可用资料计算 4B 单元 Alex、Bri、Chen 的最终押金和水电网结算。还需要读取 Excel side-adjustment 工作簿，计算三人最终 payout。只能使用最终合租规则、最终房东账单、有效押金 ledger、检查证据、2026-03-31 及以前的水电网账单，以及 final approved 的 side-adjustment 行。需要排除初稿估价、撤回扣款、其他单元记录、voided 押金、搬入前已有损坏、天气损坏、个人订阅、未批准购买、搬出后费用、draft workbook 行、旧草稿 sheet、个人 side expense、重复 side expense 和未获三人批准的 side expense。输出字段包括房东最终扣款总额、退款池、三个人的房东扣款份额、水电网净调整、side-adjustment 净调整、side adjustment 后的最终 payout、各类纳入/排除 ID 以及三个结算流程风险 boolean。utility_adjustment 表示该室友已支付的纳入结算水电网金额减去其应承担金额；正数表示应多拿回，负数表示应少拿回。side_adjustment 表示该室友已支付的纳入 side adjustment 金额减去其应承担金额；最终 payout 等于 final_refund 加 side_adjustment。refund_pool 是有效总押金减房东最终扣款，发生在室友间水电网和 side adjustment 调整之前。扣款、押金、账单和 Excel side-adjustment 选择必须输出 source 中的 item_id、row_id、bill_id 或 adjustment_id，不要自造描述性标签。三个风险字段输出 boolean。",
+  "allowed_tools": [
+    "list_sources",
+    "read_source",
+    "read_text_source",
+    "read_csv",
+    "read_pdf",
+    "read_docx",
+    "read_xlsx",
+    "run_calculation",
+    "lookup_vendor_status",
+    "search_employee_directory",
+    "check_public_calendar",
+    "estimate_shipping_cost"
+  ],
+  "sources": [
+    {
+      "source_id": "deposit_contributions_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/deposit_contributions_hm37.csv",
+      "content": "row_id,person,unit,amount,status,notes\nDEP_ALEX_VALID,Alex,4B,1200.00,valid_final,Lead tenant deposit contribution\nDEP_BRI_VALID,Bri,4B,1050.00,valid_final,Bedroom B deposit contribution\nDEP_CHEN_VALID,Chen,4B,750.00,valid_final,Small room deposit contribution\nDEP_ALEX_VOIDED_TOPUP,Alex,4B,100.00,voided_pending,Voided top-up request from 2025-08; never paid\nDEP_DANA_4C,Dana,4C,500.00,other_unit,Imported from adjacent unit and not part of HM-37"
+    },
+    {
+      "source_id": "final_property_statement_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/final_property_statement_hm37.csv",
+      "content": "statement_version,item_id,unit,description,amount,status,responsibility_hint,notes\nfinal_2026_04_08,F1,4B,Move-out re-cleaning after failed broom-clean inspection,285.00,final_deducted,shared_unknown,Final statement line 1\nfinal_2026_04_08,F2,4B,Mailbox key replacement,45.00,final_deducted,shared_unknown,One mailbox key was not returned and no roommate accepted responsibility\nfinal_2026_04_08,F3,4B,Living room wall patch and paint for desk-anchor gouges,420.00,final_deducted,chen_identified,Matches inspection note for Chen desk anchors\nfinal_2026_04_08,F4,4B,Bedroom B blind slat replacement,130.00,final_deducted,bri_identified,Matches bedroom B assignment\nfinal_2026_04_08,X1,4B,Hall carpet replacement estimate,900.00,withdrawn_preexisting,exclude,Withdrawn after move-in checklist review\nfinal_2026_04_08,X2,4B,Balcony screen repair,160.00,withdrawn_weather_damage,exclude,Manager notes storm damage and no tenant charge\ndraft_2026_04_02,D1,4B,Preliminary paint estimate before vendor invoice,525.00,draft_superseded,exclude,Superseded by F3 final invoice\nfinal_2026_04_08,N1,4C,Parking remote replacement,65.00,other_unit,exclude,Neighboring unit included in exported ledger by mistake"
+    },
+    {
+      "source_id": "final_utilities_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/final_utilities_hm37.csv",
+      "content": "bill_id,service,service_period_start,service_period_end,total_amount,paid_by,include_in_settlement,special_rule,notes\nU1,electricity,2026-03-01,2026-03-31,192.60,Alex,yes,ev_addon_36_to_alex,March final bill through lease end; total includes 36.00 EV charging add-on\nU2,water_trash,2026-03-01,2026-03-31,96.00,Chen,yes,equal_split,March water and trash through lease end\nU3,internet,2026-03-01,2026-03-31,75.00,Bri,yes,equal_split,Shared household internet through move-out date\nU4,electricity,2026-04-01,2026-04-15,41.10,Alex,no,after_moveout,Service after lease end; Alex kept account open for showing appointments\nU5,streaming_service,2026-03-01,2026-03-31,18.00,Bri,no,personal_subscription,Not a household utility under the agreement\nU6,router_cable,2026-03-28,2026-03-28,12.49,Bri,no,no_written_approval,Replacement cable purchase was not approved by all roommates"
+    },
+    {
+      "source_id": "lead_tenant_email_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/lead_tenant_email_hm37.txt",
+      "content": "From: property.manager@example.test\nTo: Alex\nDate: 2026-04-09\nSubject: HM-37 final deposit statement and check routing\n\nAlex,\n\nThe final statement for Unit 4B / HM-37 is now closed. The total security\ndeposit held was $3,000.00. Final landlord deductions total $880.00, and the\nrefund check for $2,120.00 was issued to you as lead tenant because the lease\nhad one forwarding address on file.\n\nPlease note that our April 2 preliminary estimate is no longer active. The hall\ncarpet and balcony screen items were removed before the final statement. The\nparking remote line in the export belongs to Unit 4C and should not be included\nin your roommate settlement.\n\nWe do not settle utilities between roommates. The refund check amount above is\nonly the landlord security-deposit refund.\n"
+    },
+    {
+      "source_id": "lease_and_housemate_rules_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/lease_and_housemate_rules_hm37.md",
+      "content": "# HM-37 Lease and Housemate Settlement Rules\n\n## Current rule set for Unit 4B, lease ending 2026-03-31\n\nSecurity deposit held by the landlord belongs to the roommates in the same\namounts originally contributed by each person. For HM-37, use the deposit\nledger marked `valid_final`.\n\nLandlord deductions that are confirmed on the final property statement should\nbe allocated as follows:\n\n1. Shared or unknown-responsibility deductions are allocated by original deposit\n   share.\n2. Deductions tied to an identified roommate's assigned room or documented\n   action are charged to that roommate only.\n3. Withdrawn, draft, prior estimate, other-unit, move-in-preexisting, and\n   weather-damage lines are excluded.\n4. Normal wear and tear is not deductible.\n\nUtilities are not landlord deductions unless the final property statement says\notherwise. For the roommate settlement, utilities through 2026-03-31 are split\nequally among Alex, Bri, and Chen after applying any bill-specific rider.\n\nBill-specific rider for the March 2026 electricity bill:\n- The EV charging add-on is Alex's personal charge.\n- The remaining electricity amount is split equally.\n\nInternet for March 2026 is a shared household utility. Streaming services,\nreplacement cables, and post-move-out service periods are personal or excluded\nunless all three roommates approved them in writing.\n\n## Obsolete clause, do not use\n\nThe 2024 draft housemate agreement split all shared deductions equally. That\ndraft was replaced by the current rule set above after Bri moved into bedroom B.\nDo not use the 2024 equal-deposit split rule for HM-37.\n"
+    },
+    {
+      "source_id": "movein_condition_checklist_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/movein_condition_checklist_hm37.csv",
+      "content": "area,item,condition_at_movein,tenant_initials,settlement_relevance\nhall,carpet,worn_with_two_old_stains,all,preexisting_exclude\nbalcony,screen,slightly_loose_before_storm,all,do_not_charge_without_new_tenant_damage\nbedroom_b,blinds,intact,bri,relevant_if_damaged_at_moveout\nliving_room,wall_under_window,clean_no_gouges,chen,relevant_if_new_gouges_found\nkitchen,appliance_drawers,clean,all,cleaning_can_be_charged_if_not_returned_clean\nmailbox,key_set,two_keys_issued,all,key_replacement_can_be_charged_if_missing"
+    },
+    {
+      "source_id": "moveout_inspection_notes_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/moveout_inspection_notes_hm37.md",
+      "content": "# HM-37 Move-out Inspection Notes\n\nInspection date: 2026-04-01\nUnit: 4B\n\nRoom assignments:\n- Alex: Bedroom A\n- Bri: Bedroom B\n- Chen: small room and living-room desk nook\n\nFindings tied to final charges:\n- General cleaning: kitchen surfaces, refrigerator drawers, and bathroom baseboards\n  required a re-clean after keys were returned. Responsibility not assigned.\n- Missing mailbox key: one mailbox key missing from returned packet. Responsibility\n  unknown.\n- Living room wall: two desk-anchor gouges under the window by Chen's desk nook.\n  Chen confirmed the anchor strips were from his standing desk cable rail.\n- Bedroom B blinds: three broken slats in bedroom B; not marked on the move-in\n  checklist. Bedroom B was Bri's assigned room.\n\nFindings not charged to tenants:\n- Hall carpet was already worn and stained on the move-in checklist. The April 2\n  preliminary replacement estimate was withdrawn.\n- Balcony screen was bent after the March 28 wind storm. Property manager marked\n  it weather-related and withdrew the charge.\n\nNoise notes:\n- A parking remote issue belongs to Unit 4C.\n- A hallway scuff outside Unit 4B belongs to common-area maintenance, not HM-37.\n"
+    },
+    {
+      "source_id": "preliminary_cleaning_quote_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/preliminary_cleaning_quote_hm37.txt",
+      "content": "Preliminary vendor quote, created 2026-04-02.\nStatus: preliminary only; do not use after the final 2026-04-08 statement.\n\nUnit 4B:\n- General cleaning estimate: $475.00\n- Hall carpet replacement estimate: $900.00\n- Paint estimate: $525.00\n\nNotes:\n- Vendor had not reviewed the move-in checklist.\n- Property manager later requested a revised invoice.\n- This quote was forwarded in the roommate chat and caused confusion.\n\nUnrelated:\n- Unit 4C parking remote replacement: $65.00\n"
+    },
+    {
+      "source_id": "repair_receipt_packet_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/repair_receipt_packet_hm37.pdf",
+      "content": "HM-37 final receipt packet, revised 2026-04-08\nCleaning re-clean final invoice: 285.00\nMailbox key replacement receipt: 45.00\nLiving room wall patch and paint final invoice: 420.00\nBedroom B blind slat replacement receipt: 130.00\nWithdrawn quote: carpet replacement 900.00, do not charge\nWithdrawn quote: balcony screen 160.00, weather damage"
+    },
+    {
+      "source_id": "side_adjustment_workbook_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/side_adjustment_workbook_hm37.xlsx",
+      "content": "# sheet: final_side_adjustments\nadjustment_id,status,description,amount,paid_by,allocation_rule,include_in_settlement,notes\nSA1,final,Certified mail and forwarding packet for landlord refund check,18,Alex,equal_split,yes,Approved in roommate closeout thread; processing the shared refund check\nSA2,final,Short-term storage locker for shared move-out boxes Mar 25-31,90,Bri,equal_split,yes,All roommates approved; only lease-period shared storage dates included\nSA3,final,Mobile deposit fee for landlord refund check,6,Alex,equal_split,yes,Bank fee caused by single paper refund check routing\nSA4,draft,Earlier storage quote for full month April,240,Bri,exclude,no,Superseded; after move-out dates and not approved\nSA5,final,Moving truck rental for Alex and Bri furniture,180,Alex,personal_subset,no,Chen did not use truck and no all-roommate approval\nSA6,final,Donation pickup for Chen bookshelf,42,Chen,personal,no,Personal disposal, not household settlement\nSA7,final,Paint touch-up supplies bought by Chen,29.4,Chen,exclude_landlord_duplicate,no,Duplicate of landlord wall repair F3; do not reimburse separately\nSA8,voided,Old Venmo request from Bri to Alex for utilities,34.2,Bri,voided,no,Voided after final utility calculation\nSA9,other_unit,Unit 4C storage shelf disposal,55,Dana,other_unit,no,Imported from adjacent unit workbook tab\n\n# sheet: old_draft_do_not_use\nadjustment_id,description,amount,paid_by,include_in_settlement,notes\nOLD1,Equal split all moving truck fees,180,Alex,no,Old draft before Chen opted out\nOLD2,Full April storage locker,240,Bri,no,Old draft after move-out period\nOLD3,Estimated bank fees,15,Alex,no,Estimate replaced by SA3"
+    }
+  ],
+  "gold_output": {
+    "landlord_deduction_total": 880.0,
+    "refund_pool": 2120.0,
+    "alex_landlord_deduction_share": 132.0,
+    "bri_landlord_deduction_share": 245.5,
+    "chen_landlord_deduction_share": 502.5,
+    "alex_utility_adjustment": 47.4,
+    "bri_utility_adjustment": -34.2,
+    "chen_utility_adjustment": -13.2,
+    "alex_final_refund": 1115.4,
+    "bri_final_refund": 770.3,
+    "chen_final_refund": 234.3,
+    "side_adjustment_total": 114.0,
+    "alex_side_adjustment": -14.0,
+    "bri_side_adjustment": 52.0,
+    "chen_side_adjustment": -38.0,
+    "alex_final_payout": 1101.4,
+    "bri_final_payout": 822.3,
+    "chen_final_payout": 196.3,
+    "approved_deduction_ids": [
+      "F1",
+      "F2",
+      "F3",
+      "F4"
+    ],
+    "excluded_property_statement_ids": [
+      "X1",
+      "X2",
+      "D1",
+      "N1"
+    ],
+    "valid_deposit_people": [
+      "Alex",
+      "Bri",
+      "Chen"
+    ],
+    "excluded_deposit_row_ids": [
+      "DEP_ALEX_VOIDED_TOPUP",
+      "DEP_DANA_4C"
+    ],
+    "included_utility_bill_ids": [
+      "U1",
+      "U2",
+      "U3"
+    ],
+    "excluded_utility_bill_ids": [
+      "U4",
+      "U5",
+      "U6"
+    ],
+    "included_side_adjustment_ids": [
+      "SA1",
+      "SA2",
+      "SA3"
+    ],
+    "excluded_side_adjustment_ids": [
+      "SA4",
+      "SA5",
+      "SA6",
+      "SA7",
+      "SA8",
+      "SA9",
+      "OLD1",
+      "OLD2",
+      "OLD3"
+    ],
+    "refund_check_to_lead_tenant": true,
+    "preliminary_estimate_conflict": true,
+    "roommate_reimbursement_needed": true
+  },
+  "correct_solution_process": "Valid deposit rows are DEP_ALEX_VALID, DEP_BRI_VALID, and DEP_CHEN_VALID for Alex 1200, Bri 1050, Chen 750, total 3000, giving deposit shares 40%, 35%, 25%. Final landlord deduction item_ids are F1 285, F2 45, F3 420, and F4 130, total 880; refund pool is 3000-880=2120. Excluded property statement item_ids are X1, X2, D1, and N1. Excluded deposit row_ids are DEP_ALEX_VOIDED_TOPUP and DEP_DANA_4C. Included utility bill_ids are U1, U2, and U3; excluded utility bill_ids are U4, U5, and U6. Shared/unknown deductions are F1+F2=330, allocated by deposit share: Alex 132, Bri 115.50, Chen 82.50. F3 is charged only to Chen, and F4 only to Bri, so landlord deduction shares are Alex 132.00, Bri 245.50, Chen 502.50. Utilities through 2026-03-31: U1 electricity 192.60 paid by Alex, with 36.00 EV add-on to Alex and remaining 156.60 split equally, so Alex's electric responsibility is 88.20 and Bri/Chen each 52.20. U2 water/trash 96 paid by Chen is split equally at 32 each. U3 internet 75 paid by Bri is split equally at 25 each. Utility net adjustments are Alex +47.40, Bri -34.20, Chen -13.20. Final refunds before side adjustments are Alex 1115.40, Bri 770.30, Chen 234.30. Included side adjustment IDs are SA1 18 paid by Alex, SA2 90 paid by Bri, and SA3 6 paid by Alex, total 114. Each roommate is responsible for 38.00. Paid totals are Alex 24, Bri 90, Chen 0, so side adjustments are Alex -14.00, Bri +52.00, Chen -38.00. Final payouts after side adjustments are Alex 1101.40, Bri 822.30, Chen 196.30. Excluded side adjustment IDs are SA4, SA5, SA6, SA7, SA8, SA9, OLD1, OLD2, and OLD3. refund_check_to_lead_tenant=true because the refund check was issued only to Alex. preliminary_estimate_conflict=true because the preliminary quote conflicts with the final statement. roommate_reimbursement_needed=true because utility and side-adjustment payers and responsibilities differ.",
+  "agent_output": {
+    "landlord_deduction_total": 880.0,
+    "refund_pool": 2120.0,
+    "alex_landlord_deduction_share": 110.0,
+    "bri_landlord_deduction_share": 240.0,
+    "chen_landlord_deduction_share": 530.0,
+    "alex_utility_adjustment": 47.4,
+    "bri_utility_adjustment": -34.2,
+    "chen_utility_adjustment": -13.2,
+    "alex_final_refund": 1137.4,
+    "bri_final_refund": 775.8,
+    "chen_final_refund": 206.8,
+    "side_adjustment_total": 114.0,
+    "alex_side_adjustment": -14.0,
+    "bri_side_adjustment": 52.0,
+    "chen_side_adjustment": -38.0,
+    "alex_final_payout": 1123.4,
+    "bri_final_payout": 827.8,
+    "chen_final_payout": 168.8,
+    "approved_deduction_ids": [
+      "F1",
+      "F2",
+      "F3",
+      "F4"
+    ],
+    "excluded_property_statement_ids": [
+      "X1",
+      "X2",
+      "D1",
+      "N1"
+    ],
+    "valid_deposit_people": [
+      "Alex",
+      "Bri",
+      "Chen"
+    ],
+    "excluded_deposit_row_ids": [
+      "DEP_ALEX_VOIDED_TOPUP",
+      "DEP_DANA_4C"
+    ],
+    "included_utility_bill_ids": [
+      "U1",
+      "U2",
+      "U3"
+    ],
+    "excluded_utility_bill_ids": [
+      "U4",
+      "U5",
+      "U6"
+    ],
+    "included_side_adjustment_ids": [
+      "SA1",
+      "SA2",
+      "SA3"
+    ],
+    "excluded_side_adjustment_ids": [
+      "SA4",
+      "SA5",
+      "SA6",
+      "SA7",
+      "SA8",
+      "SA9"
+    ],
+    "refund_check_to_lead_tenant": true,
+    "preliminary_estimate_conflict": false,
+    "roommate_reimbursement_needed": false
+  },
+  "agent_notes": "",
+  "agent_tool_log": [
+    {
+      "tool_name": "list_sources",
+      "args": {},
+      "result": "deposit_contributions_hm37 (csv)\nfinal_property_statement_hm37 (csv)\nfinal_utilities_hm37 (csv)\nlead_tenant_email_hm37 (text)\nlease_and_housemate_rules_hm37 (text)\nmovein_condition_checklist_hm37 (csv)\nmoveout_inspection_notes_hm37 (text)\npreliminary_cleaning_quote_hm37 (text)\nrepair_receipt_packet_hm37 (pdf)\nside_adjustment_workbook_hm37 (xlsx)"
+    },
+    {
+      "tool_name": "read_text_source",
+      "args": {
+        "source_id": "lease_and_housemate_rules_hm37"
+      },
+      "result": "# HM-37 Lease and Housemate Settlement Rules\n\n## Current rule set for Unit 4B, lease ending 2026-03-31\n\nSecurity deposit held by the landlord belongs to the roommates in the same\namounts originally contributed by each person. For HM-37, use the deposit\nledger marked `valid_final`.\n\nLandlord deductions that are confirmed on the final property statement should\nbe allocated as follows:\n\n1. Shared or unknown-responsibility deductions are allocated by original deposit\n   share.\n2. Deductions tied to an identified roommate's assigned room or documented\n   action are charged to that roommate only.\n3. Withdrawn, draft, prior estimate, other-unit, move-in-preexisting, and\n   weather-damage lines are excluded.\n4. Normal wear and tear is not deductible.\n\nUtilities are not landlord deductions unless the final property statement says\notherwise. For the roommate settlement, utilities through 2026-03-31 are split\nequally among Alex, Bri, and Chen after applying any bill-specific rider.\n\nBill-specific rider for the March 2026 electricity bill:\n- The EV charging add-on is Alex's personal charge.\n- The remaining electricity amount is split equally.\n\nInternet for March 2026 is a shared household utility. Streaming services,\nreplacement cables, and post-move-out service periods are personal or excluded\nunless all three roommates approved them in writing.\n\n## Obsolete clause, do not use\n\nThe 2024 draft housemate agreement split all shared deductions equally. That\ndraft was replaced by the current rule set above after Bri moved into bedroom B.\nDo not use the 2024 equal-deposit split rule for HM-37.\n"
+    },
+    {
+      "tool_name": "read_csv",
+      "args": {
+        "source_id": "deposit_contributions_hm37"
+      },
+      "result": "row_id,person,unit,amount,status,notes\nDEP_ALEX_VALID,Alex,4B,1200.00,valid_final,Lead tenant deposit contribution\nDEP_BRI_VALID,Bri,4B,1050.00,valid_final,Bedroom B deposit contribution\nDEP_CHEN_VALID,Chen,4B,750.00,valid_final,Small room deposit contribution\nDEP_ALEX_VOIDED_TOPUP,Alex,4B,100.00,voided_pending,Voided top-up request from 2025-08; never paid\nDEP_DANA_4C,Dana,4C,500.00,other_unit,Imported from adjacent unit and not part of HM-37"
+    },
+    {
+      "tool_name": "read_csv",
+      "args": {
+        "source_id": "final_property_statement_hm37"
+      },
+      "result": "statement_version,item_id,unit,description,amount,status,responsibility_hint,notes\nfinal_2026_04_08,F1,4B,Move-out re-cleaning after failed broom-clean inspection,285.00,final_deducted,shared_unknown,Final statement line 1\nfinal_2026_04_08,F2,4B,Mailbox key replacement,45.00,final_deducted,shared_unknown,One mailbox key was not returned and no roommate accepted responsibility\nfinal_2026_04_08,F3,4B,Living room wall patch and paint for desk-anchor gouges,420.00,final_deducted,chen_identified,Matches inspection note for Chen desk anchors\nfinal_2026_04_08,F4,4B,Bedroom B blind slat replacement,130.00,final_deducted,bri_identified,Matches bedroom B assignment\nfinal_2026_04_08,X1,4B,Hall carpet replacement estimate,900.00,withdrawn_preexisting,exclude,Withdrawn after move-in checklist review\nfinal_2026_04_08,X2,4B,Balcony screen repair,160.00,withdrawn_weather_damage,exclude,Manager notes storm damage and no tenant charge\ndraft_2026_04_02,D1,4B,Preliminary paint estimate before vendor invoice,525.00,draft_superseded,exclude,Superseded by F3 final invoice\nfinal_2026_04_08,N1,4C,Parking remote replacement,65.00,other_unit,exclude,Neighboring unit included in exported ledger by mistake"
+    },
+    {
+      "tool_name": "read_csv",
+      "args": {
+        "source_id": "final_utilities_hm37"
+      },
+      "result": "bill_id,service,service_period_start,service_period_end,total_amount,paid_by,include_in_settlement,special_rule,notes\nU1,electricity,2026-03-01,2026-03-31,192.60,Alex,yes,ev_addon_36_to_alex,March final bill through lease end; total includes 36.00 EV charging add-on\nU2,water_trash,2026-03-01,2026-03-31,96.00,Chen,yes,equal_split,March water and trash through lease end\nU3,internet,2026-03-01,2026-03-31,75.00,Bri,yes,equal_split,Shared household internet through move-out date\nU4,electricity,2026-04-01,2026-04-15,41.10,Alex,no,after_moveout,Service after lease end; Alex kept account open for showing appointments\nU5,streaming_service,2026-03-01,2026-03-31,18.00,Bri,no,personal_subscription,Not a household utility under the agreement\nU6,router_cable,2026-03-28,2026-03-28,12.49,Bri,no,no_written_approval,Replacement cable purchase was not approved by all roommates"
+    },
+    {
+      "tool_name": "read_xlsx",
+      "args": {
+        "source_id": "side_adjustment_workbook_hm37"
+      },
+      "result": "# sheet: final_side_adjustments\nadjustment_id,status,description,amount,paid_by,allocation_rule,include_in_settlement,notes\nSA1,final,Certified mail and forwarding packet for landlord refund check,18,Alex,equal_split,yes,Approved in roommate closeout thread; processing the shared refund check\nSA2,final,Short-term storage locker for shared move-out boxes Mar 25-31,90,Bri,equal_split,yes,All roommates approved; only lease-period shared storage dates included\nSA3,final,Mobile deposit fee for landlord refund check,6,Alex,equal_split,yes,Bank fee caused by single paper refund check routing\nSA4,draft,Earlier storage quote for full month April,240,Bri,exclude,no,Superseded; after move-out dates and not approved\nSA5,final,Moving truck rental for Alex and Bri furniture,180,Alex,personal_subset,no,Chen did not use truck and no all-roommate approval\nSA6,final,Donation pickup for Chen bookshelf,42,Chen,personal,no,Personal disposal, not household settlement\nSA7,final,Paint touch-up supplies bought by Chen,29.4,Chen,exclude_landlord_duplicate,no,Duplicate of landlord wall repair F3; do not reimburse separately\nSA8,voided,Old Venmo request from Bri to Alex for utilities,34.2,Bri,voided,no,Voided after final utility calculation\nSA9,other_unit,Unit 4C storage shelf disposal,55,Dana,other_unit,no,Imported from adjacent unit workbook tab\n\n# sheet: old_draft_do_not_use\nadjustment_id,description,amount,paid_by,include_in_settlement,notes\nOLD1,Equal split all moving truck fees,180,Alex,no,Old draft before Chen opted out\nOLD2,Full April storage locker,240,Bri,no,Old draft after move-out period\nOLD3,Estimated bank fees,15,Alex,no,Estimate replaced by SA3"
+    }
+  ],
+  "score": {
+    "field_accuracy": 0.7666666666666667,
+    "score_percent": 76.67,
+    "task_success": 0.0,
+    "evidence_accuracy": null,
+    "tool_coverage": null,
+    "details": {
+      "correct_checks": 46,
+      "total_checks": 60,
+      "checks": [
+        {
+          "check_id": "landlord_deduction_total.exact",
+          "field": "landlord_deduction_total",
+          "type": "exact",
+          "correct": true,
+          "expected": 880.0,
+          "actual": 880.0
+        },
+        {
+          "check_id": "refund_pool.exact",
+          "field": "refund_pool",
+          "type": "exact",
+          "correct": true,
+          "expected": 2120.0,
+          "actual": 2120.0
+        },
+        {
+          "check_id": "alex_landlord_deduction_share.exact",
+          "field": "alex_landlord_deduction_share",
+          "type": "exact",
+          "correct": false,
+          "expected": 132.0,
+          "actual": 110.0
+        },
+        {
+          "check_id": "bri_landlord_deduction_share.exact",
+          "field": "bri_landlord_deduction_share",
+          "type": "exact",
+          "correct": false,
+          "expected": 245.5,
+          "actual": 240.0
+        },
+        {
+          "check_id": "chen_landlord_deduction_share.exact",
+          "field": "chen_landlord_deduction_share",
+          "type": "exact",
+          "correct": false,
+          "expected": 502.5,
+          "actual": 530.0
+        },
+        {
+          "check_id": "alex_utility_adjustment.exact",
+          "field": "alex_utility_adjustment",
+          "type": "exact",
+          "correct": true,
+          "expected": 47.4,
+          "actual": 47.4
+        },
+        {
+          "check_id": "bri_utility_adjustment.exact",
+          "field": "bri_utility_adjustment",
+          "type": "exact",
+          "correct": true,
+          "expected": -34.2,
+          "actual": -34.2
+        },
+        {
+          "check_id": "chen_utility_adjustment.exact",
+          "field": "chen_utility_adjustment",
+          "type": "exact",
+          "correct": true,
+          "expected": -13.2,
+          "actual": -13.2
+        },
+        {
+          "check_id": "alex_final_refund.exact",
+          "field": "alex_final_refund",
+          "type": "exact",
+          "correct": false,
+          "expected": 1115.4,
+          "actual": 1137.4
+        },
+        {
+          "check_id": "bri_final_refund.exact",
+          "field": "bri_final_refund",
+          "type": "exact",
+          "correct": false,
+          "expected": 770.3,
+          "actual": 775.8
+        },
+        {
+          "check_id": "chen_final_refund.exact",
+          "field": "chen_final_refund",
+          "type": "exact",
+          "correct": false,
+          "expected": 234.3,
+          "actual": 206.8
+        },
+        {
+          "check_id": "side_adjustment_total.exact",
+          "field": "side_adjustment_total",
+          "type": "exact",
+          "correct": true,
+          "expected": 114.0,
+          "actual": 114.0
+        },
+        {
+          "check_id": "alex_side_adjustment.exact",
+          "field": "alex_side_adjustment",
+          "type": "exact",
+          "correct": true,
+          "expected": -14.0,
+          "actual": -14.0
+        },
+        {
+          "check_id": "bri_side_adjustment.exact",
+          "field": "bri_side_adjustment",
+          "type": "exact",
+          "correct": true,
+          "expected": 52.0,
+          "actual": 52.0
+        },
+        {
+          "check_id": "chen_side_adjustment.exact",
+          "field": "chen_side_adjustment",
+          "type": "exact",
+          "correct": true,
+          "expected": -38.0,
+          "actual": -38.0
+        },
+        {
+          "check_id": "alex_final_payout.exact",
+          "field": "alex_final_payout",
+          "type": "exact",
+          "correct": false,
+          "expected": 1101.4,
+          "actual": 1123.4
+        },
+        {
+          "check_id": "bri_final_payout.exact",
+          "field": "bri_final_payout",
+          "type": "exact",
+          "correct": false,
+          "expected": 822.3,
+          "actual": 827.8
+        },
+        {
+          "check_id": "chen_final_payout.exact",
+          "field": "chen_final_payout",
+          "type": "exact",
+          "correct": false,
+          "expected": 196.3,
+          "actual": 168.8
+        },
+        {
+          "check_id": "refund_check_to_lead_tenant.exact",
+          "field": "refund_check_to_lead_tenant",
+          "type": "exact",
+          "correct": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "check_id": "preliminary_estimate_conflict.exact",
+          "field": "preliminary_estimate_conflict",
+          "type": "exact",
+          "correct": false,
+          "expected": true,
+          "actual": false
+        },
+        {
+          "check_id": "roommate_reimbursement_needed.exact",
+          "field": "roommate_reimbursement_needed",
+          "type": "exact",
+          "correct": false,
+          "expected": true,
+          "actual": false
+        },
+        {
+          "check_id": "approved_deduction_ids.contains.f1",
+          "field": "approved_deduction_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "f1",
+          "actual": [
+            "f1",
+            "f2",
+            "f3",
+            "f4"
+          ]
+        },
+        {
+          "check_id": "approved_deduction_ids.contains.f2",
+          "field": "approved_deduction_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "f2",
+          "actual": [
+            "f1",
+            "f2",
+            "f3",
+            "f4"
+          ]
+        },
+        {
+          "check_id": "approved_deduction_ids.contains.f3",
+          "field": "approved_deduction_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "f3",
+          "actual": [
+            "f1",
+            "f2",
+            "f3",
+            "f4"
+          ]
+        },
+        {
+          "check_id": "approved_deduction_ids.contains.f4",
+          "field": "approved_deduction_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "f4",
+          "actual": [
+            "f1",
+            "f2",
+            "f3",
+            "f4"
+          ]
+        },
+        {
+          "check_id": "approved_deduction_ids.no_unexpected_items",
+          "field": "approved_deduction_ids",
+          "type": "set_no_unexpected_items",
+          "correct": true,
+          "expected": [
+            "f1",
+            "f2",
+            "f3",
+            "f4"
+          ],
+          "actual": [
+            "f1",
+            "f2",
+            "f3",
+            "f4"
+          ],
+          "unexpected": []
+        },
+        {
+          "check_id": "excluded_property_statement_ids.contains.d1",
+          "field": "excluded_property_statement_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "d1",
+          "actual": [
+            "d1",
+            "n1",
+            "x1",
+            "x2"
+          ]
+        },
+        {
+          "check_id": "excluded_property_statement_ids.contains.n1",
+          "field": "excluded_property_statement_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "n1",
+          "actual": [
+            "d1",
+            "n1",
+            "x1",
+            "x2"
+          ]
+        },
+        {
+          "check_id": "excluded_property_statement_ids.contains.x1",
+          "field": "excluded_property_statement_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "x1",
+          "actual": [
+            "d1",
+            "n1",
+            "x1",
+            "x2"
+          ]
+        },
+        {
+          "check_id": "excluded_property_statement_ids.contains.x2",
+          "field": "excluded_property_statement_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "x2",
+          "actual": [
+            "d1",
+            "n1",
+            "x1",
+            "x2"
+          ]
+        },
+        {
+          "check_id": "excluded_property_statement_ids.no_unexpected_items",
+          "field": "excluded_property_statement_ids",
+          "type": "set_no_unexpected_items",
+          "correct": true,
+          "expected": [
+            "d1",
+            "n1",
+            "x1",
+            "x2"
+          ],
+          "actual": [
+            "d1",
+            "n1",
+            "x1",
+            "x2"
+          ],
+          "unexpected": []
+        },
+        {
+          "check_id": "valid_deposit_people.contains.alex",
+          "field": "valid_deposit_people",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "alex",
+          "actual": [
+            "alex",
+            "bri",
+            "chen"
+          ]
+        },
+        {
+          "check_id": "valid_deposit_people.contains.bri",
+          "field": "valid_deposit_people",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "bri",
+          "actual": [
+            "alex",
+            "bri",
+            "chen"
+          ]
+        },
+        {
+          "check_id": "valid_deposit_people.contains.chen",
+          "field": "valid_deposit_people",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "chen",
+          "actual": [
+            "alex",
+            "bri",
+            "chen"
+          ]
+        },
+        {
+          "check_id": "valid_deposit_people.no_unexpected_items",
+          "field": "valid_deposit_people",
+          "type": "set_no_unexpected_items",
+          "correct": true,
+          "expected": [
+            "alex",
+            "bri",
+            "chen"
+          ],
+          "actual": [
+            "alex",
+            "bri",
+            "chen"
+          ],
+          "unexpected": []
+        },
+        {
+          "check_id": "excluded_deposit_row_ids.contains.dep_alex_voided_topup",
+          "field": "excluded_deposit_row_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "dep_alex_voided_topup",
+          "actual": [
+            "dep_alex_voided_topup",
+            "dep_dana_4c"
+          ]
+        },
+        {
+          "check_id": "excluded_deposit_row_ids.contains.dep_dana_4c",
+          "field": "excluded_deposit_row_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "dep_dana_4c",
+          "actual": [
+            "dep_alex_voided_topup",
+            "dep_dana_4c"
+          ]
+        },
+        {
+          "check_id": "excluded_deposit_row_ids.no_unexpected_items",
+          "field": "excluded_deposit_row_ids",
+          "type": "set_no_unexpected_items",
+          "correct": true,
+          "expected": [
+            "dep_alex_voided_topup",
+            "dep_dana_4c"
+          ],
+          "actual": [
+            "dep_alex_voided_topup",
+            "dep_dana_4c"
+          ],
+          "unexpected": []
+        },
+        {
+          "check_id": "included_utility_bill_ids.contains.u1",
+          "field": "included_utility_bill_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "u1",
+          "actual": [
+            "u1",
+            "u2",
+            "u3"
+          ]
+        },
+        {
+          "check_id": "included_utility_bill_ids.contains.u2",
+          "field": "included_utility_bill_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "u2",
+          "actual": [
+            "u1",
+            "u2",
+            "u3"
+          ]
+        },
+        {
+          "check_id": "included_utility_bill_ids.contains.u3",
+          "field": "included_utility_bill_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "u3",
+          "actual": [
+            "u1",
+            "u2",
+            "u3"
+          ]
+        },
+        {
+          "check_id": "included_utility_bill_ids.no_unexpected_items",
+          "field": "included_utility_bill_ids",
+          "type": "set_no_unexpected_items",
+          "correct": true,
+          "expected": [
+            "u1",
+            "u2",
+            "u3"
+          ],
+          "actual": [
+            "u1",
+            "u2",
+            "u3"
+          ],
+          "unexpected": []
+        },
+        {
+          "check_id": "excluded_utility_bill_ids.contains.u4",
+          "field": "excluded_utility_bill_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "u4",
+          "actual": [
+            "u4",
+            "u5",
+            "u6"
+          ]
+        },
+        {
+          "check_id": "excluded_utility_bill_ids.contains.u5",
+          "field": "excluded_utility_bill_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "u5",
+          "actual": [
+            "u4",
+            "u5",
+            "u6"
+          ]
+        },
+        {
+          "check_id": "excluded_utility_bill_ids.contains.u6",
+          "field": "excluded_utility_bill_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "u6",
+          "actual": [
+            "u4",
+            "u5",
+            "u6"
+          ]
+        },
+        {
+          "check_id": "excluded_utility_bill_ids.no_unexpected_items",
+          "field": "excluded_utility_bill_ids",
+          "type": "set_no_unexpected_items",
+          "correct": true,
+          "expected": [
+            "u4",
+            "u5",
+            "u6"
+          ],
+          "actual": [
+            "u4",
+            "u5",
+            "u6"
+          ],
+          "unexpected": []
+        },
+        {
+          "check_id": "included_side_adjustment_ids.contains.sa1",
+          "field": "included_side_adjustment_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "sa1",
+          "actual": [
+            "sa1",
+            "sa2",
+            "sa3"
+          ]
+        },
+        {
+          "check_id": "included_side_adjustment_ids.contains.sa2",
+          "field": "included_side_adjustment_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "sa2",
+          "actual": [
+            "sa1",
+            "sa2",
+            "sa3"
+          ]
+        },
+        {
+          "check_id": "included_side_adjustment_ids.contains.sa3",
+          "field": "included_side_adjustment_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "sa3",
+          "actual": [
+            "sa1",
+            "sa2",
+            "sa3"
+          ]
+        },
+        {
+          "check_id": "included_side_adjustment_ids.no_unexpected_items",
+          "field": "included_side_adjustment_ids",
+          "type": "set_no_unexpected_items",
+          "correct": true,
+          "expected": [
+            "sa1",
+            "sa2",
+            "sa3"
+          ],
+          "actual": [
+            "sa1",
+            "sa2",
+            "sa3"
+          ],
+          "unexpected": []
+        },
+        {
+          "check_id": "excluded_side_adjustment_ids.contains.old1",
+          "field": "excluded_side_adjustment_ids",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "old1",
+          "actual": [
+            "sa4",
+            "sa5",
+            "sa6",
+            "sa7",
+            "sa8",
+            "sa9"
+          ]
+        },
+        {
+          "check_id": "excluded_side_adjustment_ids.contains.old2",
+          "field": "excluded_side_adjustment_ids",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "old2",
+          "actual": [
+            "sa4",
+            "sa5",
+            "sa6",
+            "sa7",
+            "sa8",
+            "sa9"
+          ]
+        },
+        {
+          "check_id": "excluded_side_adjustment_ids.contains.old3",
+          "field": "excluded_side_adjustment_ids",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "old3",
+          "actual": [
+            "sa4",
+            "sa5",
+            "sa6",
+            "sa7",
+            "sa8",
+            "sa9"
+          ]
+        },
+        {
+          "check_id": "excluded_side_adjustment_ids.contains.sa4",
+          "field": "excluded_side_adjustment_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "sa4",
+          "actual": [
+            "sa4",
+            "sa5",
+            "sa6",
+            "sa7",
+            "sa8",
+            "sa9"
+          ]
+        },
+        {
+          "check_id": "excluded_side_adjustment_ids.contains.sa5",
+          "field": "excluded_side_adjustment_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "sa5",
+          "actual": [
+            "sa4",
+            "sa5",
+            "sa6",
+            "sa7",
+            "sa8",
+            "sa9"
+          ]
+        },
+        {
+          "check_id": "excluded_side_adjustment_ids.contains.sa6",
+          "field": "excluded_side_adjustment_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "sa6",
+          "actual": [
+            "sa4",
+            "sa5",
+            "sa6",
+            "sa7",
+            "sa8",
+            "sa9"
+          ]
+        },
+        {
+          "check_id": "excluded_side_adjustment_ids.contains.sa7",
+          "field": "excluded_side_adjustment_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "sa7",
+          "actual": [
+            "sa4",
+            "sa5",
+            "sa6",
+            "sa7",
+            "sa8",
+            "sa9"
+          ]
+        },
+        {
+          "check_id": "excluded_side_adjustment_ids.contains.sa8",
+          "field": "excluded_side_adjustment_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "sa8",
+          "actual": [
+            "sa4",
+            "sa5",
+            "sa6",
+            "sa7",
+            "sa8",
+            "sa9"
+          ]
+        },
+        {
+          "check_id": "excluded_side_adjustment_ids.contains.sa9",
+          "field": "excluded_side_adjustment_ids",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "sa9",
+          "actual": [
+            "sa4",
+            "sa5",
+            "sa6",
+            "sa7",
+            "sa8",
+            "sa9"
+          ]
+        },
+        {
+          "check_id": "excluded_side_adjustment_ids.no_unexpected_items",
+          "field": "excluded_side_adjustment_ids",
+          "type": "set_no_unexpected_items",
+          "correct": true,
+          "expected": [
+            "old1",
+            "old2",
+            "old3",
+            "sa4",
+            "sa5",
+            "sa6",
+            "sa7",
+            "sa8",
+            "sa9"
+          ],
+          "actual": [
+            "sa4",
+            "sa5",
+            "sa6",
+            "sa7",
+            "sa8",
+            "sa9"
+          ],
+          "unexpected": []
+        }
+      ]
+    }
+  },
+  "latency_sec": 121.92,
+  "error": null
+}

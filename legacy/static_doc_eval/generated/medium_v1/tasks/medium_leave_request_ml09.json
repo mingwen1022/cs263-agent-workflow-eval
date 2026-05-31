@@ -1,0 +1,30 @@
+{
+  "task_id": "medium_leave_request_ml09",
+  "task_family": "multi_app_workflow",
+  "difficulty": "medium",
+  "instruction": "Review the annual leave request for employee E-445 using the available sources. Determine the number of days that can be approved, any days that must be denied, what type of approval is required, and any risk flags. Review only the annual leave request; the separate sick leave request is out of scope. Return only a JSON object: approved_days, denied_days, approval_required, out_of_scope_requests, risk_flags. approved_days must be the number of days approved. denied_days must be the number of days not approved. approval_required must be a string describing the required approval type. out_of_scope_requests must be an array of short snake_case labels for requests excluded from this review. risk_flags must be an array of short snake_case labels for risks. Do not include explanation outside the JSON.",
+  "allowed_tools": ["list_sources","read_source","read_text_source","read_csv","read_pdf","read_docx","run_calculation","lookup_vendor_status","search_employee_directory","check_public_calendar","estimate_shipping_cost"],
+  "source_manifest": "sources/medium_leave_request_ml09/source_manifest.json",
+  "gold_output": {
+    "approved_days": 5,
+    "denied_days": 0,
+    "approval_required": "written_manager_approval",
+    "out_of_scope_requests": ["sick_leave_request"],
+    "risk_flags": ["written_approval_pending"]
+  },
+  "evaluation_criteria": {
+    "exact_fields": ["approved_days","denied_days","approval_required"],
+    "numeric_tolerances": {},
+    "set_fields": ["out_of_scope_requests","risk_flags"],
+    "set_aliases": {
+      "out_of_scope_requests": {
+        "sick_leave_request": ["sick_leave","separate_sick_request","may26_sick","sick_leave_may26"]
+      },
+      "risk_flags": {
+        "written_approval_pending": ["approval_not_confirmed","verbal_approval_only","pending_written_approval","manager_written_approval_missing","pending_written_manager_approval","written_approval_not_yet_received"]
+      }
+    },
+    "required_tool_calls": ["list_sources","read_source"],
+    "scoring_notes": "5 days requested >= 4 days threshold → written manager approval required. Available annual balance = 7 days >= 5 days requested → all 5 approved, 0 denied. Verbal approval was given but written confirmation is pending → risk flag. Sick leave May 26-27 is a separate request → out_of_scope."
+  }
+}

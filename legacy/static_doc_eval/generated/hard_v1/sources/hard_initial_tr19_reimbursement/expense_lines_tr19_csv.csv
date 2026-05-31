@@ -1,0 +1,18 @@
+line_id,claim_id,employee_id,category,subcategory,date,description,amount,currency,receipt_status,payment_method,merchant
+N1,TR-18,E-441,transport,rental_car,2026-03-22,Rental car,188.00,USD,approved,corporate_card,Hertz
+L1,TR-19,E-882,hotel,lodging,2026-04-03,Hotel night 1,270.00,USD,submitted,personal_card,North Pier Hotel
+L2,TR-19,E-882,hotel,lodging,2026-04-04,Hotel night 2,245.00,USD,submitted,personal_card,North Pier Hotel
+L3,TR-19,E-882,transport,airport_rideshare,2026-04-03,Airport rideshare,48.00,USD,submitted,personal_card,RideNow
+L4,TR-19,E-882,transport,commute,2026-04-05,Home to office commute,36.00,USD,submitted,personal_card,RideNow
+L5,TR-19,E-882,meal,dinner,2026-04-03,Dinner,72.00,USD,corrected,personal_card,Harbor Table
+L6,TR-19,E-882,meal,breakfast,2026-04-04,Breakfast,18.00,USD,submitted,personal_card,Hotel Cafe
+L7,TR-19,E-882,meal,lunch,2026-04-04,Lunch,22.00,USD,submitted,personal_card,Expo Deli
+L8,TR-19,E-882,meal,dinner,2026-04-04,Dinner,31.00,USD,submitted,personal_card,Canal Kitchen
+L9,TR-19,E-882,registration,workshop,2026-04-04,Workshop registration,205.00,USD,submitted,personal_card,DataOps Workshop
+L10,TR-19,E-882,connectivity,premium_wifi,2026-04-04,Premium hotel WiFi,29.00,USD,submitted,personal_card,North Pier Hotel
+L11,TR-19,E-882,gift,client_gift,2026-04-04,Client gift,42.00,USD,submitted,personal_card,Museum Shop
+L12,TR-19,E-882,transport,airport_rideshare,2026-04-05,Return airport rideshare,44.00,USD,submitted,personal_card,RideNow
+L13,TR-19,E-882,meal,breakfast,2026-04-05,Return day breakfast,22.00,USD,corrected,personal_card,Hotel Cafe
+N2,TR-20,E-882,meal,dinner,2026-04-10,Dinner,66.00,USD,submitted,personal_card,Station Grill
+N3,TR-19,E-882,airfare,change_fee,2026-04-02,Flight change fee,120.00,USD,voided,personal_card,FlyWest
+N4,TR-19,E-552,meal,team_lunch,2026-04-04,Shared team lunch,68.00,USD,submitted,personal_card,Expo Deli

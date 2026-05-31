@@ -1,0 +1,6 @@
+batch_id,entry_ref,employee_id,correction_type,pay_period,net_change,processed_date,payment_status
+PC-05,PC05-1,E-441,expense_reimbursement,2025-11,280.00,2025-12-15,paid
+PC-06,PC06-1,E-551,overtime,2026-01,157.50,2026-02-15,paid
+PC-06,PC06-2,E-442,expense_reimbursement,2026-01,220.00,2026-02-15,paid
+PC-06,PC06-3,E-771,bonus,2025-12,400.00,2026-02-15,paid
+PC-07,PC07-1,E-119,overtime,2026-01,180.00,2026-03-10,paid

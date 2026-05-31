@@ -1,0 +1,58 @@
+{
+  "task_id": "hard_budget_variance_bv22",
+  "task_family": "multi_app_workflow",
+  "difficulty": "hard",
+  "instruction": "Review the Q1-2026 budget variance report BV-22 using the available sources. Determine the total overspend in flagged departments, which departments are over budget by more than the allowed threshold, which spending categories must be frozen in Q2 as a result, which transfer requests are approved or denied, which rows in the actuals export should be excluded from Q1 analysis, and any risk flags. Use only Q1-2026 data. Prior period rows are included for trending only and must be excluded from all calculations and determinations. Apply the variance policy, transfer rules, and finance memo. Return only a JSON object with these fields: total_overspend, over_budget_departments, frozen_categories, approved_transfers, denied_transfers, excluded_rows, risk_flags. total_overspend must be the combined dollar overrun across all flagged over-budget departments. over_budget_departments must be an array of short snake_case department names where total actual exceeded total budget by more than 5%. frozen_categories must be an array of short snake_case labels for categories frozen in Q2 due to overruns in flagged departments. approved_transfers must be an array of short snake_case labels for transfer requests that meet all policy requirements. denied_transfers must be an array of short snake_case labels for transfer requests that violate policy. excluded_rows must be an array of short snake_case labels for prior-period rows excluded from Q1 analysis. risk_flags must be an array of short snake_case labels for material budget risks. Do not include explanation outside the JSON.",
+  "allowed_tools": [
+    "list_sources", "read_source", "read_text_source", "read_csv", "read_pdf",
+    "read_docx", "run_calculation", "lookup_vendor_status", "search_employee_directory",
+    "check_public_calendar", "estimate_shipping_cost"
+  ],
+  "source_manifest": "sources/hard_budget_variance_bv22/source_manifest.json",
+  "gold_output": {
+    "total_overspend": 56700.0,
+    "over_budget_departments": ["engineering", "marketing"],
+    "frozen_categories": ["engineering_headcount", "engineering_external_contractors", "marketing_campaigns", "marketing_travel"],
+    "approved_transfers": ["tr_b01", "tr_b02"],
+    "denied_transfers": ["tr_b03", "tr_b04", "tr_b05"],
+    "excluded_rows": ["q4_2025_engineering", "q4_2025_marketing", "cc_201_int_subsidiary"],
+    "risk_flags": ["contractor_spend_spike", "marketing_campaign_overspend"]
+  },
+  "evaluation_criteria": {
+    "exact_fields": ["total_overspend"],
+    "numeric_tolerances": {"total_overspend": 0.01},
+    "set_fields": ["over_budget_departments", "frozen_categories", "approved_transfers", "denied_transfers", "excluded_rows", "risk_flags"],
+    "set_aliases": {
+      "over_budget_departments": {
+        "engineering": ["engineering_dept", "cc_201", "eng"],
+        "marketing": ["marketing_dept", "cc_305", "mktg"]
+      },
+      "frozen_categories": {
+        "engineering_headcount": ["eng_headcount", "headcount_engineering", "engineering_headcount_frozen", "headcount"],
+        "engineering_external_contractors": ["eng_contractors", "external_contractors_engineering", "contractor_budget_frozen", "external_contractors"],
+        "marketing_campaigns": ["mktg_campaigns", "campaign_budget_frozen", "campaigns_marketing", "campaigns"],
+        "marketing_travel": ["mktg_travel", "travel_marketing", "marketing_travel_frozen", "travel"]
+      },
+      "approved_transfers": {
+        "tr_b01": ["transfer_b01", "marketing_events_to_campaigns", "tr_b01_approved", "events_to_campaigns"],
+        "tr_b02": ["transfer_b02", "engineering_tools_to_contractors", "tr_b02_approved", "tools_to_contractors"]
+      },
+      "denied_transfers": {
+        "tr_b03": ["transfer_b03", "cross_department_transfer", "tr_b03_denied", "tr_b03_cross_department", "finance_to_engineering"],
+        "tr_b04": ["transfer_b04", "duplicate_transfer", "tr_b04_denied", "tr_b04_duplicate"],
+        "tr_b05": ["transfer_b05", "eng_to_ops_transfer", "tr_b05_denied", "cross_department_allocation", "tr_b05_cross_department", "engineering_to_operations"]
+      },
+      "excluded_rows": {
+        "q4_2025_engineering": ["n1", "q4_eng_headcount", "prior_period_engineering", "q4_2025_eng", "n1_headcount", "engineering_q4_2025", "n1_q4_2025"],
+        "q4_2025_marketing": ["n2", "q4_mktg_campaigns", "prior_period_marketing", "q4_2025_mktg", "n2_campaigns", "marketing_q4_2025", "n2_q4_2025"],
+        "cc_201_int_subsidiary": ["n3", "n4", "cc_201_int", "international_subsidiary", "subsidiary_rows", "cc201_int_headcount", "cc201_int_software", "n3_q1_2026", "n4_q1_2026"]
+      },
+      "risk_flags": {
+        "contractor_spend_spike": ["external_contractor_overrun", "contractor_budget_spike", "eng_contractor_risk", "contractor_overspend", "delayed_hiring_cycle", "engineering_contractor_overspend"],
+        "marketing_campaign_overspend": ["campaign_overrun", "marketing_overspend", "campaign_budget_risk", "marketing_campaign_risk", "unplanned_marketing_spend", "unplanned_sponsored_content_push"]
+      }
+    },
+    "required_tool_calls": ["list_sources", "read_source", "run_calculation"],
+    "scoring_notes": "Q1 only (exclude N1 and N2 which are Q4-2025). Engineering total: budget 564000, actual 597300, overspend 33300 (5.9% > 5% threshold => flagged). Marketing total: budget 208000, actual 231400, overspend 23400 (11.25% => flagged). Finance: budget 335000, actual 332700, under by 2300 (0.69% => not flagged). Operations: budget 245000, actual 242800, under by 2200 (0.9% => not flagged). Total overspend = 33300+23400=56700. Frozen in Engineering: headcount and external_contractors (both individual overruns). Frozen in Marketing: campaigns and travel (both individual overruns). Transfers: TR-B01 (marketing events surplus 9000 to campaigns, same dept, under 10k => approved). TR-B02 (eng software_tools surplus 2200 to contractors, same dept, under 10k => approved). TR-B03 (cross-department => denied). TR-B04 (duplicate => denied)."
+  }
+}

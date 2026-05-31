@@ -1,0 +1,4 @@
+customer,tier,affected_by_incident,region,account_status
+Apex Solutions,gold,true,us-east,active
+Harbor Media,silver,true,us-west,active
+Summit Corp,gold,false,eu-west,active

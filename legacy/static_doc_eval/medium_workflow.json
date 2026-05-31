@@ -1,0 +1,311 @@
+{
+  "summary": {
+    "small_workflow": {
+      "avg_score_percent": 73.52,
+      "num_scored_tasks": 11
+    }
+  },
+  "runs": [
+    {
+      "task_id": "medium_access_request_ma03",
+      "system_name": "small_agentic_workflow",
+      "answer": {
+        "approved_permissions": [
+          "sales_reports_read"
+        ],
+        "denied_permissions": [
+          "customer_pii_read",
+          "financial_reports_write"
+        ],
+        "excluded_requests": [
+          "code_repository_read"
+        ]
+      },
+      "score_percent": 100.0,
+      "correct_checks": 7,
+      "total_checks": 7,
+      "failed_checks": [],
+      "latency_sec": 72.47,
+      "error": null
+    },
+    {
+      "task_id": "medium_budget_request_mb16",
+      "system_name": "small_agentic_workflow",
+      "answer": {
+        "approved_amount": 5400.0,
+        "denied_items": [
+          "team_offsite_dinner"
+        ],
+        "approval_required_from": "director",
+        "excluded_rows": [
+          "q1_reforecast",
+          "finance_team_analytics_tool"
+        ]
+      },
+      "score_percent": 71.43,
+      "correct_checks": 5,
+      "total_checks": 7,
+      "failed_checks": [
+        "excluded_rows.contains.finance_different_dept",
+        "excluded_rows.no_unexpected_items"
+      ],
+      "latency_sec": 128.55,
+      "error": null
+    },
+    {
+      "task_id": "medium_contract_amendment_mc19",
+      "system_name": "small_agentic_workflow",
+      "answer": {
+        "manager_approved_changes": [
+          "extend_contract_term",
+          "increase_seat_count"
+        ],
+        "vp_required_changes": [
+          "add_data_export_api",
+          "reduce_payment_terms"
+        ],
+        "new_monthly_cost": 1000,
+        "risk_flags": [
+          "financial_risk_payment_terms"
+        ]
+      },
+      "score_percent": 0.0,
+      "correct_checks": 0,
+      "total_checks": 9,
+      "failed_checks": [
+        "new_monthly_cost.exact",
+        "manager_approved_changes.contains.seat_count_increase",
+        "manager_approved_changes.contains.term_extension",
+        "manager_approved_changes.no_unexpected_items",
+        "vp_required_changes.contains.api_addon",
+        "vp_required_changes.contains.payment_term_reduction",
+        "vp_required_changes.no_unexpected_items",
+        "risk_flags.contains.payment_term_shortening",
+        "risk_flags.no_unexpected_items"
+      ],
+      "latency_sec": 148.02,
+      "error": null
+    },
+    {
+      "task_id": "medium_expense_claim_me07",
+      "system_name": "small_agentic_workflow",
+      "answer": {
+        "reimbursable_total": 283.0,
+        "denied_items": [
+          "normal_commuting",
+          "connectivity"
+        ],
+        "excluded_rows": [
+          "N1"
+        ],
+        "approval_required": false
+      },
+      "score_percent": 62.5,
+      "correct_checks": 5,
+      "total_checks": 8,
+      "failed_checks": [
+        "denied_items.contains.commute",
+        "denied_items.contains.meal_over_cap",
+        "denied_items.no_unexpected_items"
+      ],
+      "latency_sec": 237.26,
+      "error": null
+    },
+    {
+      "task_id": "medium_incident_sla_mi01",
+      "system_name": "small_agentic_workflow",
+      "answer": {
+        "breached_sla": true,
+        "ack_elapsed_minutes": 22,
+        "breach_minutes": 7,
+        "recovery_elapsed_minutes": 45,
+        "credit_eligible_customers": [
+          "apex_solutions"
+        ],
+        "excluded_customers": [
+          "harbor_media",
+          "summit_corp"
+        ],
+        "credit_due": 200,
+        "excluded_events": [
+          "n1",
+          "n2"
+        ],
+        "risk_flags": []
+      },
+      "score_percent": 100.0,
+      "correct_checks": 14,
+      "total_checks": 14,
+      "failed_checks": [],
+      "latency_sec": 126.26,
+      "error": null
+    },
+    {
+      "task_id": "medium_invoice_review_mi22",
+      "system_name": "small_agentic_workflow",
+      "answer": {
+        "payable_amount": 2400.0,
+        "disputed_items": [
+          "rush_delivery_surcharge"
+        ],
+        "approved_line_items": [
+          "software_licenses",
+          "implementation_hours"
+        ],
+        "excluded_lines": [
+          "prior_month_maintenance"
+        ]
+      },
+      "score_percent": 100.0,
+      "correct_checks": 8,
+      "total_checks": 8,
+      "failed_checks": [],
+      "latency_sec": 105.76,
+      "error": null
+    },
+    {
+      "task_id": "medium_leave_request_ml09",
+      "system_name": "small_agentic_workflow",
+      "answer": {
+        "approved_days": 5,
+        "denied_days": 0,
+        "approval_required": "Written manager approval",
+        "out_of_scope_requests": [
+          "sick_leave_request"
+        ],
+        "risk_flags": [
+          "missing_written_approval"
+        ]
+      },
+      "score_percent": 71.43,
+      "correct_checks": 5,
+      "total_checks": 7,
+      "failed_checks": [
+        "risk_flags.contains.written_approval_pending",
+        "risk_flags.no_unexpected_items"
+      ],
+      "latency_sec": 85.27,
+      "error": null
+    },
+    {
+      "task_id": "medium_onboarding_check_mo05",
+      "system_name": "small_agentic_workflow",
+      "answer": {
+        "cleared_to_start": true,
+        "completed_requirements": [
+          "background_check",
+          "equipment_setup",
+          "it_access_provisioned",
+          "manager_intro_meeting"
+        ],
+        "pending_mandatory": [
+          "hr_orientation",
+          "compliance_training"
+        ],
+        "excluded_rows": [
+          "n1"
+        ]
+      },
+      "score_percent": 90.0,
+      "correct_checks": 9,
+      "total_checks": 10,
+      "failed_checks": [
+        "completed_requirements.no_unexpected_items"
+      ],
+      "latency_sec": 93.05,
+      "error": null
+    },
+    {
+      "task_id": "medium_payroll_review_mp12",
+      "system_name": "small_agentic_workflow",
+      "answer": {
+        "net_correction_amount": 275.0,
+        "approved_corrections": [
+          "overtime",
+          "expense_reimbursement"
+        ],
+        "denied_corrections": [
+          "commission"
+        ],
+        "excluded_entries": [
+          "n1",
+          "c4"
+        ],
+        "approval_required": true
+      },
+      "score_percent": 80.0,
+      "correct_checks": 8,
+      "total_checks": 10,
+      "failed_checks": [
+        "approved_corrections.contains.c1_overtime",
+        "approved_corrections.no_unexpected_items"
+      ],
+      "latency_sec": 121.25,
+      "error": null
+    },
+    {
+      "task_id": "medium_support_sla_ms08",
+      "system_name": "small_agentic_workflow",
+      "answer": {
+        "breached_tickets": [
+          "t-801"
+        ],
+        "sla_met_tickets": [
+          "t-802",
+          "t-803"
+        ],
+        "excluded_tickets": [
+          "n1"
+        ],
+        "escalation_required": [
+          "flag_for_team_lead_review"
+        ]
+      },
+      "score_percent": 77.78,
+      "correct_checks": 7,
+      "total_checks": 9,
+      "failed_checks": [
+        "escalation_required.contains.t801_team_lead_review",
+        "escalation_required.no_unexpected_items"
+      ],
+      "latency_sec": 105.64,
+      "error": null
+    },
+    {
+      "task_id": "medium_vendor_selection_mv14",
+      "system_name": "small_agentic_workflow",
+      "answer": {
+        "recommended_vendor": "cloudcore",
+        "selected_monthly_price": 850.0,
+        "excluded_vendors": [
+          {
+            "vendor": "databridge",
+            "reason": "support_response_too_slow_or_contract_too_short"
+          },
+          {
+            "vendor": "novatech",
+            "reason": "wrong_region_eu"
+          },
+          {
+            "vendor": "cloudcore",
+            "reason": "support_response_too_slow"
+          }
+        ],
+        "risk_flags": [
+          "single_vendor_dependency"
+        ]
+      },
+      "score_percent": 55.56,
+      "correct_checks": 5,
+      "total_checks": 9,
+      "failed_checks": [
+        "excluded_vendors.contains.cloudcore_starter_sla",
+        "excluded_vendors.contains.databridge_sla",
+        "excluded_vendors.contains.novatech_region",
+        "excluded_vendors.no_unexpected_items"
+      ],
+      "latency_sec": 93.09,
+      "error": null
+    }
+  ]
+}

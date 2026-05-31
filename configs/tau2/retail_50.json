@@ -1,0 +1,147 @@
+{
+  "suite_name": "tau2_retail_50",
+  "source": "data/tau2/domains/retail",
+  "domain": "retail",
+  "task_set_name": "retail",
+  "task_split_name": "base",
+  "task_ids": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "6",
+    "7",
+    "8",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "25",
+    "28",
+    "29",
+    "30",
+    "31",
+    "34",
+    "35",
+    "37",
+    "41",
+    "43",
+    "44",
+    "46",
+    "47",
+    "48",
+    "50",
+    "52",
+    "54",
+    "57",
+    "58",
+    "59",
+    "63",
+    "66",
+    "67",
+    "69",
+    "72",
+    "73",
+    "75",
+    "76",
+    "78",
+    "80"
+  ],
+  "num_tasks": 50,
+  "seed": 300,
+  "num_trials": 1,
+  "max_steps": 200,
+  "max_concurrency": 3,
+  "user_simulator": {
+    "implementation": "user_simulator",
+    "llm": "vertex_ai/gemini-3-flash-preview",
+    "llm_args": {
+      "temperature": 0.0,
+      "max_tokens": 4096
+    }
+  },
+  "nl_assertion_judge": {
+    "llm": "vertex_ai/gemini-3-flash-preview",
+    "llm_args": {
+      "temperature": 0.0,
+      "max_tokens": 4096,
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "agent_systems": {
+    "large_single": {
+      "implementation": "langchain_llm_agent",
+      "llm": "vertex_ai/gemini-2.5-flash",
+      "llm_args": {
+        "temperature": 0.0,
+        "max_tokens": 4096
+      }
+    },
+    "small_single": {
+      "implementation": "langchain_llm_agent",
+      "llm": "ollama/gemma4:e4b",
+      "llm_args": {
+        "temperature": 0.0
+      }
+    },
+    "workflow_large": {
+      "implementation": "workflow_agent",
+      "llm": "vertex_ai/gemini-2.5-flash",
+      "llm_args": {
+        "temperature": 0.0,
+        "max_tokens": 4096
+      }
+    },
+    "planner_executor_large": {
+      "implementation": "planner_executor_agent",
+      "llm": "vertex_ai/gemini-2.5-flash",
+      "llm_args": {
+        "temperature": 0.0,
+        "max_tokens": 4096
+      }
+    },
+    "smag_large": {
+      "implementation": "smag_agent",
+      "llm": "vertex_ai/gemini-2.5-flash",
+      "llm_args": {
+        "temperature": 0.0,
+        "max_tokens": 4096
+      }
+    },
+    "smag_small": {
+      "implementation": "smag_agent",
+      "llm": "ollama/gemma4:e4b",
+      "llm_args": {
+        "temperature": 0.0
+      }
+    }
+  },
+  "required_retail_files": [
+    "db.json",
+    "policy.md",
+    "tasks.json",
+    "split_tasks.json",
+    "audio_difficulty.json",
+    "task_issues/"
+  ],
+  "required_retail_code": [
+    "src/tau2/domains/retail/data_model.py",
+    "src/tau2/domains/retail/tools.py",
+    "src/tau2/domains/retail/environment.py",
+    "src/tau2/domains/retail/utils.py",
+    "src/tau2/evaluator/",
+    "src/tau2/runner/",
+    "src/tau2/user/"
+  ]
+}

@@ -1,0 +1,7 @@
+cost_center,fiscal_period,category,budget_allocated,ytd_spent,available
+CC-104,Q2-2026,software_licenses,30000.00,4000.00,26000.00
+CC-104,Q2-2026,support,8000.00,800.00,7200.00
+CC-104,Q2-2026,training,2000.00,1800.00,200.00
+CC-104,Q2-2026,hardware,15000.00,8200.00,6800.00
+CC-108,Q2-2026,software_licenses,15000.00,8500.00,6500.00
+CC-108,Q2-2026,support,5000.00,2100.00,2900.00

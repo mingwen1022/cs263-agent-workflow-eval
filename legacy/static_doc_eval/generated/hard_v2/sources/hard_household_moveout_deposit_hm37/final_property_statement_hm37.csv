@@ -1,0 +1,9 @@
+statement_version,item_id,unit,description,amount,status,responsibility_hint,notes
+final_2026_04_08,F1,4B,Move-out re-cleaning after failed broom-clean inspection,285.00,final_deducted,shared_unknown,Final statement line 1
+final_2026_04_08,F2,4B,Mailbox key replacement,45.00,final_deducted,shared_unknown,One mailbox key was not returned and no roommate accepted responsibility
+final_2026_04_08,F3,4B,Living room wall patch and paint for desk-anchor gouges,420.00,final_deducted,chen_identified,Matches inspection note for Chen desk anchors
+final_2026_04_08,F4,4B,Bedroom B blind slat replacement,130.00,final_deducted,bri_identified,Matches bedroom B assignment
+final_2026_04_08,X1,4B,Hall carpet replacement estimate,900.00,withdrawn_preexisting,exclude,Withdrawn after move-in checklist review
+final_2026_04_08,X2,4B,Balcony screen repair,160.00,withdrawn_weather_damage,exclude,Manager notes storm damage and no tenant charge
+draft_2026_04_02,D1,4B,Preliminary paint estimate before vendor invoice,525.00,draft_superseded,exclude,Superseded by F3 final invoice
+final_2026_04_08,N1,4C,Parking remote replacement,65.00,other_unit,exclude,Neighboring unit included in exported ledger by mistake

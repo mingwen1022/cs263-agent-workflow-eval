@@ -27,6 +27,8 @@ def _source_type(path: Path) -> str:
         return "docx"
     if suffix == ".csv":
         return "csv"
+    if suffix == ".xlsx":
+        return "xlsx"
     if suffix in {".txt", ".md"}:
         return "text"
     return suffix.lstrip(".") or "unknown"
@@ -68,6 +70,20 @@ def _read_pdf_file(path: Path) -> str:
     return "\n".join(lines)
 
 
+def _read_xlsx_file(path: Path) -> str:
+    from openpyxl import load_workbook
+
+    workbook = load_workbook(path, read_only=True, data_only=True)
+    sheets = []
+    for sheet in workbook.worksheets:
+        rows = []
+        for row in sheet.iter_rows(values_only=True):
+            values = ["" if value is None else str(value) for value in row]
+            rows.append(",".join(values))
+        sheets.append(f"# sheet: {sheet.title}\n" + "\n".join(rows))
+    return "\n\n".join(sheets)
+
+
 def _read_any_file(path: Path) -> str:
     file_type = _source_type(path)
     if file_type == "pdf":
@@ -76,6 +92,8 @@ def _read_any_file(path: Path) -> str:
         return _read_docx_file(path)
     if file_type == "csv":
         return _read_csv_file(path)
+    if file_type == "xlsx":
+        return _read_xlsx_file(path)
     return _read_text_file(path)
 
 
@@ -134,6 +152,11 @@ def make_source_tools(source_store: dict[str, Any]) -> list[Any]:
         return _read_typed(source_store, source_id, "docx")
 
     @tool
+    def read_xlsx(source_id: str) -> str:
+        """Read an Excel XLSX source by ID and return sheet rows as CSV-like text."""
+        return _read_typed(source_store, source_id, "xlsx")
+
+    @tool
     def run_calculation(expression: str) -> str:
         """Evaluate a simple arithmetic expression."""
         safe_globals = {"__builtins__": {}, "round": round, "min": min, "max": max, "abs": abs}
@@ -183,6 +206,7 @@ def make_source_tools(source_store: dict[str, Any]) -> list[Any]:
         read_csv,
         read_pdf,
         read_docx,
+        read_xlsx,
         run_calculation,
         lookup_vendor_status,
         search_employee_directory,

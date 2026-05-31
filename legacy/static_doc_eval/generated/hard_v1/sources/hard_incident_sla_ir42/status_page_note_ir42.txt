@@ -1,0 +1,17 @@
+Status-page note for IR-42
+
+The first public status-page update was posted at 09:51 PDT. The incident began
+with the qualifying production alert at 09:10 PDT.
+
+Draft notes from communications:
+
+- A draft update was prepared at 09:35 PDT but was not published externally.
+- A customer-facing email was sent after recovery. It should not be treated as the
+  first public status-page update.
+- The staging alert at 08:55 PDT was not included in the public incident timeline.
+
+Status-page review guidance:
+
+The status-page target is measured from the same qualifying production alert used
+for acknowledgement review. A late status-page update should be reported as a
+risk flag, but it does not by itself determine service credit amount.

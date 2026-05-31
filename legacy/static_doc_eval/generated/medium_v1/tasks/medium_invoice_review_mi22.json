@@ -1,0 +1,33 @@
+{
+  "task_id": "medium_invoice_review_mi22",
+  "task_family": "multi_app_workflow",
+  "difficulty": "medium",
+  "instruction": "Review invoice INV-56 against purchase order PO-62. Determine the payable amount, disputed items, approved line items, and excluded invoice lines. Only lines referencing PO-62 belong to this review. Lines not in the PO are disputed. Return only a JSON object: payable_amount, disputed_items, approved_line_items, excluded_lines. payable_amount must be the total approved for payment. disputed_items must be an array of short snake_case labels for invoice items not in the PO. approved_line_items must be an array of short snake_case labels for items matching the PO. excluded_lines must be an array of short snake_case labels for invoice lines from other invoices or different POs. Do not include explanation outside the JSON.",
+  "allowed_tools": ["list_sources","read_source","read_text_source","read_csv","read_pdf","read_docx","run_calculation","lookup_vendor_status","search_employee_directory","check_public_calendar","estimate_shipping_cost"],
+  "source_manifest": "sources/medium_invoice_review_mi22/source_manifest.json",
+  "gold_output": {
+    "payable_amount": 2400.0,
+    "disputed_items": ["rush_delivery_surcharge"],
+    "approved_line_items": ["software_licenses", "implementation_hours"],
+    "excluded_lines": ["inv55_prior_invoice"]
+  },
+  "evaluation_criteria": {
+    "exact_fields": ["payable_amount"],
+    "numeric_tolerances": {"payable_amount": 0.01},
+    "set_fields": ["disputed_items","approved_line_items","excluded_lines"],
+    "set_aliases": {
+      "disputed_items": {
+        "rush_delivery_surcharge": ["l3","rush_surcharge","delivery_surcharge","unapproved_surcharge","not_on_po"]
+      },
+      "approved_line_items": {
+        "software_licenses": ["l1","licenses","po62_1","software_license_line"],
+        "implementation_hours": ["l2","consulting_hours","impl_hours","po62_2"]
+      },
+      "excluded_lines": {
+        "inv55_prior_invoice": ["n1","inv55","prior_invoice","prior_maintenance","prior_month_maintenance","inv_55_maintenance"]
+      }
+    },
+    "required_tool_calls": ["list_sources","read_source","run_calculation"],
+    "scoring_notes": "N1 is INV-55 (different invoice) → excluded. L1+L2 match PO-62 exactly → payable 1200+1200=2400. L3 rush surcharge not in PO → disputed. payable_amount=2400."
+  }
+}

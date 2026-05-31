@@ -1,0 +1,8 @@
+item_id,employee_id,requirement,status,completed_date,notes
+C1,E-901,background_check,complete,2026-05-01,Cleared
+C2,E-901,equipment_setup,complete,2026-05-05,Laptop provisioned
+C3,E-901,it_access_provisioned,complete,2026-05-05,Standard access granted
+C4,E-901,hr_orientation,pending,,Scheduled for May 20
+C5,E-901,compliance_training,pending,,Not yet assigned
+C6,E-901,manager_intro_meeting,complete,2026-05-06,Done
+N1,E-902,background_check,complete,2026-05-02,Different employee in same batch

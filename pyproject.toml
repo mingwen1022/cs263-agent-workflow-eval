@@ -15,12 +15,14 @@ dependencies = [
     "pypdf>=5.0.0",
     "python-dotenv>=1.0.1",
     "rich>=13.7.0",
+    "tau2",
     "typer>=0.12.0",
 ]
 
 [project.scripts]
 check-models = "cs263_agent_eval.scripts.check_models:main"
 run-hard-task = "cs263_agent_eval.scripts.run_hard_task:main"
+build-task-report = "cs263_agent_eval.scripts.build_task_report:main"
 
 [dependency-groups]
 dev = [
@@ -32,6 +34,9 @@ dev = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/cs263_agent_eval"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"
@@ -39,3 +44,11 @@ target-version = "py312"
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.uv.workspace]
+members = [
+    "third_party/tau2-bench",
+]
+
+[tool.uv.sources]
+tau2 = { workspace = true, editable = true }

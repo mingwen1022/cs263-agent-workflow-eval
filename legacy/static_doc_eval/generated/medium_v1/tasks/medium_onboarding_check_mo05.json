@@ -1,0 +1,35 @@
+{
+  "task_id": "medium_onboarding_check_mo05",
+  "task_family": "multi_app_workflow",
+  "difficulty": "medium",
+  "instruction": "Review the onboarding status for employee E-901 using the available sources. Determine whether the employee is cleared to start, which requirements are complete, which are still pending and mandatory, and which checklist rows should be excluded from this review. Return only a JSON object: cleared_to_start, completed_requirements, pending_mandatory, excluded_rows. cleared_to_start must be a boolean. completed_requirements must be an array of short snake_case labels for completed onboarding items. pending_mandatory must be an array of short snake_case labels for mandatory requirements not yet complete. excluded_rows must be an array of short snake_case labels for checklist rows excluded from this review. Do not include explanation outside the JSON.",
+  "allowed_tools": ["list_sources","read_source","read_text_source","read_csv","read_pdf","read_docx","run_calculation","lookup_vendor_status","search_employee_directory","check_public_calendar","estimate_shipping_cost"],
+  "source_manifest": "sources/medium_onboarding_check_mo05/source_manifest.json",
+  "gold_output": {
+    "cleared_to_start": true,
+    "completed_requirements": ["background_check", "equipment_setup", "it_access_provisioned"],
+    "pending_mandatory": ["hr_orientation", "compliance_training"],
+    "excluded_rows": ["e902_different_employee"]
+  },
+  "evaluation_criteria": {
+    "exact_fields": ["cleared_to_start"],
+    "numeric_tolerances": {},
+    "set_fields": ["completed_requirements","pending_mandatory","excluded_rows"],
+    "set_aliases": {
+      "completed_requirements": {
+        "background_check": ["c1","background_cleared","bg_check"],
+        "equipment_setup": ["c2","laptop_provisioned","equipment_provisioned"],
+        "it_access_provisioned": ["c3","it_access","standard_access"]
+      },
+      "pending_mandatory": {
+        "hr_orientation": ["c4","hr_orientation_pending","orientation"],
+        "compliance_training": ["c5","compliance_training_pending","training_not_assigned"]
+      },
+      "excluded_rows": {
+        "e902_different_employee": ["n1","e902","different_employee_row","e902_background"]
+      }
+    },
+    "required_tool_calls": ["list_sources","read_source"],
+    "scoring_notes": "Pre-start mandatory: background_check C1 ✓, equipment_setup C2 ✓, it_access_provisioned C3 ✓ → all complete → cleared_to_start=true. Within-5-days mandatory: hr_orientation C4 pending, compliance_training C5 pending → pending_mandatory. manager_intro_meeting C6 complete but optional → not in required lists. N1 is E-902 → excluded."
+  }
+}

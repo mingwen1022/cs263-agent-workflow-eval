@@ -1,0 +1,40 @@
+{
+  "task_id": "medium_incident_sla_mi01",
+  "task_family": "multi_app_workflow",
+  "difficulty": "medium",
+  "instruction": "Review the incident using the available sources. Determine whether the acknowledgement SLA was breached, the elapsed times, which customers are eligible for automatic credit, which customers are excluded from credit, the total credit due, which events should be excluded from the SLA clock, and any risk flags. Use only the first qualifying production alert as the SLA clock start. Internal monitoring events and staging environment alerts are not qualifying events. Return only a JSON object with these fields: breached_sla, ack_elapsed_minutes, breach_minutes, recovery_elapsed_minutes, credit_eligible_customers, excluded_customers, credit_due, excluded_events, risk_flags. breached_sla must be a boolean. ack_elapsed_minutes must be total minutes from the qualifying alert to acknowledgement. breach_minutes must be minutes late beyond the acknowledgement SLA threshold. recovery_elapsed_minutes must be total minutes from the qualifying alert to recovery. credit_eligible_customers must be an array of short snake_case labels for customers receiving automatic credit. excluded_customers must be an array of short snake_case labels for customers that do not receive automatic credit. credit_due must be the total numeric credit amount. excluded_events must be an array of short snake_case labels for events excluded from SLA clock consideration. risk_flags must be an array of short snake_case labels for secondary risks. Do not include explanation outside the JSON.",
+  "allowed_tools": ["list_sources","read_source","read_text_source","read_csv","read_pdf","read_docx","run_calculation","lookup_vendor_status","search_employee_directory","check_public_calendar","estimate_shipping_cost"],
+  "source_manifest": "sources/medium_incident_sla_mi01/source_manifest.json",
+  "gold_output": {
+    "breached_sla": true,
+    "ack_elapsed_minutes": 22,
+    "breach_minutes": 7,
+    "recovery_elapsed_minutes": 45,
+    "credit_eligible_customers": ["apex_solutions"],
+    "excluded_customers": ["harbor_media", "summit_corp"],
+    "credit_due": 200.0,
+    "excluded_events": ["internal_health_check", "staging_alert"],
+    "risk_flags": []
+  },
+  "evaluation_criteria": {
+    "exact_fields": ["breached_sla","ack_elapsed_minutes","breach_minutes","recovery_elapsed_minutes","credit_due"],
+    "numeric_tolerances": {"ack_elapsed_minutes":0.01,"breach_minutes":0.01,"recovery_elapsed_minutes":0.01,"credit_due":0.01},
+    "set_fields": ["credit_eligible_customers","excluded_customers","excluded_events","risk_flags"],
+    "set_aliases": {
+      "credit_eligible_customers": {
+        "apex_solutions": ["apex","apex_solutions_inc","apex_sol"]
+      },
+      "excluded_customers": {
+        "harbor_media": ["harbor","harbor_media_silver"],
+        "summit_corp": ["summit","summit_corporation","unaffected_gold"]
+      },
+      "excluded_events": {
+        "internal_health_check": ["n1","health_check","internal_monitoring","health_check_event","monitoring_health_check"],
+        "staging_alert": ["n2","staging_environment_alert","staging_checkout","pre_production_alert","staging_checkout_error"]
+      },
+      "risk_flags": {}
+    },
+    "required_tool_calls": ["list_sources","read_source"],
+    "scoring_notes": "Qualifying alert E1 at 10:00, ack E2 at 10:22 = 22 min > 15 min Gold SLA → breach_minutes=7. Recovery E3 at 10:45 = 45 min. Apex Solutions: Gold + affected + active → eligible. Harbor Media: Silver → excluded. Summit Corp: Gold but not affected → excluded. Credit = 1×200 = 200."
+  }
+}

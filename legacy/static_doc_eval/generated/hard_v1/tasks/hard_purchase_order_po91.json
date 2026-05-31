@@ -1,0 +1,52 @@
+{
+  "task_id": "hard_purchase_order_po91",
+  "task_family": "multi_app_workflow",
+  "difficulty": "hard",
+  "instruction": "Review purchase order PO-91 using the available sources. Determine which line items are approved under current procurement policy, the total approved and denied amounts, who must sign off based on the approved total, the remaining software_licenses budget for cost center CC-104 after approved items are applied, which items are denied and why, which prior-contract items qualify as policy exceptions, which rows should be excluded before analysis, and any budget risk flags. Ignore draft or carried-forward entries from other POs. Apply only the current vendor policy and active contract constraints. Return only a JSON object with these fields: approved_amount, denied_amount, approval_required_from, budget_remaining_after, denied_items, policy_exceptions, excluded_rows, risk_flags. approved_amount must be the total of all approved PO-91 line items. denied_amount must be the total of all denied PO-91 line items. approval_required_from must be a short lowercase string for the required approver role given the approved total. budget_remaining_after must be the remaining software_licenses budget for CC-104 after approved software_licenses items are applied. denied_items must be an array of short snake_case labels for line item types that cannot be approved under current policy without prior Procurement Committee review. policy_exceptions must be an array of short snake_case labels for items that would normally require separate review but are approvable due to an active contract or pre-approved exception. excluded_rows must be an array of short snake_case labels for rows that belong to other POs or are not live requests and must be excluded before analysis. risk_flags must be an array of short snake_case labels for budget or approval risks. Do not include explanation outside the JSON.",
+  "allowed_tools": [
+    "list_sources", "read_source", "read_text_source", "read_csv", "read_pdf",
+    "read_docx", "run_calculation", "lookup_vendor_status", "search_employee_directory",
+    "check_public_calendar", "estimate_shipping_cost"
+  ],
+  "source_manifest": "sources/hard_purchase_order_po91/source_manifest.json",
+  "gold_output": {
+    "approved_amount": 24800.0,
+    "denied_amount": 6200.0,
+    "approval_required_from": ["director"],
+    "budget_remaining_after": 4000.0,
+    "denied_items": ["premium_support_upgrade", "training_package"],
+    "policy_exceptions": ["analytics_addon_prior_contract"],
+    "excluded_rows": ["po88_carryover", "q4_placeholder"],
+    "risk_flags": ["software_budget_near_limit"]
+  },
+  "evaluation_criteria": {
+    "exact_fields": ["approved_amount", "denied_amount", "budget_remaining_after"],
+    "numeric_tolerances": {
+      "approved_amount": 0.01,
+      "denied_amount": 0.01,
+      "budget_remaining_after": 0.01
+    },
+    "set_fields": ["approval_required_from", "denied_items", "policy_exceptions", "excluded_rows", "risk_flags"],
+    "set_aliases": {
+      "approval_required_from": {
+        "director": ["director_of_it", "it_director", "director_it", "director_level"]
+      },
+      "denied_items": {
+        "premium_support_upgrade": ["premium_support", "support_upgrade", "support", "premium_tier_support", "support_upgrade_unapproved", "premium_upgrade", "premium_support_upgrade_tier", "l4"],
+        "training_package": ["training", "certified_training", "training_unapproved", "training_not_preapproved", "platform_training", "platform_certified_training", "l5"]
+      },
+      "policy_exceptions": {
+        "analytics_addon_prior_contract": ["addon_prior_contract", "addon_module_prior_contract", "analytics_module_exception", "analytics_addon_exception", "prior_contract_addon", "contract_preapproved_addon", "analytics_add_on_module"]
+      },
+      "excluded_rows": {
+        "po88_carryover": ["po88", "po_88", "carryover", "carried_forward_row", "n1", "carried_forward_support_renewal", "po_88_carried_forward"],
+        "q4_placeholder": ["q4_draft", "draft_placeholder", "q4_renewal", "planning_placeholder", "n2", "q4_renewal_placeholder", "po_92_draft", "po92_draft"]
+      },
+      "risk_flags": {
+        "software_budget_near_limit": ["budget_near_limit", "low_remaining_budget", "software_budget_low", "budget_risk", "budget_almost_exhausted", "budget_utilization_high", "overcharged_support"]
+      }
+    },
+    "required_tool_calls": ["list_sources", "read_source", "run_calculation"],
+    "scoring_notes": "Approved: L1 (18000) + L2 (4000, prior contract pre-approves 20 addon seats) + L3 (2800 standard support) = 24800. Denied: L4 (3500 premium upgrade, policy requires separate committee review) + L5 (2700 training, same reason) = 6200. Approval threshold: 24800 in $10k-$50k range => director. Budget remaining in software_licenses: 26000 available - 22000 approved = 4000. Risk flag: 4000/30000 = 13% remaining in software_licenses budget is near limit. N1 (PO-88 carryover) and N2 (Q4 draft) are excluded."
+  }
+}

@@ -1,0 +1,6 @@
+event_id,timestamp_pdt,event_type,system,description
+N1,2026-05-10 09:45,monitoring,health_check,Internal health check degraded — no customer impact
+N2,2026-05-10 09:58,alert,checkout_api_staging,Staging environment checkout error — pre-production only
+E1,2026-05-10 10:00,alert,checkout_api,Checkout service error rate above threshold
+E2,2026-05-10 10:22,acknowledgement,incident_channel,On-call engineer acknowledged in incident channel
+E3,2026-05-10 10:45,recovery,checkout_api,Checkout service recovered

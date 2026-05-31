@@ -1,0 +1,21 @@
+CloudBox renewal amendment for CB-27
+
+If the customer renews Premium by 2026-06-15, apply a 15% discount to the Premium
+monthly base fee for the next term. The discount does not apply to Standard or
+Enterprise. The amendment also waives any migration fee.
+
+The discount is unavailable after 2026-06-15.
+
+Clarifications:
+
+- The 15% discount applies only to the Premium base monthly fee shown in the active
+  US pricing table. It does not create a discount on Standard.
+- Do not stack this amendment with expired pilot pricing.
+- This amendment does not change included seats or included storage.
+- The deadline is a renewal deadline, not a payment due date.
+
+Sales note not approved:
+
+A sales representative mentioned that a larger annual discount might be available
+in Q3. That statement is not approved pricing and should not be used for this
+monthly renewal decision.

@@ -1,0 +1,5 @@
+line_id,invoice_number,vendor_id,po_reference,description,quantity,unit_price,line_total
+N1,INV-55,V-101,PO-60,Prior month maintenance,1,400.00,400.00
+L1,INV-56,V-101,PO-62,Software licenses,10,120.00,1200.00
+L2,INV-56,V-101,PO-62,Implementation hours,8,150.00,1200.00
+L3,INV-56,V-101,PO-62,Rush delivery surcharge,1,300.00,300.00

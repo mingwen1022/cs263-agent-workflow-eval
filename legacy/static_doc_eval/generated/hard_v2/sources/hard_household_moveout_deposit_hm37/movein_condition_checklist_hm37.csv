@@ -1,0 +1,7 @@
+area,item,condition_at_movein,tenant_initials,settlement_relevance
+hall,carpet,worn_with_two_old_stains,all,preexisting_exclude
+balcony,screen,slightly_loose_before_storm,all,do_not_charge_without_new_tenant_damage
+bedroom_b,blinds,intact,bri,relevant_if_damaged_at_moveout
+living_room,wall_under_window,clean_no_gouges,chen,relevant_if_new_gouges_found
+kitchen,appliance_drawers,clean,all,cleaning_can_be_charged_if_not_returned_clean
+mailbox,key_set,two_keys_issued,all,key_replacement_can_be_charged_if_missing

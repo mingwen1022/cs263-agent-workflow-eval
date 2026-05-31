@@ -1,0 +1,7 @@
+line_id,claim_id,category,date,description,amount,currency,receipt_status,merchant
+N1,ME-06,transport,2026-04-10,Taxi for prior trip,28.00,USD,approved,City Cab
+L1,ME-07,hotel,2026-04-21,Hotel for client visit,180.00,USD,submitted,Downtown Inn
+L2,ME-07,transport,2026-04-21,Airport rideshare,38.00,USD,submitted,RideNow
+L3,ME-07,meal,2026-04-21,Client dinner,82.00,USD,submitted,Harbor Grill
+L4,ME-07,transport,2026-04-22,Home to office commute,22.00,USD,submitted,RideNow
+L5,ME-07,connectivity,2026-04-22,Hotel premium WiFi,18.00,USD,submitted,Downtown Inn

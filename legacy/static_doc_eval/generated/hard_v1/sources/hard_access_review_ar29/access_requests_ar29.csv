@@ -1,0 +1,8 @@
+request_id,batch_id,employee_id,role,department,resource,permission_level,business_justification,status
+N1,AR-28,E-771,analyst,finance,financial_reports,read,Routine analyst access,approved
+R1,AR-29,E-443,contractor,engineering,customer_pii_database,read,Need to run QA tests on production data,pending
+R2,AR-29,E-443,contractor,engineering,internal_audit_logs,read,Debugging service errors,pending
+R3,AR-29,E-443,contractor,engineering,deployment_pipeline,write,Deploy hotfixes without wait,pending
+R4,AR-29,E-443,contractor,engineering,customer_pii_database,delete,Remove test records from production,pending
+R5,AR-29,E-443,contractor,engineering,usage_reports,read,Monitor system performance,pending
+N2,AR-30,E-551,engineer,engineering,deployment_pipeline,write,Standard engineer deploy access,pending

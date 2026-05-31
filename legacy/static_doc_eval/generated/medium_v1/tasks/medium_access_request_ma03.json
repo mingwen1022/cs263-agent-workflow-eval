@@ -1,0 +1,32 @@
+{
+  "task_id": "medium_access_request_ma03",
+  "task_family": "multi_app_workflow",
+  "difficulty": "medium",
+  "instruction": "Review the access requests for employee E-221 using the available sources. Determine which permissions should be approved and which denied based on policy, and which requests should be excluded from this review. Return only a JSON object with these fields: approved_permissions, denied_permissions, excluded_requests. approved_permissions must be an array of short snake_case labels for approved resource+permission pairs. denied_permissions must be an array of short snake_case labels for denied resource+permission pairs. excluded_requests must be an array of short snake_case labels for requests excluded from this review. Do not include explanation outside the JSON.",
+  "allowed_tools": ["list_sources","read_source","read_text_source","read_csv","read_pdf","read_docx","run_calculation","lookup_vendor_status","search_employee_directory","check_public_calendar","estimate_shipping_cost"],
+  "source_manifest": "sources/medium_access_request_ma03/source_manifest.json",
+  "gold_output": {
+    "approved_permissions": ["sales_reports_read"],
+    "denied_permissions": ["customer_pii_read", "financial_reports_write"],
+    "excluded_requests": ["other_employee_request"]
+  },
+  "evaluation_criteria": {
+    "exact_fields": [],
+    "numeric_tolerances": {},
+    "set_fields": ["approved_permissions","denied_permissions","excluded_requests"],
+    "set_aliases": {
+      "approved_permissions": {
+        "sales_reports_read": ["r1","sales_reports","sales_data_read"]
+      },
+      "denied_permissions": {
+        "customer_pii_read": ["r2","pii_read","customer_pii","pii_database_read"],
+        "financial_reports_write": ["r3","financial_write","reports_write","write_access_denied"]
+      },
+      "excluded_requests": {
+        "other_employee_request": ["n1","e330_request","different_employee","engineer_request","code_repository_read","n1_code_repo"]
+      }
+    },
+    "required_tool_calls": ["list_sources","read_source"],
+    "scoring_notes": "R1 sales_reports read: analyst role allows read on sales_reports → approved. R2 customer_pii read: policy prohibits PII without DPO approval → denied. R3 financial_reports write: analysts may only have read on financial_reports, not write → denied. N1 is E-330 (different employee) → excluded."
+  }
+}

@@ -1,0 +1,21 @@
+Subject: Reimbursement review for TR-19
+
+Please review the reimbursement claim for trip TR-19. The claimant asks for
+hotel, meals, local transport, a workshop registration fee, WiFi, and a small
+client gift. Return the final payable amount and identify anything denied or
+covered only by an exception.
+
+The traveler says there was a manager approval for the hotel rate and workshop.
+The uploaded receipts may include corrected meal detail in a separate note.
+The expense export may include other trips or voided lines from the same upload
+batch; review only active TR-19 lines that are part of this claim.
+
+Forwarded context:
+
+- The finance inbox also contains older discussion about TR-18 rental car charges.
+  That thread is unrelated to TR-19.
+- The requester copied a checklist for relocation reimbursements. Relocation rules
+  are not part of this trip review.
+-- 
+Auto-footer: This mailbox may include draft notes, templates, and archived policy
+links. Use only source material that applies to the claim under review.

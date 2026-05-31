@@ -1,0 +1,10 @@
+Contract amendment request for vendor V-204 — Account CB-55
+
+Requested changes:
+1. Extend contract term by 12 months (current expiry: 2026-08-31, new: 2027-08-31).
+2. Increase the included seat count from 50 to 75 at the current per-seat rate.
+3. Add a data export API add-on at $150/month.
+4. Reduce the payment terms from Net 45 to Net 15.
+
+Context: the vendor has offered the seat count increase as a courtesy given
+the 12-month extension.

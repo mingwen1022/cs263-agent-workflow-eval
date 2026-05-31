@@ -1,0 +1,563 @@
+{
+  "summary": {
+    "large_single": {
+      "avg_score_percent": 95.05,
+      "num_scored_tasks": 11
+    },
+    "small_single": {
+      "avg_score_percent": 79.92,
+      "num_scored_tasks": 11
+    }
+  },
+  "runs": [
+    {
+      "task_id": "medium_access_request_ma03",
+      "system_name": "large_single",
+      "answer": {
+        "approved_permissions": [
+          "sales_reports_read"
+        ],
+        "denied_permissions": [
+          "customer_pii_read",
+          "financial_reports_write"
+        ],
+        "excluded_requests": [
+          "code_repository_read"
+        ]
+      },
+      "score_percent": 100.0,
+      "correct_checks": 7,
+      "total_checks": 7,
+      "failed_checks": [],
+      "latency_sec": 8.44,
+      "error": null
+    },
+    {
+      "task_id": "medium_access_request_ma03",
+      "system_name": "small_single",
+      "answer": {
+        "approved_permissions": [
+          "sales_reports_read"
+        ],
+        "denied_permissions": [
+          "customer_pii_read",
+          "financial_reports_write"
+        ],
+        "excluded_requests": [
+          "code_repository_read"
+        ]
+      },
+      "score_percent": 100.0,
+      "correct_checks": 7,
+      "total_checks": 7,
+      "failed_checks": [],
+      "latency_sec": 26.53,
+      "error": null
+    },
+    {
+      "task_id": "medium_budget_request_mb16",
+      "system_name": "large_single",
+      "answer": {
+        "approved_amount": 5400.0,
+        "denied_items": [
+          "team_offsite_dinner"
+        ],
+        "approval_required_from": "director",
+        "excluded_rows": [
+          "marketing_q1_reforecast",
+          "finance_software_tool"
+        ]
+      },
+      "score_percent": 100.0,
+      "correct_checks": 7,
+      "total_checks": 7,
+      "failed_checks": [],
+      "latency_sec": 7.32,
+      "error": null
+    },
+    {
+      "task_id": "medium_budget_request_mb16",
+      "system_name": "small_single",
+      "answer": {
+        "approved_amount": 5400.0,
+        "denied_items": [
+          "team_offsite_dinner"
+        ],
+        "approval_required_from": "director",
+        "excluded_rows": [
+          "n1",
+          "n2"
+        ]
+      },
+      "score_percent": 100.0,
+      "correct_checks": 7,
+      "total_checks": 7,
+      "failed_checks": [],
+      "latency_sec": 39.42,
+      "error": null
+    },
+    {
+      "task_id": "medium_contract_amendment_mc19",
+      "system_name": "large_single",
+      "answer": {
+        "manager_approved_changes": [
+          "term_extension",
+          "seat_count_increase"
+        ],
+        "vp_required_changes": [
+          "api_add_on",
+          "payment_term_reduction"
+        ],
+        "new_monthly_cost": 850.0,
+        "risk_flags": []
+      },
+      "score_percent": 77.78,
+      "correct_checks": 7,
+      "total_checks": 9,
+      "failed_checks": [
+        "new_monthly_cost.exact",
+        "risk_flags.contains.payment_term_shortening"
+      ],
+      "latency_sec": 18.76,
+      "error": null
+    },
+    {
+      "task_id": "medium_contract_amendment_mc19",
+      "system_name": "small_single",
+      "answer": {
+        "manager_approved_changes": [
+          "extend_contract_term",
+          "increase_seat_count"
+        ],
+        "vp_required_changes": [
+          "add_data_export_api",
+          "reduce_payment_terms"
+        ],
+        "new_monthly_cost": 850,
+        "risk_flags": []
+      },
+      "score_percent": 11.11,
+      "correct_checks": 1,
+      "total_checks": 9,
+      "failed_checks": [
+        "new_monthly_cost.exact",
+        "manager_approved_changes.contains.seat_count_increase",
+        "manager_approved_changes.contains.term_extension",
+        "manager_approved_changes.no_unexpected_items",
+        "vp_required_changes.contains.api_addon",
+        "vp_required_changes.contains.payment_term_reduction",
+        "vp_required_changes.no_unexpected_items",
+        "risk_flags.contains.payment_term_shortening"
+      ],
+      "latency_sec": 46.84,
+      "error": null
+    },
+    {
+      "task_id": "medium_expense_claim_me07",
+      "system_name": "large_single",
+      "answer": {
+        "reimbursable_total": 283.0,
+        "denied_items": [
+          "meal",
+          "transport",
+          "connectivity"
+        ],
+        "excluded_rows": [
+          "N1"
+        ],
+        "approval_required": false
+      },
+      "score_percent": 100.0,
+      "correct_checks": 8,
+      "total_checks": 8,
+      "failed_checks": [],
+      "latency_sec": 16.24,
+      "error": null
+    },
+    {
+      "task_id": "medium_expense_claim_me07",
+      "system_name": "small_single",
+      "answer": {
+        "reimbursable_total": 283.0,
+        "denied_items": [
+          "normal_commuting",
+          "connectivity"
+        ],
+        "excluded_rows": [
+          "n1"
+        ],
+        "approval_required": false
+      },
+      "score_percent": 62.5,
+      "correct_checks": 5,
+      "total_checks": 8,
+      "failed_checks": [
+        "denied_items.contains.commute",
+        "denied_items.contains.meal_over_cap",
+        "denied_items.no_unexpected_items"
+      ],
+      "latency_sec": 42.26,
+      "error": null
+    },
+    {
+      "task_id": "medium_incident_sla_mi01",
+      "system_name": "large_single",
+      "answer": {
+        "breached_sla": true,
+        "ack_elapsed_minutes": 22,
+        "breach_minutes": 7,
+        "recovery_elapsed_minutes": 45,
+        "credit_eligible_customers": [
+          "apex_solutions"
+        ],
+        "excluded_customers": [
+          "harbor_media",
+          "summit_corp"
+        ],
+        "credit_due": 200,
+        "excluded_events": [
+          "monitoring_health_check",
+          "staging_checkout_error"
+        ],
+        "risk_flags": []
+      },
+      "score_percent": 100.0,
+      "correct_checks": 14,
+      "total_checks": 14,
+      "failed_checks": [],
+      "latency_sec": 10.78,
+      "error": null
+    },
+    {
+      "task_id": "medium_incident_sla_mi01",
+      "system_name": "small_single",
+      "answer": {
+        "breached_sla": true,
+        "ack_elapsed_minutes": 22,
+        "breach_minutes": 7,
+        "recovery_elapsed_minutes": 45,
+        "credit_eligible_customers": [
+          "apex_solutions"
+        ],
+        "excluded_customers": [
+          "harbor_media",
+          "summit_corp"
+        ],
+        "credit_due": 200,
+        "excluded_events": [
+          "n1",
+          "n2"
+        ],
+        "risk_flags": []
+      },
+      "score_percent": 100.0,
+      "correct_checks": 14,
+      "total_checks": 14,
+      "failed_checks": [],
+      "latency_sec": 50.03,
+      "error": null
+    },
+    {
+      "task_id": "medium_invoice_review_mi22",
+      "system_name": "large_single",
+      "answer": {
+        "payable_amount": 2400.0,
+        "disputed_items": [
+          "rush_delivery_surcharge"
+        ],
+        "approved_line_items": [
+          "software_licenses",
+          "implementation_hours"
+        ],
+        "excluded_lines": [
+          "prior_month_maintenance"
+        ]
+      },
+      "score_percent": 100.0,
+      "correct_checks": 8,
+      "total_checks": 8,
+      "failed_checks": [],
+      "latency_sec": 7.54,
+      "error": null
+    },
+    {
+      "task_id": "medium_invoice_review_mi22",
+      "system_name": "small_single",
+      "answer": {
+        "payable_amount": 2400.0,
+        "disputed_items": [
+          "rush_delivery_surcharge"
+        ],
+        "approved_line_items": [
+          "software_licenses",
+          "implementation_hours"
+        ],
+        "excluded_lines": [
+          "prior_month_maintenance"
+        ]
+      },
+      "score_percent": 100.0,
+      "correct_checks": 8,
+      "total_checks": 8,
+      "failed_checks": [],
+      "latency_sec": 47.4,
+      "error": null
+    },
+    {
+      "task_id": "medium_leave_request_ml09",
+      "system_name": "large_single",
+      "answer": {
+        "approved_days": 5,
+        "denied_days": 0,
+        "approval_required": "written manager approval",
+        "out_of_scope_requests": [
+          "sick_leave_request"
+        ],
+        "risk_flags": [
+          "pending_written_manager_approval"
+        ]
+      },
+      "score_percent": 100.0,
+      "correct_checks": 7,
+      "total_checks": 7,
+      "failed_checks": [],
+      "latency_sec": 17.28,
+      "error": null
+    },
+    {
+      "task_id": "medium_leave_request_ml09",
+      "system_name": "small_single",
+      "answer": {
+        "approved_days": 5,
+        "denied_days": 0,
+        "approval_required": "written manager approval",
+        "out_of_scope_requests": [
+          "sick_leave_request"
+        ],
+        "risk_flags": [
+          "pending_written_approval"
+        ]
+      },
+      "score_percent": 100.0,
+      "correct_checks": 7,
+      "total_checks": 7,
+      "failed_checks": [],
+      "latency_sec": 30.34,
+      "error": null
+    },
+    {
+      "task_id": "medium_onboarding_check_mo05",
+      "system_name": "large_single",
+      "answer": {
+        "cleared_to_start": true,
+        "completed_requirements": [
+          "background_check",
+          "equipment_setup",
+          "it_access_provisioned",
+          "manager_intro_meeting"
+        ],
+        "pending_mandatory": [
+          "hr_orientation",
+          "compliance_training"
+        ],
+        "excluded_rows": [
+          "N1"
+        ]
+      },
+      "score_percent": 90.0,
+      "correct_checks": 9,
+      "total_checks": 10,
+      "failed_checks": [
+        "completed_requirements.no_unexpected_items"
+      ],
+      "latency_sec": 10.6,
+      "error": null
+    },
+    {
+      "task_id": "medium_onboarding_check_mo05",
+      "system_name": "small_single",
+      "answer": {
+        "cleared_to_start": true,
+        "completed_requirements": [
+          "background_check",
+          "equipment_setup",
+          "it_access_provisioned",
+          "manager_intro_meeting"
+        ],
+        "pending_mandatory": [
+          "hr_orientation",
+          "compliance_training"
+        ],
+        "excluded_rows": [
+          "manager_intro_meeting"
+        ]
+      },
+      "score_percent": 70.0,
+      "correct_checks": 7,
+      "total_checks": 10,
+      "failed_checks": [
+        "completed_requirements.no_unexpected_items",
+        "excluded_rows.contains.e902_different_employee",
+        "excluded_rows.no_unexpected_items"
+      ],
+      "latency_sec": 33.09,
+      "error": null
+    },
+    {
+      "task_id": "medium_payroll_review_mp12",
+      "system_name": "large_single",
+      "answer": {
+        "net_correction_amount": 275.0,
+        "approved_corrections": [
+          "overtime_c1",
+          "expense_reimbursement_c2"
+        ],
+        "denied_corrections": [
+          "commission_c3"
+        ],
+        "excluded_entries": [
+          "prior_batch_n1",
+          "other_employee_c4"
+        ],
+        "approval_required": true
+      },
+      "score_percent": 100.0,
+      "correct_checks": 10,
+      "total_checks": 10,
+      "failed_checks": [],
+      "latency_sec": 14.37,
+      "error": null
+    },
+    {
+      "task_id": "medium_payroll_review_mp12",
+      "system_name": "small_single",
+      "answer": {
+        "net_correction_amount": 275.0,
+        "approved_corrections": [
+          "overtime",
+          "expense_reimbursement"
+        ],
+        "denied_corrections": [
+          "commission"
+        ],
+        "excluded_entries": [
+          "n1",
+          "c4"
+        ],
+        "approval_required": true
+      },
+      "score_percent": 80.0,
+      "correct_checks": 8,
+      "total_checks": 10,
+      "failed_checks": [
+        "approved_corrections.contains.c1_overtime",
+        "approved_corrections.no_unexpected_items"
+      ],
+      "latency_sec": 39.6,
+      "error": null
+    },
+    {
+      "task_id": "medium_support_sla_ms08",
+      "system_name": "large_single",
+      "answer": {
+        "breached_tickets": [
+          "t_801"
+        ],
+        "sla_met_tickets": [
+          "t_802",
+          "t_803"
+        ],
+        "excluded_tickets": [
+          "n1"
+        ],
+        "escalation_required": [
+          "t_801_team_lead_review"
+        ]
+      },
+      "score_percent": 77.78,
+      "correct_checks": 7,
+      "total_checks": 9,
+      "failed_checks": [
+        "escalation_required.contains.t801_team_lead_review",
+        "escalation_required.no_unexpected_items"
+      ],
+      "latency_sec": 20.09,
+      "error": null
+    },
+    {
+      "task_id": "medium_support_sla_ms08",
+      "system_name": "small_single",
+      "answer": {
+        "breached_tickets": [
+          "t-801"
+        ],
+        "sla_met_tickets": [
+          "t-802",
+          "t-803"
+        ],
+        "excluded_tickets": [
+          "n1"
+        ],
+        "escalation_required": [
+          "team_lead_review"
+        ]
+      },
+      "score_percent": 77.78,
+      "correct_checks": 7,
+      "total_checks": 9,
+      "failed_checks": [
+        "escalation_required.contains.t801_team_lead_review",
+        "escalation_required.no_unexpected_items"
+      ],
+      "latency_sec": 30.23,
+      "error": null
+    },
+    {
+      "task_id": "medium_vendor_selection_mv14",
+      "system_name": "large_single",
+      "answer": {
+        "recommended_vendor": "cloud_core",
+        "selected_monthly_price": 850.0,
+        "excluded_vendors": [
+          "data_bridge",
+          "novatech",
+          "cloud_core_v04"
+        ],
+        "risk_flags": [
+          "single_vendor_dependency"
+        ]
+      },
+      "score_percent": 100.0,
+      "correct_checks": 9,
+      "total_checks": 9,
+      "failed_checks": [],
+      "latency_sec": 10.35,
+      "error": null
+    },
+    {
+      "task_id": "medium_vendor_selection_mv14",
+      "system_name": "small_single",
+      "answer": {
+        "recommended_vendor": "cloudcore",
+        "selected_monthly_price": 850.0,
+        "excluded_vendors": [
+          "databridge",
+          "novatech",
+          "cloudcore"
+        ],
+        "risk_flags": [
+          "single_vendor_dependency"
+        ]
+      },
+      "score_percent": 77.78,
+      "correct_checks": 7,
+      "total_checks": 9,
+      "failed_checks": [
+        "excluded_vendors.contains.cloudcore_starter_sla",
+        "excluded_vendors.no_unexpected_items"
+      ],
+      "latency_sec": 38.41,
+      "error": null
+    }
+  ]
+}

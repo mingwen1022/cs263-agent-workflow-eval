@@ -1,0 +1,5 @@
+ticket_id,customer,priority,opened_pdt,first_response_pdt,resolved_pdt,category
+T-801,Brightfield Corp,P2,2026-05-15 09:00,2026-05-15 10:10,2026-05-15 11:30,billing_issue
+T-802,Clearview Inc,P1,2026-05-15 10:30,2026-05-15 10:48,2026-05-15 12:00,service_outage
+T-803,Brightfield Corp,P3,2026-05-16 14:00,2026-05-16 16:20,2026-05-17 09:00,feature_request
+N1,Internal,P4,2026-05-15 08:00,2026-05-15 08:05,2026-05-15 08:10,internal_monitoring

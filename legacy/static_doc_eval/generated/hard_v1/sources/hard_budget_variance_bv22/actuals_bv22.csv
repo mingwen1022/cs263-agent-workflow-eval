@@ -1,0 +1,15 @@
+department,cost_center,category,period,budget_approved,actual_spend,variance
+Engineering,CC-201,headcount,Q1-2026,480000.00,492000.00,-12000.00
+Engineering,CC-201,external_contractors,Q1-2026,60000.00,83500.00,-23500.00
+Engineering,CC-201,software_tools,Q1-2026,24000.00,21800.00,2200.00
+Marketing,CC-305,campaigns,Q1-2026,150000.00,178000.00,-28000.00
+Marketing,CC-305,events,Q1-2026,40000.00,31000.00,9000.00
+Marketing,CC-305,travel,Q1-2026,18000.00,22400.00,-4400.00
+Finance,CC-102,headcount,Q1-2026,320000.00,318500.00,1500.00
+Finance,CC-102,software_tools,Q1-2026,15000.00,14200.00,800.00
+Operations,CC-410,headcount,Q1-2026,210000.00,209000.00,1000.00
+Operations,CC-410,facilities,Q1-2026,35000.00,33800.00,1200.00
+N1,CC-201,headcount,Q4-2025,460000.00,455000.00,5000.00
+N2,CC-305,campaigns,Q4-2025,140000.00,162000.00,-22000.00
+N3,CC-201-INT,headcount,Q1-2026,95000.00,102000.00,-7000.00
+N4,CC-201-INT,software_tools,Q1-2026,12000.00,11500.00,500.00

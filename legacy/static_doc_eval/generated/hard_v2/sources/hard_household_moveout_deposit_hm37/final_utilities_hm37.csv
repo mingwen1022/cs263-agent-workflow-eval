@@ -1,0 +1,10 @@
+bill_id,service,service_period_start,service_period_end,total_amount,paid_by,include_in_settlement,special_rule,notes
+U1,electricity,2026-03-01,2026-03-31,192.60,Alex,yes,ev_addon_36_to_alex,March final bill through lease end; total includes 36.00 EV charging add-on
+U2,water_trash,2026-03-01,2026-03-31,96.00,Chen,yes,equal_split,March water and trash through lease end
+U3,internet,2026-03-01,2026-03-31,75.00,Bri,yes,equal_split,Shared household internet through move-out date
+U4,electricity,2026-04-01,2026-04-15,41.10,Alex,no,after_moveout,Service after lease end; Alex kept account open for showing appointments
+U5,streaming_service,2026-03-01,2026-03-31,18.00,Bri,no,personal_subscription,Not a household utility under the agreement
+U6,router_cable,2026-03-28,2026-03-28,12.49,Bri,no,no_written_approval,Replacement cable purchase was not approved by all roommates
+U7,gas_heat,2026-03-20,2026-04-04,144.00,Chen,partial,prorate_through_2026_03_31_equal_split,Span bill; include 12 of 16 inclusive service days through lease end, so included settlement amount is 108.00
+U8,gas_heat,2026-04-05,2026-04-19,57.00,Chen,no,after_moveout,Second gas true-up after lease end; do not include
+U9,electricity_usage_estimate,2026-03-15,2026-03-31,33.00,Alex,no,duplicate_estimate,Estimated March usage line replaced by final electric bill U1

@@ -1,0 +1,6 @@
+entry_id,batch_id,employee_id,type,pay_period,net_change,status
+N1,MP-11,E-310,overtime,2026-02,220.00,approved
+C1,MP-12,E-551,overtime,2026-03,180.00,pending
+C2,MP-12,E-551,expense_reimbursement,2026-03,95.00,pending
+C3,MP-12,E-551,commission,2026-03,400.00,pending
+C4,MP-12,E-772,overtime,2026-03,160.00,pending

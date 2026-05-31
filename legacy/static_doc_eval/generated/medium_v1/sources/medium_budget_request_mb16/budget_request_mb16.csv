@@ -1,0 +1,7 @@
+item_id,department,category,description,amount,status
+N1,Marketing,q1_reforecast,Prior quarter adjustment,5000.00,processed
+R1,Engineering,software,New IDE licenses for 5 devs,1200.00,pending
+R2,Engineering,training,Cloud certification course,2400.00,pending
+R3,Engineering,hardware,Replacement laptop,1800.00,pending
+R4,Engineering,entertainment,Team offsite dinner,600.00,pending
+N2,Finance,software,Finance team analytics tool,900.00,pending

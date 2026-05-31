@@ -7,7 +7,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field
 
 
-Difficulty = Literal["hard"]
+Difficulty = Literal["hard", "medium"]
 TaskFamily = Literal["document_workflow", "multi_app_workflow"]
 SystemName = Literal["large_single", "small_single", "small_agentic_workflow"]
 
@@ -43,6 +43,7 @@ class AgentPrediction(BaseModel):
 class ScoreBreakdown(BaseModel):
     field_accuracy: float
     score_percent: float
+    task_success: float = 0.0
     evidence_accuracy: float | None = None
     tool_coverage: float | None = None
     details: dict[str, Any] = Field(default_factory=dict)

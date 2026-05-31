@@ -1,0 +1,31 @@
+{
+  "task_id": "medium_expense_claim_me07",
+  "task_family": "multi_app_workflow",
+  "difficulty": "medium",
+  "instruction": "Review expense claim ME-07 using the available sources. Determine the total reimbursable amount, which items are denied, which rows should be excluded before analysis, and whether additional approval is required. Use only ME-07 expense lines. Apply policy caps and exclusions. Return only a JSON object with these fields: reimbursable_total, denied_items, excluded_rows, approval_required. reimbursable_total must be the total payable amount. denied_items must be an array of short snake_case labels for cost types that are not reimbursable. excluded_rows must be an array of short snake_case labels for rows that belong to other claims. approval_required must be a boolean. Do not include explanation outside the JSON.",
+  "allowed_tools": ["list_sources","read_source","read_text_source","read_csv","read_pdf","read_docx","run_calculation","lookup_vendor_status","search_employee_directory","check_public_calendar","estimate_shipping_cost"],
+  "source_manifest": "sources/medium_expense_claim_me07/source_manifest.json",
+  "gold_output": {
+    "reimbursable_total": 283.0,
+    "denied_items": ["meal_over_cap", "commute", "premium_wifi"],
+    "excluded_rows": ["me06_prior_claim"],
+    "approval_required": false
+  },
+  "evaluation_criteria": {
+    "exact_fields": ["reimbursable_total","approval_required"],
+    "numeric_tolerances": {"reimbursable_total": 0.01},
+    "set_fields": ["denied_items","excluded_rows"],
+    "set_aliases": {
+      "denied_items": {
+        "meal_over_cap": ["dinner_over_cap","meal_cap_exceeded","client_dinner_over_cap","meal","meal_excess","dinner_excess"],
+        "commute": ["home_to_office","commute_rideshare","normal_commute","commuting","transport","home_office_transport"],
+        "premium_wifi": ["wifi","hotel_wifi","premium_internet","connectivity","wifi_connectivity","premium_connectivity"]
+      },
+      "excluded_rows": {
+        "me06_prior_claim": ["me06","n1","prior_claim","prior_trip_taxi"]
+      }
+    },
+    "required_tool_calls": ["list_sources","read_source","run_calculation"],
+    "scoring_notes": "Excluded: N1 (ME-06). Approved: L1 hotel 180 + L2 rideshare 38 + L3 dinner capped at 65 = 283. Denied: L3 dinner excess (82-65=17 denied as meal_over_cap), L4 commute 22 denied, L5 wifi 18 denied. Total 283 < 500 so approval_required=false."
+  }
+}

@@ -120,6 +120,7 @@ def score_prediction(task: BenchmarkTask, answer: dict[str, Any]) -> ScoreBreakd
     return ScoreBreakdown(
         field_accuracy=field_accuracy,
         score_percent=round(field_accuracy * 100, 2),
+        task_success=1.0 if correct_checks == total_checks and total_checks > 0 else 0.0,
         details={
             "correct_checks": correct_checks,
             "total_checks": total_checks,

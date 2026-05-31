@@ -1,0 +1,5 @@
+request_id,employee_id,role,resource,permission,justification
+R1,E-221,analyst,sales_reports,read,Need monthly revenue data for forecast model
+R2,E-221,analyst,customer_pii,read,Required for churn analysis project
+R3,E-221,analyst,financial_reports,write,Need to update Q2 projections
+N1,E-330,engineer,code_repository,read,Prior request from different employee in same batch

@@ -1,0 +1,35 @@
+{
+  "task_id": "medium_payroll_review_mp12",
+  "task_family": "multi_app_workflow",
+  "difficulty": "medium",
+  "instruction": "Review payroll correction batch MP-12 for employee E-551 using the available sources. Determine the total net correction, which corrections are approved, which are denied due to policy, which entries should be excluded, and whether Payroll Director approval is required. Return only a JSON object: net_correction_amount, approved_corrections, denied_corrections, excluded_entries, approval_required. net_correction_amount must be the total eligible net pay increase. approved_corrections must be an array of short snake_case labels for eligible corrections. denied_corrections must be an array of short snake_case labels for in-scope corrections rejected by policy. excluded_entries must be an array of short snake_case labels for entries excluded from processing. approval_required must be a boolean. Do not include explanation outside the JSON.",
+  "allowed_tools": ["list_sources","read_source","read_text_source","read_csv","read_pdf","read_docx","run_calculation","lookup_vendor_status","search_employee_directory","check_public_calendar","estimate_shipping_cost"],
+  "source_manifest": "sources/medium_payroll_review_mp12/source_manifest.json",
+  "gold_output": {
+    "net_correction_amount": 275.0,
+    "approved_corrections": ["c1_overtime", "c2_expense_reimbursement"],
+    "denied_corrections": ["c3_commission"],
+    "excluded_entries": ["n1_prior_batch", "c4_wrong_employee"],
+    "approval_required": true
+  },
+  "evaluation_criteria": {
+    "exact_fields": ["net_correction_amount","approval_required"],
+    "numeric_tolerances": {"net_correction_amount": 0.01},
+    "set_fields": ["approved_corrections","denied_corrections","excluded_entries"],
+    "set_aliases": {
+      "approved_corrections": {
+        "c1_overtime": ["c1","overtime_correction","c1_march_overtime","overtime_c1","c1_overtime_march"],
+        "c2_expense_reimbursement": ["c2","expense_reimbursement","c2_reimbursement","expense_reimbursement_c2","c2_expense"]
+      },
+      "denied_corrections": {
+        "c3_commission": ["c3","commission_adjustment","commission_not_eligible","commission","commission_c3"]
+      },
+      "excluded_entries": {
+        "n1_prior_batch": ["n1","mp11_entry","prior_batch_entry","prior_batch_n1","n1_prior"],
+        "c4_wrong_employee": ["c4","e772_entry","different_employee","c4_wrong_employee","other_employee_c4"]
+      }
+    },
+    "required_tool_calls": ["list_sources","read_source","run_calculation"],
+    "scoring_notes": "Exclude N1 (MP-11 prior batch) and C4 (E-772 different employee). C1 overtime 180 approved. C2 expense_reimbursement 95 approved. C3 commission 400 denied (commission not eligible per policy). Net = 180+95=275. 275>200 → approval_required=true."
+  }
+}

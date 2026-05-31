@@ -1,0 +1,5 @@
+vendor_id,vendor_name,product,monthly_price,support_response,region,contract_length_months,status
+V-01,CloudCore,DataSync Pro,850.00,four_hours,us,12,active
+V-02,DataBridge,DataSync Lite,620.00,next_business_day,us,6,active
+V-03,NovaTech,DataSync Pro,880.00,four_hours,eu,12,active
+V-04,CloudCore,DataSync Starter,420.00,email_only,us,12,active

@@ -1,0 +1,30 @@
+{
+  "task_id": "medium_budget_request_mb16",
+  "task_family": "multi_app_workflow",
+  "difficulty": "medium",
+  "instruction": "Review the Engineering department budget request using the available sources. Determine the total approved amount, any denied items, the required approval level, and rows to exclude before analysis. Apply the budget policy to each line item. Return only a JSON object: approved_amount, denied_items, approval_required_from, excluded_rows. approved_amount must be the total of approved line items. denied_items must be an array of short snake_case labels for items requiring committee pre-approval. approval_required_from must be a short string for the required approver role. excluded_rows must be an array of short snake_case labels for rows excluded from this request. Do not include explanation outside the JSON.",
+  "allowed_tools": ["list_sources","read_source","read_text_source","read_csv","read_pdf","read_docx","run_calculation","lookup_vendor_status","search_employee_directory","check_public_calendar","estimate_shipping_cost"],
+  "source_manifest": "sources/medium_budget_request_mb16/source_manifest.json",
+  "gold_output": {
+    "approved_amount": 5400.0,
+    "denied_items": ["entertainment_offsite_dinner"],
+    "approval_required_from": "director",
+    "excluded_rows": ["marketing_prior_quarter", "finance_different_dept"]
+  },
+  "evaluation_criteria": {
+    "exact_fields": ["approved_amount","approval_required_from"],
+    "numeric_tolerances": {"approved_amount": 0.01},
+    "set_fields": ["denied_items","excluded_rows"],
+    "set_aliases": {
+      "denied_items": {
+        "entertainment_offsite_dinner": ["r4","entertainment","team_dinner","offsite_dinner","entertainment_requires_approval","team_offsite_dinner"]
+      },
+      "excluded_rows": {
+        "marketing_prior_quarter": ["n1","marketing_row","prior_quarter","q1_reforecast","marketing_q1_reforecast"],
+        "finance_different_dept": ["n2","finance_row","finance_software","analytics_tool_finance","finance_software_tool"]
+      }
+    },
+    "required_tool_calls": ["list_sources","read_source","run_calculation"],
+    "scoring_notes": "Exclude N1 (Marketing, prior quarter). R1 software 1200 approved. R2 training 2400 approved. R3 hardware 1800 approved. R4 entertainment 600 denied (requires committee pre-approval). Approved total = 1200+2400+1800 = 5400. 5400 in $3k-$10k range → director approval."
+  }
+}

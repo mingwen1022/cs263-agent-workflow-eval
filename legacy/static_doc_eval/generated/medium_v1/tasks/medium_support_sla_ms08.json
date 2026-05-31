@@ -1,0 +1,36 @@
+{
+  "task_id": "medium_support_sla_ms08",
+  "task_family": "multi_app_workflow",
+  "difficulty": "medium",
+  "instruction": "Review the support ticket log using the available sources. Identify which customer tickets breached their SLA, which met SLA, which tickets are excluded from SLA tracking, and what escalation actions are required. Return only a JSON object: breached_tickets, sla_met_tickets, excluded_tickets, escalation_required. breached_tickets must be an array of short snake_case labels for tickets that missed their SLA target. sla_met_tickets must be an array of short snake_case labels for tickets that met their SLA. excluded_tickets must be an array of short snake_case labels for tickets excluded from customer SLA tracking. escalation_required must be an array of short snake_case labels for escalation actions needed. Do not include explanation outside the JSON.",
+  "allowed_tools": ["list_sources","read_source","read_text_source","read_csv","read_pdf","read_docx","run_calculation","lookup_vendor_status","search_employee_directory","check_public_calendar","estimate_shipping_cost"],
+  "source_manifest": "sources/medium_support_sla_ms08/source_manifest.json",
+  "gold_output": {
+    "breached_tickets": ["t801_p2_breach"],
+    "sla_met_tickets": ["t802_p1_met", "t803_p3_met"],
+    "excluded_tickets": ["n1_internal"],
+    "escalation_required": ["t801_team_lead_review"]
+  },
+  "evaluation_criteria": {
+    "exact_fields": [],
+    "numeric_tolerances": {},
+    "set_fields": ["breached_tickets","sla_met_tickets","excluded_tickets","escalation_required"],
+    "set_aliases": {
+      "breached_tickets": {
+        "t801_p2_breach": ["t801","t_801","brightfield_p2","p2_breach","billing_issue_breach"]
+      },
+      "sla_met_tickets": {
+        "t802_p1_met": ["t802","t_802","clearview_p1","p1_met","service_outage_met"],
+        "t803_p3_met": ["t803","t_803","brightfield_p3","p3_met","feature_request_met"]
+      },
+      "excluded_tickets": {
+        "n1_internal": ["n1","internal_ticket","internal_monitoring","p4_internal"]
+      },
+      "escalation_required": {
+        "t801_team_lead_review": ["t801_escalation","team_lead_review_t801","p2_breach_escalation","t801_flag"]
+      }
+    },
+    "required_tool_calls": ["list_sources","read_source","run_calculation"],
+    "scoring_notes": "T-801 P2: opened 09:00, response 10:10 = 70 min > 60 min P2 SLA → BREACH. T-802 P1: 10:48-10:30=18 min < 30 min → MET. T-803 P3: 16:20-14:00=140 min < 240 min → MET. N1 internal P4 → excluded from SLA. Breached P2 → team lead review required."
+  }
+}

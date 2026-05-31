@@ -1,0 +1,34 @@
+{
+  "task_id": "medium_vendor_selection_mv14",
+  "task_family": "multi_app_workflow",
+  "difficulty": "medium",
+  "instruction": "Review vendor quotes using the available sources. Select the least expensive vendor that meets all stated requirements. Return only a JSON object with these fields: recommended_vendor, selected_monthly_price, excluded_vendors, risk_flags. recommended_vendor must be the vendor name as a short snake_case string. selected_monthly_price must be the monthly price of the selected vendor. excluded_vendors must be an array of short snake_case labels for vendors not meeting requirements. risk_flags must be an array of short snake_case risk labels. Do not include explanation outside the JSON.",
+  "allowed_tools": ["list_sources","read_source","read_text_source","read_csv","read_pdf","read_docx","run_calculation","lookup_vendor_status","search_employee_directory","check_public_calendar","estimate_shipping_cost"],
+  "source_manifest": "sources/medium_vendor_selection_mv14/source_manifest.json",
+  "gold_output": {
+    "recommended_vendor": ["cloudcore"],
+    "selected_monthly_price": 850.0,
+    "excluded_vendors": ["databridge_sla", "novatech_region", "cloudcore_starter_sla"],
+    "risk_flags": ["single_vendor_dependency"]
+  },
+  "evaluation_criteria": {
+    "exact_fields": ["selected_monthly_price"],
+    "numeric_tolerances": {"selected_monthly_price": 0.01},
+    "set_fields": ["recommended_vendor","excluded_vendors","risk_flags"],
+    "set_aliases": {
+      "recommended_vendor": {
+        "cloudcore": ["cloud_core","cloudcore_pro","v01","v_01","cloudcore_datasync"]
+      },
+      "excluded_vendors": {
+        "databridge_sla": ["databridge","v02","v_02","databridge_lite","next_business_day_sla","data_bridge"],
+        "novatech_region": ["novatech","v03","v_03","novatech_eu","eu_region","nova_tech"],
+        "cloudcore_starter_sla": ["cloudcore_starter","v04","v_04","starter_email_only","email_only_support","cloud_core_v04","cloud_core_starter"]
+      },
+      "risk_flags": {
+        "single_vendor_dependency": ["single_qualifying_vendor","only_one_vendor","vendor_lock","one_vendor_risk"]
+      }
+    },
+    "required_tool_calls": ["list_sources","read_source"],
+    "scoring_notes": "Qualifying: V-01 CloudCore DataSync Pro (us, 4hr, 12mo, $850). V-02 DataBridge: SLA=next_business_day → excluded. V-03 NovaTech: EU region → excluded. V-04 CloudCore Starter: SLA=email_only → excluded. Only 1 qualifying vendor → risk single_vendor_dependency."
+  }
+}

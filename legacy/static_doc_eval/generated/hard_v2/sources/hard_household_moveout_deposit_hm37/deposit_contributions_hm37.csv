@@ -1,0 +1,6 @@
+row_id,person,unit,amount,status,notes
+DEP_ALEX_VALID,Alex,4B,1200.00,valid_final,Lead tenant deposit contribution
+DEP_BRI_VALID,Bri,4B,1050.00,valid_final,Bedroom B deposit contribution
+DEP_CHEN_VALID,Chen,4B,750.00,valid_final,Small room deposit contribution
+DEP_ALEX_VOIDED_TOPUP,Alex,4B,100.00,voided_pending,Voided top-up request from 2025-08; never paid
+DEP_DANA_4C,Dana,4C,500.00,other_unit,Imported from adjacent unit and not part of HM-37

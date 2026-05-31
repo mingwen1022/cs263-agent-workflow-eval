@@ -1,0 +1,6 @@
+request_id,from_department,from_category,to_department,to_category,amount,justification,status
+TR-B01,Marketing,events,Marketing,campaigns,9000.00,Use events surplus to offset campaign overrun,pending
+TR-B02,Engineering,software_tools,Engineering,external_contractors,2200.00,Use tools surplus to offset contractor overrun,pending
+TR-B03,Finance,headcount,Engineering,external_contractors,1500.00,Cross-department transfer for contractor shortfall,pending
+TR-B04,Engineering,software_tools,Engineering,headcount,2200.00,Duplicate of TR-B02 submitted in error,pending
+TR-B05,Engineering,headcount,Operations,facilities,5000.00,Shared infrastructure cost between engineering and ops,pending

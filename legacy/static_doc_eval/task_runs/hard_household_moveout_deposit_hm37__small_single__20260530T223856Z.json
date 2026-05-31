@@ -1,0 +1,565 @@
+{
+  "task_id": "hard_household_moveout_deposit_hm37",
+  "system_name": "small_single",
+  "created_at": "20260530T223856Z",
+  "trace_url": "https://smith.langchain.com/o/6e10ea75-a811-49d0-9ace-7d3c13f768c2/projects/p/29d09956-365b-453f-9f3a-a71eed8ec154/r/019e7b08-cacb-7432-8926-e1d7d23f889f?trace_id=019e7b08-cacb-7432-8926-e1d7d23f889f&start_time=2026-05-30T22:37:14.315221",
+  "task_instruction": "Review the household move-out settlement HM-37 using the available sources. Calculate the final security-deposit and utility settlement for Unit 4B roommates Alex, Bri, and Chen. Use only the final lease/housemate rules, final property statement, valid deposit ledger rows, inspection evidence, and utilities through 2026-03-31. Exclude preliminary estimates, withdrawn charges, other-unit rows, voided deposit rows, preexisting damage, weather-related damage, personal subscriptions, unapproved purchases, and post-move-out utility periods. Return only a JSON object with these fields: landlord_deduction_total, refund_pool, alex_landlord_deduction_share, bri_landlord_deduction_share, chen_landlord_deduction_share, alex_utility_adjustment, bri_utility_adjustment, chen_utility_adjustment, alex_final_refund, bri_final_refund, chen_final_refund, approved_deductions, excluded_items, utility_adjustments_applied, risk_flags. Numeric fields must be dollar amounts rounded to two decimals. approved_deductions, excluded_items, utility_adjustments_applied, and risk_flags must be arrays of short snake_case labels. For every array field, include all and only the items directly supported by the sources; do not add speculative, generic, duplicate, or unsupported labels. Do not include explanation outside the JSON.",
+  "task_instruction_zh": "",
+  "allowed_tools": [
+    "list_sources",
+    "read_source",
+    "read_text_source",
+    "read_csv",
+    "read_pdf",
+    "read_docx",
+    "run_calculation",
+    "lookup_vendor_status",
+    "search_employee_directory",
+    "check_public_calendar",
+    "estimate_shipping_cost"
+  ],
+  "sources": [
+    {
+      "source_id": "deposit_contributions_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/deposit_contributions_hm37.csv",
+      "content": "person,unit,amount,status,notes\nAlex,4B,1200.00,valid_final,Lead tenant deposit contribution\nBri,4B,1050.00,valid_final,Bedroom B deposit contribution\nChen,4B,750.00,valid_final,Small room deposit contribution\nAlex,4B,100.00,voided_pending,Voided top-up request from 2025-08; never paid\nDana,4C,500.00,other_unit,Imported from adjacent unit and not part of HM-37"
+    },
+    {
+      "source_id": "final_property_statement_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/final_property_statement_hm37.csv",
+      "content": "statement_version,item_id,unit,description,amount,status,responsibility_hint,notes\nfinal_2026_04_08,F1,4B,Move-out re-cleaning after failed broom-clean inspection,285.00,final_deducted,shared_unknown,Final statement line 1\nfinal_2026_04_08,F2,4B,Mailbox key replacement,45.00,final_deducted,shared_unknown,One mailbox key was not returned and no roommate accepted responsibility\nfinal_2026_04_08,F3,4B,Living room wall patch and paint for desk-anchor gouges,420.00,final_deducted,chen_identified,Matches inspection note for Chen desk anchors\nfinal_2026_04_08,F4,4B,Bedroom B blind slat replacement,130.00,final_deducted,bri_identified,Matches bedroom B assignment\nfinal_2026_04_08,X1,4B,Hall carpet replacement estimate,900.00,withdrawn_preexisting,exclude,Withdrawn after move-in checklist review\nfinal_2026_04_08,X2,4B,Balcony screen repair,160.00,withdrawn_weather_damage,exclude,Manager notes storm damage and no tenant charge\ndraft_2026_04_02,D1,4B,Preliminary paint estimate before vendor invoice,525.00,draft_superseded,exclude,Superseded by F3 final invoice\nfinal_2026_04_08,N1,4C,Parking remote replacement,65.00,other_unit,exclude,Neighboring unit included in exported ledger by mistake"
+    },
+    {
+      "source_id": "final_utilities_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/final_utilities_hm37.csv",
+      "content": "bill_id,service,service_period_start,service_period_end,total_amount,paid_by,include_in_settlement,special_rule,notes\nU1,electricity,2026-03-01,2026-03-31,192.60,Alex,yes,ev_addon_36_to_alex,March final bill through lease end; total includes 36.00 EV charging add-on\nU2,water_trash,2026-03-01,2026-03-31,96.00,Chen,yes,equal_split,March water and trash through lease end\nU3,internet,2026-03-01,2026-03-31,75.00,Bri,yes,equal_split,Shared household internet through move-out date\nU4,electricity,2026-04-01,2026-04-15,41.10,Alex,no,after_moveout,Service after lease end; Alex kept account open for showing appointments\nU5,streaming_service,2026-03-01,2026-03-31,18.00,Bri,no,personal_subscription,Not a household utility under the agreement\nU6,router_cable,2026-03-28,2026-03-28,12.49,Bri,no,no_written_approval,Replacement cable purchase was not approved by all roommates"
+    },
+    {
+      "source_id": "lead_tenant_email_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/lead_tenant_email_hm37.txt",
+      "content": "From: property.manager@example.test\nTo: Alex\nDate: 2026-04-09\nSubject: HM-37 final deposit statement and check routing\n\nAlex,\n\nThe final statement for Unit 4B / HM-37 is now closed. The total security\ndeposit held was $3,000.00. Final landlord deductions total $880.00, and the\nrefund check for $2,120.00 was issued to you as lead tenant because the lease\nhad one forwarding address on file.\n\nPlease note that our April 2 preliminary estimate is no longer active. The hall\ncarpet and balcony screen items were removed before the final statement. The\nparking remote line in the export belongs to Unit 4C and should not be included\nin your roommate settlement.\n\nWe do not settle utilities between roommates. The refund check amount above is\nonly the landlord security-deposit refund.\n"
+    },
+    {
+      "source_id": "lease_and_housemate_rules_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/lease_and_housemate_rules_hm37.md",
+      "content": "# HM-37 Lease and Housemate Settlement Rules\n\n## Current rule set for Unit 4B, lease ending 2026-03-31\n\nSecurity deposit held by the landlord belongs to the roommates in the same\namounts originally contributed by each person. For HM-37, use the deposit\nledger marked `valid_final`.\n\nLandlord deductions that are confirmed on the final property statement should\nbe allocated as follows:\n\n1. Shared or unknown-responsibility deductions are allocated by original deposit\n   share.\n2. Deductions tied to an identified roommate's assigned room or documented\n   action are charged to that roommate only.\n3. Withdrawn, draft, prior estimate, other-unit, move-in-preexisting, and\n   weather-damage lines are excluded.\n4. Normal wear and tear is not deductible.\n\nUtilities are not landlord deductions unless the final property statement says\notherwise. For the roommate settlement, utilities through 2026-03-31 are split\nequally among Alex, Bri, and Chen after applying any bill-specific rider.\n\nBill-specific rider for the March 2026 electricity bill:\n- The EV charging add-on is Alex's personal charge.\n- The remaining electricity amount is split equally.\n\nInternet for March 2026 is a shared household utility. Streaming services,\nreplacement cables, and post-move-out service periods are personal or excluded\nunless all three roommates approved them in writing.\n\n## Obsolete clause, do not use\n\nThe 2024 draft housemate agreement split all shared deductions equally. That\ndraft was replaced by the current rule set above after Bri moved into bedroom B.\nDo not use the 2024 equal-deposit split rule for HM-37.\n"
+    },
+    {
+      "source_id": "movein_condition_checklist_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/movein_condition_checklist_hm37.csv",
+      "content": "area,item,condition_at_movein,tenant_initials,settlement_relevance\nhall,carpet,worn_with_two_old_stains,all,preexisting_exclude\nbalcony,screen,slightly_loose_before_storm,all,do_not_charge_without_new_tenant_damage\nbedroom_b,blinds,intact,bri,relevant_if_damaged_at_moveout\nliving_room,wall_under_window,clean_no_gouges,chen,relevant_if_new_gouges_found\nkitchen,appliance_drawers,clean,all,cleaning_can_be_charged_if_not_returned_clean\nmailbox,key_set,two_keys_issued,all,key_replacement_can_be_charged_if_missing"
+    },
+    {
+      "source_id": "moveout_inspection_notes_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/moveout_inspection_notes_hm37.md",
+      "content": "# HM-37 Move-out Inspection Notes\n\nInspection date: 2026-04-01\nUnit: 4B\n\nRoom assignments:\n- Alex: Bedroom A\n- Bri: Bedroom B\n- Chen: small room and living-room desk nook\n\nFindings tied to final charges:\n- General cleaning: kitchen surfaces, refrigerator drawers, and bathroom baseboards\n  required a re-clean after keys were returned. Responsibility not assigned.\n- Missing mailbox key: one mailbox key missing from returned packet. Responsibility\n  unknown.\n- Living room wall: two desk-anchor gouges under the window by Chen's desk nook.\n  Chen confirmed the anchor strips were from his standing desk cable rail.\n- Bedroom B blinds: three broken slats in bedroom B; not marked on the move-in\n  checklist. Bedroom B was Bri's assigned room.\n\nFindings not charged to tenants:\n- Hall carpet was already worn and stained on the move-in checklist. The April 2\n  preliminary replacement estimate was withdrawn.\n- Balcony screen was bent after the March 28 wind storm. Property manager marked\n  it weather-related and withdrew the charge.\n\nNoise notes:\n- A parking remote issue belongs to Unit 4C.\n- A hallway scuff outside Unit 4B belongs to common-area maintenance, not HM-37.\n"
+    },
+    {
+      "source_id": "preliminary_cleaning_quote_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/preliminary_cleaning_quote_hm37.txt",
+      "content": "Preliminary vendor quote, created 2026-04-02.\nStatus: preliminary only; do not use after the final 2026-04-08 statement.\n\nUnit 4B:\n- General cleaning estimate: $475.00\n- Hall carpet replacement estimate: $900.00\n- Paint estimate: $525.00\n\nNotes:\n- Vendor had not reviewed the move-in checklist.\n- Property manager later requested a revised invoice.\n- This quote was forwarded in the roommate chat and caused confusion.\n\nUnrelated:\n- Unit 4C parking remote replacement: $65.00\n"
+    },
+    {
+      "source_id": "repair_receipt_packet_hm37",
+      "path": "data/generated/hard_v2/sources/hard_household_moveout_deposit_hm37/repair_receipt_packet_hm37.pdf",
+      "content": "HM-37 final receipt packet, revised 2026-04-08\nCleaning re-clean final invoice: 285.00\nMailbox key replacement receipt: 45.00\nLiving room wall patch and paint final invoice: 420.00\nBedroom B blind slat replacement receipt: 130.00\nWithdrawn quote: carpet replacement 900.00, do not charge\nWithdrawn quote: balcony screen 160.00, weather damage"
+    }
+  ],
+  "gold_output": {
+    "landlord_deduction_total": 880.0,
+    "refund_pool": 2120.0,
+    "alex_landlord_deduction_share": 132.0,
+    "bri_landlord_deduction_share": 245.5,
+    "chen_landlord_deduction_share": 502.5,
+    "alex_utility_adjustment": 47.4,
+    "bri_utility_adjustment": -34.2,
+    "chen_utility_adjustment": -13.2,
+    "alex_final_refund": 1115.4,
+    "bri_final_refund": 770.3,
+    "chen_final_refund": 234.3,
+    "approved_deductions": [
+      "cleaning_reclean",
+      "mailbox_key",
+      "living_room_wall_repair",
+      "bedroom_b_blinds"
+    ],
+    "excluded_items": [
+      "carpet_replacement_preexisting",
+      "balcony_screen_weather_damage",
+      "unit_4c_parking_remote",
+      "preliminary_paint_estimate",
+      "voided_alex_topup",
+      "unit_4c_deposit_row",
+      "april_electric_after_moveout",
+      "streaming_personal_subscription",
+      "router_cable_unapproved"
+    ],
+    "utility_adjustments_applied": [
+      "electric_march_equal_split_with_ev_alex",
+      "water_trash_march_equal_split",
+      "internet_march_equal_split"
+    ],
+    "risk_flags": [
+      "refund_check_to_lead_tenant",
+      "preliminary_estimate_conflict",
+      "roommate_reimbursement_needed"
+    ]
+  },
+  "correct_solution_process": "Valid deposit contributions are Alex 1200, Bri 1050, Chen 750, total 3000, giving deposit shares 40%, 35%, 25%. Final landlord deductions are F1 285, F2 45, F3 420, and F4 130, total 880; refund pool is 3000-880=2120. Shared/unknown deductions are F1+F2=330, allocated by deposit share: Alex 132, Bri 115.50, Chen 82.50. F3 living room wall repair is charged only to Chen, and F4 bedroom B blinds only to Bri, so landlord deduction shares are Alex 132.00, Bri 245.50, Chen 502.50. Base deposit refunds are Alex 1068.00, Bri 804.50, Chen 247.50. Utilities through 2026-03-31: electricity 192.60 paid by Alex, with 36.00 EV add-on to Alex and the remaining 156.60 split equally, so Alex's electric responsibility is 88.20 and Bri/Chen each 52.20. Water/trash 96 paid by Chen is split equally at 32 each. Internet 75 paid by Bri is split equally at 25 each. Utility net adjustments are Alex +47.40, Bri -34.20, Chen -13.20. Final refunds after utility settlement are Alex 1115.40, Bri 770.30, Chen 234.30. Exclude withdrawn/preexisting/weather/other-unit/draft/voided/post-move-out/personal/unapproved lines as listed in gold.",
+  "agent_output": {
+    "landlord_deduction_total": 880.0,
+    "refund_pool": 1788.4,
+    "alex_landlord_deduction_share": 132.0,
+    "bri_landlord_deduction_share": 245.5,
+    "chen_landlord_deduction_share": 502.5,
+    "alex_utility_adjustment": 113.2,
+    "bri_utility_adjustment": 109.2,
+    "chen_utility_adjustment": 109.2,
+    "alex_final_refund": 954.8,
+    "bri_final_refund": 695.3,
+    "chen_final_refund": 138.3,
+    "approved_deductions": [
+      "move-out-re-cleaning",
+      "mailbox-key-replacement",
+      "living-room-wall-patch",
+      "bedroom-b-blind-slat-replacement"
+    ],
+    "excluded_items": [
+      "hall-carpet-replacement-estimate",
+      "balcony-screen-repair",
+      "preliminary-paint-estimate",
+      "parking-remote-replacement"
+    ],
+    "utility_adjustments_applied": [
+      "electricity-split",
+      "water-trash-split",
+      "internet-split",
+      "ev-charging-addon"
+    ],
+    "risk_flags": [
+      "unassigned-responsibility-deduction",
+      "unverified-damage-claim"
+    ]
+  },
+  "agent_notes": "",
+  "agent_tool_log": [
+    {
+      "tool_name": "list_sources",
+      "args": {},
+      "result": "deposit_contributions_hm37 (csv)\nfinal_property_statement_hm37 (csv)\nfinal_utilities_hm37 (csv)\nlead_tenant_email_hm37 (text)\nlease_and_housemate_rules_hm37 (text)\nmovein_condition_checklist_hm37 (csv)\nmoveout_inspection_notes_hm37 (text)\npreliminary_cleaning_quote_hm37 (text)\nrepair_receipt_packet_hm37 (pdf)"
+    },
+    {
+      "tool_name": "read_text_source",
+      "args": {
+        "source_id": "lease_and_housemate_rules_hm37"
+      },
+      "result": "# HM-37 Lease and Housemate Settlement Rules\n\n## Current rule set for Unit 4B, lease ending 2026-03-31\n\nSecurity deposit held by the landlord belongs to the roommates in the same\namounts originally contributed by each person. For HM-37, use the deposit\nledger marked `valid_final`.\n\nLandlord deductions that are confirmed on the final property statement should\nbe allocated as follows:\n\n1. Shared or unknown-responsibility deductions are allocated by original deposit\n   share.\n2. Deductions tied to an identified roommate's assigned room or documented\n   action are charged to that roommate only.\n3. Withdrawn, draft, prior estimate, other-unit, move-in-preexisting, and\n   weather-damage lines are excluded.\n4. Normal wear and tear is not deductible.\n\nUtilities are not landlord deductions unless the final property statement says\notherwise. For the roommate settlement, utilities through 2026-03-31 are split\nequally among Alex, Bri, and Chen after applying any bill-specific rider.\n\nBill-specific rider for the March 2026 electricity bill:\n- The EV charging add-on is Alex's personal charge.\n- The remaining electricity amount is split equally.\n\nInternet for March 2026 is a shared household utility. Streaming services,\nreplacement cables, and post-move-out service periods are personal or excluded\nunless all three roommates approved them in writing.\n\n## Obsolete clause, do not use\n\nThe 2024 draft housemate agreement split all shared deductions equally. That\ndraft was replaced by the current rule set above after Bri moved into bedroom B.\nDo not use the 2024 equal-deposit split rule for HM-37.\n"
+    },
+    {
+      "tool_name": "read_csv",
+      "args": {
+        "source_id": "deposit_contributions_hm37"
+      },
+      "result": "person,unit,amount,status,notes\nAlex,4B,1200.00,valid_final,Lead tenant deposit contribution\nBri,4B,1050.00,valid_final,Bedroom B deposit contribution\nChen,4B,750.00,valid_final,Small room deposit contribution\nAlex,4B,100.00,voided_pending,Voided top-up request from 2025-08; never paid\nDana,4C,500.00,other_unit,Imported from adjacent unit and not part of HM-37"
+    },
+    {
+      "tool_name": "read_csv",
+      "args": {
+        "source_id": "final_property_statement_hm37"
+      },
+      "result": "statement_version,item_id,unit,description,amount,status,responsibility_hint,notes\nfinal_2026_04_08,F1,4B,Move-out re-cleaning after failed broom-clean inspection,285.00,final_deducted,shared_unknown,Final statement line 1\nfinal_2026_04_08,F2,4B,Mailbox key replacement,45.00,final_deducted,shared_unknown,One mailbox key was not returned and no roommate accepted responsibility\nfinal_2026_04_08,F3,4B,Living room wall patch and paint for desk-anchor gouges,420.00,final_deducted,chen_identified,Matches inspection note for Chen desk anchors\nfinal_2026_04_08,F4,4B,Bedroom B blind slat replacement,130.00,final_deducted,bri_identified,Matches bedroom B assignment\nfinal_2026_04_08,X1,4B,Hall carpet replacement estimate,900.00,withdrawn_preexisting,exclude,Withdrawn after move-in checklist review\nfinal_2026_04_08,X2,4B,Balcony screen repair,160.00,withdrawn_weather_damage,exclude,Manager notes storm damage and no tenant charge\ndraft_2026_04_02,D1,4B,Preliminary paint estimate before vendor invoice,525.00,draft_superseded,exclude,Superseded by F3 final invoice\nfinal_2026_04_08,N1,4C,Parking remote replacement,65.00,other_unit,exclude,Neighboring unit included in exported ledger by mistake"
+    },
+    {
+      "tool_name": "read_csv",
+      "args": {
+        "source_id": "final_utilities_hm37"
+      },
+      "result": "bill_id,service,service_period_start,service_period_end,total_amount,paid_by,include_in_settlement,special_rule,notes\nU1,electricity,2026-03-01,2026-03-31,192.60,Alex,yes,ev_addon_36_to_alex,March final bill through lease end; total includes 36.00 EV charging add-on\nU2,water_trash,2026-03-01,2026-03-31,96.00,Chen,yes,equal_split,March water and trash through lease end\nU3,internet,2026-03-01,2026-03-31,75.00,Bri,yes,equal_split,Shared household internet through move-out date\nU4,electricity,2026-04-01,2026-04-15,41.10,Alex,no,after_moveout,Service after lease end; Alex kept account open for showing appointments\nU5,streaming_service,2026-03-01,2026-03-31,18.00,Bri,no,personal_subscription,Not a household utility under the agreement\nU6,router_cable,2026-03-28,2026-03-28,12.49,Bri,no,no_written_approval,Replacement cable purchase was not approved by all roommates"
+    },
+    {
+      "tool_name": "read_pdf",
+      "args": {
+        "source_id": "moveout_inspection_notes_hm37"
+      },
+      "result": "Source 'moveout_inspection_notes_hm37' is type 'text', not 'pdf'."
+    },
+    {
+      "tool_name": "read_text_source",
+      "args": {
+        "source_id": "moveout_inspection_notes_hm37"
+      },
+      "result": "# HM-37 Move-out Inspection Notes\n\nInspection date: 2026-04-01\nUnit: 4B\n\nRoom assignments:\n- Alex: Bedroom A\n- Bri: Bedroom B\n- Chen: small room and living-room desk nook\n\nFindings tied to final charges:\n- General cleaning: kitchen surfaces, refrigerator drawers, and bathroom baseboards\n  required a re-clean after keys were returned. Responsibility not assigned.\n- Missing mailbox key: one mailbox key missing from returned packet. Responsibility\n  unknown.\n- Living room wall: two desk-anchor gouges under the window by Chen's desk nook.\n  Chen confirmed the anchor strips were from his standing desk cable rail.\n- Bedroom B blinds: three broken slats in bedroom B; not marked on the move-in\n  checklist. Bedroom B was Bri's assigned room.\n\nFindings not charged to tenants:\n- Hall carpet was already worn and stained on the move-in checklist. The April 2\n  preliminary replacement estimate was withdrawn.\n- Balcony screen was bent after the March 28 wind storm. Property manager marked\n  it weather-related and withdrew the charge.\n\nNoise notes:\n- A parking remote issue belongs to Unit 4C.\n- A hallway scuff outside Unit 4B belongs to common-area maintenance, not HM-37.\n"
+    },
+    {
+      "tool_name": "read_csv",
+      "args": {
+        "source_id": "movein_condition_checklist_hm37"
+      },
+      "result": "area,item,condition_at_movein,tenant_initials,settlement_relevance\nhall,carpet,worn_with_two_old_stains,all,preexisting_exclude\nbalcony,screen,slightly_loose_before_storm,all,do_not_charge_without_new_tenant_damage\nbedroom_b,blinds,intact,bri,relevant_if_damaged_at_moveout\nliving_room,wall_under_window,clean_no_gouges,chen,relevant_if_new_gouges_found\nkitchen,appliance_drawers,clean,all,cleaning_can_be_charged_if_not_returned_clean\nmailbox,key_set,two_keys_issued,all,key_replacement_can_be_charged_if_missing"
+    }
+  ],
+  "score": {
+    "field_accuracy": 0.20588235294117646,
+    "score_percent": 20.59,
+    "task_success": 0.0,
+    "evidence_accuracy": null,
+    "tool_coverage": null,
+    "details": {
+      "correct_checks": 7,
+      "total_checks": 34,
+      "checks": [
+        {
+          "check_id": "landlord_deduction_total.exact",
+          "field": "landlord_deduction_total",
+          "type": "exact",
+          "correct": true,
+          "expected": 880.0,
+          "actual": 880.0
+        },
+        {
+          "check_id": "refund_pool.exact",
+          "field": "refund_pool",
+          "type": "exact",
+          "correct": false,
+          "expected": 2120.0,
+          "actual": 1788.4
+        },
+        {
+          "check_id": "alex_landlord_deduction_share.exact",
+          "field": "alex_landlord_deduction_share",
+          "type": "exact",
+          "correct": true,
+          "expected": 132.0,
+          "actual": 132.0
+        },
+        {
+          "check_id": "bri_landlord_deduction_share.exact",
+          "field": "bri_landlord_deduction_share",
+          "type": "exact",
+          "correct": true,
+          "expected": 245.5,
+          "actual": 245.5
+        },
+        {
+          "check_id": "chen_landlord_deduction_share.exact",
+          "field": "chen_landlord_deduction_share",
+          "type": "exact",
+          "correct": true,
+          "expected": 502.5,
+          "actual": 502.5
+        },
+        {
+          "check_id": "alex_utility_adjustment.exact",
+          "field": "alex_utility_adjustment",
+          "type": "exact",
+          "correct": false,
+          "expected": 47.4,
+          "actual": 113.2
+        },
+        {
+          "check_id": "bri_utility_adjustment.exact",
+          "field": "bri_utility_adjustment",
+          "type": "exact",
+          "correct": false,
+          "expected": -34.2,
+          "actual": 109.2
+        },
+        {
+          "check_id": "chen_utility_adjustment.exact",
+          "field": "chen_utility_adjustment",
+          "type": "exact",
+          "correct": false,
+          "expected": -13.2,
+          "actual": 109.2
+        },
+        {
+          "check_id": "alex_final_refund.exact",
+          "field": "alex_final_refund",
+          "type": "exact",
+          "correct": false,
+          "expected": 1115.4,
+          "actual": 954.8
+        },
+        {
+          "check_id": "bri_final_refund.exact",
+          "field": "bri_final_refund",
+          "type": "exact",
+          "correct": false,
+          "expected": 770.3,
+          "actual": 695.3
+        },
+        {
+          "check_id": "chen_final_refund.exact",
+          "field": "chen_final_refund",
+          "type": "exact",
+          "correct": false,
+          "expected": 234.3,
+          "actual": 138.3
+        },
+        {
+          "check_id": "approved_deductions.contains.bedroom_b_blinds",
+          "field": "approved_deductions",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "bedroom_b_blinds",
+          "actual": [
+            "living_room_wall_repair",
+            "mailbox_key"
+          ]
+        },
+        {
+          "check_id": "approved_deductions.contains.cleaning_reclean",
+          "field": "approved_deductions",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "cleaning_reclean",
+          "actual": [
+            "living_room_wall_repair",
+            "mailbox_key"
+          ]
+        },
+        {
+          "check_id": "approved_deductions.contains.living_room_wall_repair",
+          "field": "approved_deductions",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "living_room_wall_repair",
+          "actual": [
+            "living_room_wall_repair",
+            "mailbox_key"
+          ]
+        },
+        {
+          "check_id": "approved_deductions.contains.mailbox_key",
+          "field": "approved_deductions",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "mailbox_key",
+          "actual": [
+            "living_room_wall_repair",
+            "mailbox_key"
+          ]
+        },
+        {
+          "check_id": "approved_deductions.no_unexpected_items",
+          "field": "approved_deductions",
+          "type": "set_no_unexpected_items",
+          "correct": false,
+          "expected": [
+            "bedroom_b_blinds",
+            "cleaning_reclean",
+            "living_room_wall_repair",
+            "mailbox_key"
+          ],
+          "actual": [
+            "living_room_wall_repair",
+            "mailbox_key"
+          ],
+          "unexpected": [
+            "bedroom_b_blind_slat_replacement",
+            "move_out_re_cleaning"
+          ]
+        },
+        {
+          "check_id": "excluded_items.contains.april_electric_after_moveout",
+          "field": "excluded_items",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "april_electric_after_moveout",
+          "actual": [
+            "preliminary_paint_estimate"
+          ]
+        },
+        {
+          "check_id": "excluded_items.contains.balcony_screen_weather_damage",
+          "field": "excluded_items",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "balcony_screen_weather_damage",
+          "actual": [
+            "preliminary_paint_estimate"
+          ]
+        },
+        {
+          "check_id": "excluded_items.contains.carpet_replacement_preexisting",
+          "field": "excluded_items",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "carpet_replacement_preexisting",
+          "actual": [
+            "preliminary_paint_estimate"
+          ]
+        },
+        {
+          "check_id": "excluded_items.contains.preliminary_paint_estimate",
+          "field": "excluded_items",
+          "type": "set_contains",
+          "correct": true,
+          "expected": "preliminary_paint_estimate",
+          "actual": [
+            "preliminary_paint_estimate"
+          ]
+        },
+        {
+          "check_id": "excluded_items.contains.router_cable_unapproved",
+          "field": "excluded_items",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "router_cable_unapproved",
+          "actual": [
+            "preliminary_paint_estimate"
+          ]
+        },
+        {
+          "check_id": "excluded_items.contains.streaming_personal_subscription",
+          "field": "excluded_items",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "streaming_personal_subscription",
+          "actual": [
+            "preliminary_paint_estimate"
+          ]
+        },
+        {
+          "check_id": "excluded_items.contains.unit_4c_deposit_row",
+          "field": "excluded_items",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "unit_4c_deposit_row",
+          "actual": [
+            "preliminary_paint_estimate"
+          ]
+        },
+        {
+          "check_id": "excluded_items.contains.unit_4c_parking_remote",
+          "field": "excluded_items",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "unit_4c_parking_remote",
+          "actual": [
+            "preliminary_paint_estimate"
+          ]
+        },
+        {
+          "check_id": "excluded_items.contains.voided_alex_topup",
+          "field": "excluded_items",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "voided_alex_topup",
+          "actual": [
+            "preliminary_paint_estimate"
+          ]
+        },
+        {
+          "check_id": "excluded_items.no_unexpected_items",
+          "field": "excluded_items",
+          "type": "set_no_unexpected_items",
+          "correct": false,
+          "expected": [
+            "april_electric_after_moveout",
+            "balcony_screen_weather_damage",
+            "carpet_replacement_preexisting",
+            "preliminary_paint_estimate",
+            "router_cable_unapproved",
+            "streaming_personal_subscription",
+            "unit_4c_deposit_row",
+            "unit_4c_parking_remote",
+            "voided_alex_topup"
+          ],
+          "actual": [
+            "preliminary_paint_estimate"
+          ],
+          "unexpected": [
+            "balcony_screen_repair",
+            "hall_carpet_replacement_estimate",
+            "parking_remote_replacement"
+          ]
+        },
+        {
+          "check_id": "utility_adjustments_applied.contains.electric_march_equal_split_with_ev_alex",
+          "field": "utility_adjustments_applied",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "electric_march_equal_split_with_ev_alex",
+          "actual": []
+        },
+        {
+          "check_id": "utility_adjustments_applied.contains.internet_march_equal_split",
+          "field": "utility_adjustments_applied",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "internet_march_equal_split",
+          "actual": []
+        },
+        {
+          "check_id": "utility_adjustments_applied.contains.water_trash_march_equal_split",
+          "field": "utility_adjustments_applied",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "water_trash_march_equal_split",
+          "actual": []
+        },
+        {
+          "check_id": "utility_adjustments_applied.no_unexpected_items",
+          "field": "utility_adjustments_applied",
+          "type": "set_no_unexpected_items",
+          "correct": false,
+          "expected": [
+            "electric_march_equal_split_with_ev_alex",
+            "internet_march_equal_split",
+            "water_trash_march_equal_split"
+          ],
+          "actual": [],
+          "unexpected": [
+            "electricity_split",
+            "ev_charging_addon",
+            "internet_split",
+            "water_trash_split"
+          ]
+        },
+        {
+          "check_id": "risk_flags.contains.preliminary_estimate_conflict",
+          "field": "risk_flags",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "preliminary_estimate_conflict",
+          "actual": []
+        },
+        {
+          "check_id": "risk_flags.contains.refund_check_to_lead_tenant",
+          "field": "risk_flags",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "refund_check_to_lead_tenant",
+          "actual": []
+        },
+        {
+          "check_id": "risk_flags.contains.roommate_reimbursement_needed",
+          "field": "risk_flags",
+          "type": "set_contains",
+          "correct": false,
+          "expected": "roommate_reimbursement_needed",
+          "actual": []
+        },
+        {
+          "check_id": "risk_flags.no_unexpected_items",
+          "field": "risk_flags",
+          "type": "set_no_unexpected_items",
+          "correct": false,
+          "expected": [
+            "preliminary_estimate_conflict",
+            "refund_check_to_lead_tenant",
+            "roommate_reimbursement_needed"
+          ],
+          "actual": [],
+          "unexpected": [
+            "unassigned_responsibility_deduction",
+            "unverified_damage_claim"
+          ]
+        }
+      ]
+    }
+  },
+  "latency_sec": 100.95,
+  "error": null
+}

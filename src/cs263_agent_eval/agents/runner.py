@@ -139,7 +139,16 @@ def run_single_agent(task: BenchmarkTask, llm: Any, system_name: SystemName) -> 
     try:
         result = agent.invoke(
             {"messages": [{"role": "user", "content": task.instruction}]},
-            config={"recursion_limit": settings.max_agent_steps * 3},
+            config={
+                "recursion_limit": settings.max_agent_steps * 3,
+                "run_name": f"{system_name}:{task.task_id}",
+                "tags": [system_name, task.task_id, task.difficulty],
+                "metadata": {
+                    "task_id": task.task_id,
+                    "system_name": system_name,
+                    "difficulty": task.difficulty,
+                },
+            },
         )
         latency = time.time() - started
         messages = result.get("messages", [])
