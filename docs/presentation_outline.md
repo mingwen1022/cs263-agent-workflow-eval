@@ -131,19 +131,19 @@ DB: order status → "exchange_requested" ✓
 
 **Script（英文）**：
 
-> "We used multi-turn customer service as our test setting — the agent has to handle things like exchanges and cancellations across a 15-turn conversation, calling the right tools in the right order.
+> "We started by building our own dataset — enterprise workflow tasks like budget variance analysis or invoice review, where the agent reads multiple documents and produces a structured JSON output. We scored it by checking how many fields matched the gold answer.
 >
-> We actually started by building our own dataset. But we quickly ran into a problem: our instructions were ambiguous. A model could give a totally reasonable answer that just happened not to match our gold standard — and score zero. That makes the evaluation itself unreliable.
+> But we ran into a fundamental problem: ambiguity. The instructions had edge cases that supported multiple valid interpretations. A model could give a totally reasonable answer and still score zero because it didn't match our specific gold standard. That makes the evaluation unreliable — you're not measuring the model, you're measuring how well it guesses your annotation decisions.
 >
-> So we switched to tau2-bench retail. All 50 tasks share the same policy document and the same database, so the ground truth is unambiguous — either the database changed correctly, or it didn't. We tested two models: Gemini 2.5 Flash via the API, and gemma4:e4b running locally."
+> So we switched to tau2-bench retail — a multi-turn customer service benchmark where an agent handles exchanges, returns, and cancellations. The key difference: all 50 tasks share the same retail policy and the same database. Ground truth is unambiguous — either the database changed correctly, or it didn't. 50 tasks, 16 tools, two models: Gemini 2.5 Flash via API, and gemma4:e4b running locally."
 
 **Script（中文）**：
 
-> "我们用多轮客服作为测试场景——agent 需要在十几轮对话里处理换货、取消之类的操作，按正确顺序调用工具。
+> "我们一开始自己构建了数据集——企业工作流类型的任务，比如预算差异分析、发票审核，agent 需要读多份文档，然后输出一个结构化的 JSON。评分就是看有多少字段和标准答案匹配。
 >
-> 一开始我们自己构建了数据集。但很快发现一个问题：我们的 instruction 有歧义，模型给出了完全合理的答案，却因为和我们定的标准答案不一样得了零分。这让评测本身就不可靠了。
+> 但很快遇到了一个根本性问题：歧义。我们的 instruction 有边界情况，可以支持多种合理的解读。模型给出了完全合理的答案，但和我们手写的标准答案不一样，就得了零分。这其实测的不是模型，而是模型有没有猜中我们标注时的想法。评测本身就不可靠了。
 >
-> 所以我们换成了 tau2-bench retail。所有 50 个任务共享同一份 policy 文档和同一个数据库，ground truth 没有歧义——数据库要么改对了，要么没有。我们测了两个模型：Gemini 2.5 Flash 走 API，gemma4:e4b 本地跑。"
+> 所以我们换成了 tau2-bench retail——一个多轮客服的 benchmark，agent 负责处理换货、退货、取消订单这类操作。关键区别在于：所有 50 个任务共享同一份 policy 文档和同一个数据库，ground truth 没有歧义——数据库要么改对了，要么没有。50 个任务，16 个工具，两个模型：Gemini 2.5 Flash 走 API，gemma4:e4b 本地跑。"
 
 ---
 
