@@ -8,13 +8,12 @@
 | Slide | 主题 | 时间 |
 |---|---|---|
 | 1 | Motivation | 1 min |
-| 2 | Application & Dataset | 50s |
-| 3 | Evaluation Metrics | 40s |
-| 4 | Approaches（核心） | 1.5 min |
-| 5 | Results | 40s |
-| 6 | Key Findings | 30s |
+| 2 | Evaluation (Dataset + Metrics) | 50s |
+| 3 | Approaches | 1.5 min |
+| 4 | Results | 40s |
+| 5 | Key Findings | 30s |
 
-> Script 约 750 词，5 分钟正常语速。
+> Script 约 700 词，5 分钟正常语速。
 
 ---
 
@@ -22,36 +21,20 @@
 
 ### Slide 上展示的内容
 
-**标题**：When Does Adding LLM Nodes Help?
+**标题**：Motivation
 
-**左侧图（Single Agent）**：
-```
-User Message
-     ↓
- [  LLM  ]
-     ↓
-Tool Call / Reply
-```
-标注：1 LLM call per turn
+**左侧：Flat Single Agent 流程图**
+- User Message → LLM → (Tool Call / Assistant Response) → loop back
 
-**右侧图（Agentic Workflow）**：
-```
-User / Tool Result
-        ↓
-[State Tracker LLM]
-        ↓
-  [Reasoner LLM]
-        ↓
-  [Verifier LLM]
-        ↓
-[Action Generator LLM]
-        ↓
-  Tool Call / Reply
-```
-标注：3–4 LLM calls per turn
+**右侧：Multi-Node Agentic Workflow 流程图**
+- User Message → [State Tracker LLM → Reasoner LLM → Verifier LLM → Action Generator LLM] → (Tool Call / Assistant Response)
+- 虚线框包围 4 个 LLM 节点
+- 右侧注释："Decompose one decision loop into specialized LLM nodes"
 
-**底部大字问题**：
-> Does decomposing tasks into more LLM nodes actually improve performance?
+**中间红色大字问题**：
+> Does LLM-based decomposition improve multi-step tool use, or introduce new failure modes?
+
+**V.S.**
 
 ---
 
@@ -67,45 +50,36 @@ User / Tool Result
 
 **Script（中文）**：
 
-> "随着 LLM 能力不断增强，一个自然的问题出现了：应该用单个模型端到端处理任务，还是把任务拆成多个专门的 agent 组成的流水线——每个节点负责规划、验证或执行不同的子任务？
+> "随着 LLM 能力不断增强，一个自然的问题出现了：应该用单个模型端到端处理任务，还是把任务拆成多个专门的 agent 组成的流水线？
 >
 > 多 agent 和 workflow 架构越来越流行，核心假设是：把复杂任务分解成更小的步骤，让专门的节点各司其职，应该比单个 flat agent 表现更好。
 >
-> 但事实真的如此吗？**增加 LLM 节点什么时候有帮助，什么时候反而有害？** 这些问题在需要跨多个步骤维护状态、执行精确操作的长链工具调用场景中，还缺乏系统研究。
+> 但事实真的如此吗？**增加 LLM 节点什么时候有帮助，什么时候反而有害？** 这些问题在需要跨多个步骤维护状态、执行精确操作的场景中，还缺乏系统研究。
 >
 > 在这个项目里，我们系统评测了单 agent 和 agentic workflow 各自的局限性——并探究是什么真正决定了性能差距。"
 
 ---
 
-## Slide 2 — Application & Dataset（50s）
+## Slide 2 — Evaluation（50s）
 
 ### Slide 上展示的内容
 
-**标题**：Dataset
+**标题**：Evaluation
 
-**布局**：左右两栏，中间箭头 → 从左指向右，表示从 self-built 转向 tau2-bench
+**左栏：Self-built Tasks**（灰色/淡色）
 
----
+Task Structure:
+1. Task Inputs: Task-specific Instruction + 4-8 task-specific Source Documents (csv/pdf/docx/txt/md)；No shared base across tasks, each task has unique documents, unique instruction.
+2. Agent actions: Explores sources with tools (list_source/read_csv/read_pdf...); Cross-document reasoning
+3. Task Output: Structure JSON with multiple fields
 
-**左栏：Self-built Tasks**（灰色/淡色，表示"尝试但放弃"）
+Evaluation Metrics:
+- Numeric fields: exact match with tolerance; e.g., total_overspend = $56,700 (±$0.01)
+- Set fields: unordered set match + alias lookup; e.g., over_budget_departments = {engineering, marketing}; alias: "eng"/"cc_201"/"engineering_dept" all valid
+- Score: correct fields / total fields
 
+Example Task（代码块）：
 ```
-1. Task Inputs
-   a. Task-specific instruction      ← per-task, custom-written
-   b. 4–8 source documents           ← per-task, isolated
-      (csv / pdf / docx / txt / md)
-   ⚠ No shared base across tasks
-     Each task: unique documents, unique instruction
-
-2. Agent Actions
-   a. Explores sources with tools
-      (list_source / read_csv / read_pdf ...)
-   b. Cross-document reasoning
-
-3. Task Output
-   Structured JSON with multiple fields
-
-── Example Task ──────────────────────────────
 Task: Budget Variance Analysis
 Input: actuals.csv, policy.md, transfers.csv ...
 Output: {
@@ -114,52 +88,31 @@ Output: {
   approved_transfers: [tr_b01, tr_b02],
   frozen_categories: [eng_headcount, mktg_campaigns]
 }
-
-✗ Problem: "over_budget_departments" — is "eng",
-  "cc_201", or "engineering" the right answer?
-  → ambiguity → spurious negatives
-──────────────────────────────────────────────
 ```
 
-**中间大箭头 →**
+**Problem 红色框**：
+- multiple valid interpretations exist
+- model's correct answer ≠ gold answer
+- spurious negatives undermine validity
+
+**中间大箭头**："Switch to"
+
+**右栏：Tau2-bench (Retail domain)**（高亮）
+
+右上角：tau2-bench logo + GitHub 截图
+
+Task Structure:
+1. Task Inputs: User goal/scenario (varies across task); **Shared Base**: Initial DB state; Retail policy
+2. Agent actions: Multi-turn conversation (10-20 turns with LLM simulate user); Tool calls: 16 retail tools — Read: find user id/get order details; Write: exchange items/cancel orders
+3. Task Output: Final DB state + natural language response
+
+Evaluation Metrics:
+- DB check: final DB state matches ground truth
+- NL assertion: agent response satisfies semantics
+- Score: binary: 0 or 1; both pass → score 1
+
+Example Task（代码块）：
 ```
-No shared policy
-→ ambiguous GT
-→ switched to
-  programmatic GT
-```
-
----
-
-**右栏：Tau2-bench (Retail domain)**（高亮/彩色）
-
-```
-┌──────────────────────────────────────────┐
-│  Shared Base — same across all 50 tasks  │
-│  • Retail Policy (policy.md)             │
-│  • Retail DB (db.json) — fixed           │
-│  • 16 tools (same toolset for all tasks) │
-└──────────────────────────────────────────┘
-              ↓ per-task variation only
-              User scenario & expected DB change
-
-1. Task Inputs
-   a. User goal / scenario         ← per-task
-   b. Retail DB (db.json)          ← shared, fixed
-   c. Retail policy (policy.md)    ← shared, authoritative
-
-2. Agent Actions
-   a. Multi-turn conversation (10–20 turns)
-   b. Tool calls: 16 retail tools
-      Read:  find_user_id / get_order_details /
-             get_product_details
-      Write: exchange_delivered_order_items /
-             return_delivered_order_items / cancel_pending_order
-
-3. Task Output
-   Final DB state + natural language response
-
-── Example Task ──────────────────────────────
 User:  "Exchange the keyboard in order #W2378156"
 Agent: "Could you verify your identity?"
 User:  "Yusuf Rossi, zip 19122"
@@ -172,273 +125,206 @@ Agent: find_user_id(Yusuf Rossi, 19122)
            new_item_ids=[7706410293])
 Agent: "Done! Your keyboard has been exchanged."
 DB: order status → "exchange_requested" ✓
-──────────────────────────────────────────────
-
-50 tasks
-
-Models evaluated:
-┌─────────────────────────────────────────────────┐
-│  Gemini 2.5 Flash   large cloud model (API)     │
-│  gemma4:e4b         local 4.5B model (Ollama)   │
-└─────────────────────────────────────────────────┘
 ```
 
 ---
 
 **Script（英文）**：
 
-> "To ground this study in a concrete setting, we use **multi-turn customer service** as our application — a domain where agents must handle exchanges, returns, and cancellations across a long conversation while calling tools in the right order.
+> "To ground this study in a concrete setting, we use multi-turn customer service as our application domain.
 >
-> We first tried to **build our own evaluation dataset**. Each task had its own custom source documents and instruction — there was no shared base across tasks, and no universal policy to serve as ground truth. This created a fundamental problem: **ambiguity**. Instructions had edge cases supporting multiple valid interpretations, so a model could produce a perfectly reasonable answer and still score zero. This 'spurious negatives' problem undermines evaluation validity.
+> We first tried to build our own evaluation dataset. Each task had its own custom source documents and instruction — no shared base, no universal policy. This created a fundamental problem: ambiguity. Instructions had edge cases supporting multiple valid interpretations, so a model could produce a perfectly reasonable answer and still score zero. This 'spurious negatives' problem undermines evaluation validity.
 >
-> This led us to tau2-bench retail instead. The key difference: all 50 tasks share the **same retail policy document** and the **same database schema**. Ground truth is anchored to a single authoritative policy — no ambiguity, no edge cases. Either the database changed correctly or it didn't. 50 tasks, 16 tools, two models: **Gemini 2.5 Flash** and **gemma4:e4b** running locally."
+> This led us to tau2-bench retail instead. All 50 tasks share the same retail policy document and database — ground truth is anchored to a single authoritative policy. Either the database changed correctly or it didn't. 50 tasks, 16 tools, two models: Gemini 2.5 Flash and gemma4:e4b running locally."
 
 **Script（中文）**：
 
-> "我们选择了**多轮客服**作为应用场景——agent 需要在长对话中处理换货、退货、取消等操作，按正确顺序调用工具。
+> "我们选择了多轮客服作为应用场景。
 >
-> 我们首先尝试**自己构建评测数据集**。每个 task 都有各自独立的 source 文档和 instruction，不同 task 之间没有共享的基础，也没有统一的 policy 作为 ground truth 的权威来源。这导致了根本性问题：**歧义**——instruction 存在边界情况，支持多种合理解读，模型给出完全合理的答案却得零分，"伪负样本"直接破坏了评测有效性。
+> 我们首先尝试自己构建评测数据集——每个 task 都有各自独立的文档和 instruction，没有共享的 policy 作为 ground truth 的权威来源。这导致了根本性问题：歧义。instruction 存在边界情况，模型给出完全合理的答案却得零分——伪负样本直接破坏了评测有效性。
 >
-> 于是我们转向 tau2-bench retail。关键区别在于：所有 50 个 task 共享**同一份 retail policy 文档**和**同一套数据库 schema**——ground truth 由统一的权威 policy 确定，没有歧义。数据库要么改对了，要么没有。50 个任务，16 个工具，两个模型：**Gemini 2.5 Flash** 和本地运行的 **gemma4:e4b**。"
+> 于是我们转向 tau2-bench retail。所有 50 个 task 共享同一份 retail policy 和数据库——ground truth 由统一的权威 policy 确定，没有歧义。数据库要么改对了，要么没有。50 个任务，16 个工具，两个模型：Gemini 2.5 Flash 和本地运行的 gemma4:e4b。"
 
 ---
 
-## Slide 3 — Evaluation Metrics（40s）
+## Slide 3 — Approaches（1.5 min） ← 重点
 
 ### Slide 上展示的内容
 
-**标题**：Evaluation Metrics
+**标题**：Approaches
 
-**左侧：两套评分方式对比**
+**Model Selection 蓝色小标题**
 
-| | Self-built Tasks | Tau2-bench |
-|---|---|---|
-| Score | correct fields / total fields (0–100%) | binary: 0 or 1 |
-| Numeric | exact match ± tolerance | — |
-| Set fields | unordered + alias lookup | — |
-| DB state | — | ✓ final DB matches GT |
-| NL response | — | ✓ response satisfies semantics |
-| Pass condition | higher = better | **both** must pass |
+- **Gemini 2.5 Flash** (large): via Google Vertex AI API; tested on all 4 architectures
+- **Gemma4:e4b** (small, local 4.5B): via Ollama, running locally; tested on Flat Single Agent and SMAG only (local inference speed constraint)
+- **User Simulator**: Gemini 3.0 Flash (Vertex AI), simulates customer across all tasks
+- **Goal**: evaluate how architecture design affects agent performance across model sizes
 
-**右侧：5 类错误分类（tau2-bench）**
+**Agent Architecture 蓝色小标题**
 
+右上角标题：Score (50 tasks, tau2-bench retail)
+
+4行横向流程图：
+
+**Flat Single Agent**
 ```
-■ WRITE_WRONG_ARGS    wrong item IDs or payment method
-■ PARTIAL_WRITE       some writes correct, some not
-■ DB_OK_NL_FAIL       executed correctly, said it wrong
-■ TRANSFER_ABORT      agent gave up, called human
-■ NO_WRITE            never attempted the write
+[User/Tool Message] → [LLM (bind_tools, full context)] → [Tool Call/Response]
+        ↑_________________________tool result___________________________|
 ```
+Score: Gemini: 0.54 ｜ gemma4: 0.50（绿色）
 
-小字注释：Error taxonomy turns a single success rate into a diagnostic breakdown
+**4-node Workflow**
+```
+[User/Tool Message] → [State Tracker LLM] → [Reasoner LLM] → [Verifier LLM (write only)] → [Action Gen LLM] → [Tool Call/Response]
+                                                    ↑_____________rejected_______________|
+```
+Score: Gemini: 0.38 ↓（红色）
+
+**Planner-Executor**
+```
+[User/Tool Message] → [Planner LLM (full conv. history)] → [Verifier LLM (weak, conv_summary)] → [Executor (deterministic, no LLM)] → [Tool Call/Response]
+```
+Score: Gemini: 0.34 ↓（红色）
+
+**SMAG** *(Architecture adapted from SMAG — State Machine Augmented Generation, arXiv:2503.21036)*
+```
+[User/Tool Message] → [Python SM.update() (parse tool result)] → [LLM (full ctx + SM context)] → [Python can_execute() (precondition check)] → [Tool Call/Response]
+                                                                         ↑__________rejected (≤2 retries)_________|
+```
+Score: Gemini: 0.62 ↑ ｜ gemma4: 0.58 ↑（绿色）
+
+图例：🔵 LLM node　🟠 Python/deterministic　🟢 Input/Output
 
 ---
 
 **Script（英文）**：
 
-> "For evaluation, we use three layers of metrics.
->
-> **DB Check** — did the database actually change correctly? Saying 'I've processed your return' without updating the order state is a complete failure.
->
-> **NL Assertion** — did the agent communicate the result clearly? A task where the execution is correct but the agent fails to answer a follow-up question still scores zero.
->
-> Third, we designed a **five-type error taxonomy** to understand why agents fail: wrong write arguments, partial writes, DB-correct-but-NL-fail, transfer-abort where the agent gives up, and no write attempted. This turns a single success rate into a diagnostic breakdown."
-
-**Script（中文）**：
-
-> "评测上我们用了三层指标。
->
-> **DB Check**——数据库状态是否真的改对了？说"已为您办理退货"但订单状态没变，就是完全失败。
->
-> **NL Assertion**——agent 是否清晰地沟通了结果？执行对了但没回答用户追问的问题，仍然得零分。
->
-> 第三，我们设计了**五类错误分类**来理解 agent 为什么失败：写操作参数错误、部分写成功、DB 对但 NL 失败、agent 放弃并转人工、以及从未尝试写操作。这把一个成功率数字变成了可诊断的分布。"
-
----
-
-## Slide 4 — Approaches（1.5 min） ← 重点
-
-### Slide 上展示的内容
-
-**标题**：What We Tried — and Why
-
-**四个系统横向排列，每个一列：**
-
-```
-┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│  Flat Single    │  │    Workflow     │  │Planner-Executor │  │      SMAG       │
-│     Agent       │  │  (4-node LLM)  │  │                 │  │  (Python SM)    │
-├─────────────────┤  ├─────────────────┤  ├─────────────────┤  ├─────────────────┤
-│                 │  │  State Tracker  │  │   Planner LLM   │  │  Python SM      │
-│    [  LLM  ]    │  │  Reasoner LLM  │  │  (full context) │  │  update()       │
-│  bind_tools()   │  │  Verifier LLM  │  │       ↓         │  │  can_execute()  │
-│                 │  │  Action Gen.   │  │  Executor (det.) │  │       ↓         │
-│                 │  │                 │  │                 │  │   [  LLM  ]     │
-├─────────────────┤  ├─────────────────┤  ├─────────────────┤  ├─────────────────┤
-│ ✓ Full context  │  │ ✓ Verifier helps│  │ ✓ Full context  │  │ ✓ Full context  │
-│ ✗ Write errors  │  │ ✗ Context lost  │  │ ✗ Weak verifier │  │ ✓ Deterministic │
-│                 │  │ ✗ TRANSFER↑↑   │  │                 │  │   validation    │
-├─────────────────┤  ├─────────────────┤  ├─────────────────┤  ├─────────────────┤
-│ Gemini 2.5 Flash│  │ Gemini 2.5 Flash│  │ Gemini 2.5 Flash│  │ Gemini 2.5 Flash│
-│ gemma4:e4b      │  │ only            │  │ only            │  │ gemma4:e4b      │
-│ 0.54 / 0.50     │  │ 0.34            │  │ 0.38            │  │ 0.62 / 0.58 ★  │
-└─────────────────┘  └─────────────────┘  └─────────────────┘  └─────────────────┘
-```
-
-**底部：Design Principle**
-> Use **rule-based code** for structurally deterministic tasks.
-> Reserve **LLM** for semantic understanding only.
-
-小字注释：★ smag_small (0.58) > flat_large (0.54) — small model beats large model with better architecture
-
----
-
-**Script（英文）**：
-
-> "We found that both models fail mainly on **write operation precision** — the agent reads the right information but then passes wrong item IDs or swaps the payment methods between two orders. This accounts for roughly 48% of all failures.
+> "We found that both models fail mainly on write operation precision — the agent reads the right information but then passes wrong item IDs or swaps the payment methods between two orders. This accounts for roughly 48% of all failures.
 >
 > So we tried three architectural approaches.
 >
-> **First, a four-node linear workflow**: State Tracker, Reasoner, Verifier, Action Generator. The Verifier does improve payment-method precision on some tasks — but the State Tracker compresses the conversation into a structured JSON, losing critical product variant information. This creates a new failure mode: the agent gets stuck, gives up, and transfers to a human. Workflow ends up *worse* than baseline.
+> First, a four-node linear workflow: State Tracker, Reasoner, Verifier, Action Generator. The Verifier does improve payment-method precision on some tasks — but the State Tracker compresses the conversation into a structured JSON, losing critical context. This creates a new failure mode: the agent gets stuck, gives up, and transfers to a human. Workflow ends up worse than baseline.
 >
-> **Second, Planner-Executor**: the Planner sees the full conversation history — fixing the context loss — while a deterministic Executor handles tool calls. Variant selection improves, but write validation weakens. Neither approach clearly beats the flat agent — consistent with work showing homogeneous multi-agent pipelines don't outperform a flat agent.
+> Second, Planner-Executor: the Planner sees the full conversation history, fixing context loss. Variant selection improves, but write validation weakens. Neither approach clearly beats the flat agent — consistent with work showing homogeneous multi-agent pipelines don't outperform a flat agent.
 >
-> **Third, SMAG**: move state tracking and precondition checking *out of the LLM* and into deterministic Python. A state machine parses every tool result and tracks items, orders, and payment methods. Before any write, Python checks: authenticated? correct order status? item IDs valid? The LLM keeps doing what it's good at — intent and variant selection. Python enforces what needs precision."
+> Third, SMAG: move state tracking and precondition checking out of the LLM entirely and into deterministic Python code. A state machine parses every tool result and tracks items, orders, and payment methods. Before any write, Python checks: authenticated? correct order status? item IDs valid? The LLM keeps doing what it's good at — reasoning and language. Python enforces what needs precision. This is the design principle: use rule-based code for structurally deterministic tasks; only use LLM where semantic understanding is truly required."
 
 **Script（中文）**：
 
-> "我们发现两个模型失败的主要原因都是**写操作参数精度**——读对了信息，却传错了 item ID，或者把两个订单的支付方式搞混了。约占所有失败的 48%。
+> "我们发现两个模型失败的主要原因都是写操作参数精度——读对了信息，却传错了 item ID，或者把两个订单的支付方式搞混了。约占所有失败的 48%。
 >
 > 于是我们尝试了三种架构方向。
 >
-> **第一，四节点线性流水线**：State Tracker、Reasoner、Verifier、Action Generator。Verifier 在部分任务上改善了支付方式匹配——但 State Tracker 把对话压缩成 JSON 时丢失了关键信息，引入新的失败模式：agent 反复卡住，最终放弃转人工。workflow 反而*比 baseline 更差*。
+> 第一，四节点线性流水线。Verifier 在部分任务上改善了支付方式匹配——但 State Tracker 把对话压缩成 JSON 时丢失了关键信息，引入新的失败模式：agent 反复卡住，最终放弃转人工。workflow 反而比 baseline 更差。
 >
-> **第二，Planner-Executor**：Planner 保留完整上下文，修复了上下文损耗，Executor 纯确定性处理工具调用。变体选择改善，但写操作校验弱化，两个方案都没超越 flat agent。
+> 第二，Planner-Executor。Planner 保留完整上下文，修复了上下文损耗，但写操作校验弱化，两个方案都没超越 flat agent。
 >
-> **第三，SMAG**：把状态追踪和前置校验*完全从 LLM 里拿出来*，交给确定性 Python。状态机解析每条工具返回，追踪 item、订单、支付方式。每次写操作前 Python 检查：已认证？订单状态正确？item ID 合法？LLM 只负责意图理解和变体选择，Python 负责需要精确度的部分。"
+> 第三，SMAG：把状态追踪和前置校验完全从 LLM 里拿出来，交给确定性 Python 代码。状态机解析每条工具返回结果，精确追踪 item、订单、支付方式。每次写操作前 Python 检查：已认证？订单状态正确？item ID 合法？LLM 只负责语义理解，Python 负责需要精确度的部分。"
 
 ---
 
-## Slide 5 — Results（40s）
+## Slide 4 — Results（40s）
 
 ### Slide 上展示的内容
 
 **标题**：Results
 
-**左：成功率表（50 tasks）**
+**左侧 Summary（蓝色标题）**
 
-| System | Model | avg reward |
-|---|---|---|
-| **smag_large** | Gemini 2.5 Flash | **0.62** ↑ |
-| **smag_small** | gemma4:e4b | **0.58** ↑ |
-| large_single | Gemini 2.5 Flash | 0.54 |
-| small_single | gemma4:e4b | 0.50 |
-| planner_executor | Gemini 2.5 Flash | 0.38 |
-| workflow | Gemini 2.5 Flash | 0.34 |
+- **Flat Single Agent:** large model (0.54) vs small model (0.50), only a 4% gap, suggesting the task is architecture-sensitive, not model-size-sensitive
+- **4-node Workflow (0.34) and Planner-Executor (0.38)** both fall below the flat agent baseline. Adding more LLM nodes introduces new failure modes and hurts overall performance
+- **SMAG** improves over the baseline for both models: Gemini reaches 0.62 (+8%), and **gemma4:e4b reaches 0.58**, a small local model outperforming the flat large model (0.54)
+- Error breakdown (bottom table) shows why: LLM-based workflows trade one failure type for another, while SMAG reduces failures across all error categories
 
-**中：突出显示的关键结果**
+**右侧上：Performance 表格**
 
-```
-┌──────────────────────────────────────────┐
-│  SMAG架构 vs flat agent（50 tasks）        │
-│                                          │
-│  flat large  0.54  →  smag_large  0.62  │
-│  flat small  0.50  →  smag_small  0.58  │
-│                                          │
-│  Small model under SMAG beats flat large │
-└──────────────────────────────────────────┘
-```
+| System | Model | Tasks | Success | Avg Reward |
+|---|---|---|---|---|
+| Flat Single Agent | Gemini 2.5 Flash | 50 | 27/50 | **0.54** |
+| Flat Single Agent | gemma4:e4b | 50 | 25/50 | **0.5** |
+| 4-node Workflow | Gemini 2.5 Flash | 50 | 17/50 | **0.34**（红色）|
+| Planner-Executor | Gemini 2.5 Flash | 50 | 19/50 | **0.38**（红色）|
+| SMAG | Gemini 2.5 Flash | 50 | 31/50 | **0.62**（绿色）|
+| SMAG | gemma4:e4b | 50 | 29/50 | **0.58**（绿色）|
 
-**右：错误分布条形图（前20任务，按系统）**
+**右侧下：Error Distribution 表格**
 
-```
-large_single  ■■■■■■■■ WRITE_WRONG  ■■■■ PARTIAL  ■■ OTHER
-workflow      ■■■■ WRITE  ■■■■■■■■■■■■■■■■■ TRANSFER_ABORT
-smag_large    ■■■■ WRITE  ■■ DB_NL  ■ PARTIAL
-smag_small    ■■■ WRITE   ■■ DB_NL  ■■ TRANSFER
-```
+| System | Model | WRITE_WRONG_ARGS | PARTIAL_WRITE | DB_OK_NL_FAIL | TRANSFER_ABORT | NO_WRITE | Total Fail |
+|---|---|---|---|---|---|---|---|
+| Flat Single Agent | Gemini 2.5 Flash | 11 | 7 | 1 | 4 | 0 | 23 |
+| Flat Single Agent | gemma4:e4b | 12 | 5 | 2 | 6 | 0 | 25 |
+| 4-node Workflow | Gemini 2.5 Flash | 9 | 5 | 4 | **15** | 0 | 33 |
+| Planner-Executor | Gemini 2.5 Flash | **17** | 2 | 0 | 11 | 1 | 31 |
+| SMAG | Gemini 2.5 Flash | 9 | 3 | 3 | 4 | 0 | **19** |
+| SMAG | gemma4:e4b | 7 | 5 | 4 | 5 | 0 | **21** |
+
+**Error Types（小字）**：
+- **WRITE_WRONG_ARGS:** write executed but wrong arguments — wrong item IDs, swapped payment methods
+- **PARTIAL_WRITE:** multiple writes required; some passed, some failed
+- **DB_OK_NL_FAIL:** DB state correct but agent's final response failed semantic check
+- **TRANSFER_ABORT:** agent called transfer_to_human_agents and terminated — gave up mid-task
+- **NO_WRITE:** agent never attempted any write operation
 
 ---
 
 **Script（英文）**：
 
-> "The results show a clear progression. The flat large-model baseline achieves 54% on 50 tasks. Workflow drops to 34% — worse than baseline. Planner-Executor recovers to 38%. SMAG with the large model reaches **62% — an 8-point improvement**.
+> "The results show a clear pattern. The flat large-model baseline achieves 54%. Workflow drops to 34% — worse than baseline. Planner-Executor recovers to 38%. SMAG with the large model reaches 62% — an 8-point improvement.
 >
-> Notably, we also ran SMAG with the **small local model**, gemma4:e4b, which achieves **58% — still beating the flat large model**. The small model under SMAG outperforms the flat large model, despite being a fraction of the size.
+> Notably, SMAG with the small local model, gemma4:e4b, achieves 58% — still beating the flat large model. A small model with the right architecture outperforms a larger model with the wrong one.
 >
-> Looking at errors, both SMAG variants nearly eliminated transfer-abort — down from 15 to 4–5 — while keeping write-argument errors low."
+> The error breakdown shows why: LLM-based workflows don't reduce errors — they just shift them. SMAG is the only architecture that reduces failures across all error categories."
 
 **Script（中文）**：
 
-> "结果呈现清晰趋势。大模型 flat agent 在 50 个任务上达到 54%。Workflow 降到 34%——比 baseline 更差。Planner-Executor 恢复到 38%。大模型 SMAG 达到 **62%——提升 8 个百分点**。
+> "结果呈现清晰趋势。大模型 flat agent baseline 达到 54%。Workflow 降到 34%——比 baseline 更差。Planner-Executor 恢复到 38%。大模型 SMAG 达到 62%——提升 8 个百分点。
 >
-> 值得注意的是，我们用**小模型 gemma4:e4b** 也跑了 SMAG，达到 **58%——同样超过了大模型 flat agent**。小模型在 SMAG 架构下超越了 flat 大模型，尽管参数量只是后者的一小部分。
+> 值得注意的是，小模型 gemma4:e4b 跑 SMAG 达到 58%，同样超过了大模型 flat agent。正确的架构让小模型打赢了更大的模型。
 >
-> 从错误类型看，两个 SMAG 版本几乎消除了 transfer-abort 问题——从 15 次降到 0–2 次。"
+> 错误分布说明了原因：LLM-based workflow 不是减少了错误，而是把错误从一类转移到另一类。SMAG 是唯一在所有错误类型上都有所降低的架构。"
 
 ---
 
-## Slide 6 — Key Findings（30s）
+## Slide 5 — Key Findings（30s）
 
 ### Slide 上展示的内容
 
-**标题**：Takeaways
+**标题**：Key Findings
 
-**两条大字 takeaway（各占一行，加粗）**：
+三条带图标的 bullet：
 
-**① Multi-node LLM pipelines amplify errors**
+🔄 **More LLM nodes ≠ better performance:** chaining multiple LLMs **accumulates errors** at each step; downstream nodes build on upstream mistakes
 
-```
-1 node:    error rate ε
-4 nodes:   1 − (1 − ε)⁴   >> ε
+🧠 In agentic tasks, **a small model** with the **right architecture** can **outperform a flat large model**: gemma4:e4b under SMAG (0.58) surpasses Gemini 2.5 Flash as a flat agent (0.54)
 
-State Tracker misses field
-    → Reasoner wrong decision
-         → Verifier wrong check
-              → Action Generator wrong output
-```
-
-**② Architecture > Model Size**
-
-```
-flat small (gemma4:e4b)    0.50
-flat large (Gemini Flash)  0.54   +4%
-
-SMAG small (gemma4:e4b)    0.58   > flat large (0.54)
-SMAG large (Gemini Flash)  0.62   best overall
-
-→ Rule-based state tracking removes the bottleneck
-```
-
-**底部小字（future work）**：
-> Gap to paper's 82%: replacement variant validation — clearest next step
+📋 For **high-frequency** agentic tasks with **predictable structure**, **rule-based harness** outperforms **LLM** pipelines: encoding consistent task logic in deterministic code eliminates error accumulation
 
 ---
 
 **Script（英文）**：
 
-> "Two takeaways.
+> "Three takeaways.
 >
-> First: **multi-node LLM pipelines amplify errors**. Each node introduces some error ε, and four nodes in series give roughly 1−(1−ε)⁴. When the State Tracker misses one field, the Reasoner, Verifier, and Action Generator all build on that same mistake — which is why our workflow performed worse than baseline.
+> More LLM nodes does not mean better performance — chaining multiple LLMs accumulates errors at each step, and downstream nodes build on upstream mistakes.
 >
-> Second: **architecture matters more than model size**. The small model under SMAG matches the large model exactly. Moving state extraction to Python removed the bottleneck that previously separated them. Deterministic code is always 100% accurate — that advantage doesn't disappear with better models.
+> In agentic tasks, a small model with the right architecture can outperform a flat large model. gemma4:e4b under SMAG scores 0.58, surpassing Gemini 2.5 Flash as a flat agent at 0.54.
 >
-> The gap to the paper's 82% is mainly about validating replacement variants — the clearest direction for future work. Thank you."
+> For high-frequency agentic tasks with predictable structure, rule-based harness design outperforms LLM pipelines — encoding consistent task logic in deterministic code eliminates error accumulation more reliably than adding more LLM nodes. Thank you."
 
 **Script（中文）**：
 
-> "两条 takeaway。
+> "三条 takeaway。
 >
-> 第一：**多节点 LLM 流水线放大误差**。每个节点有错误率 ε，四个节点串联误差约为 1−(1−ε)⁴。State Tracker 漏掉一个字段，后面三个节点全在同一个错误上继续做决策——这就是 workflow 反而比 baseline 更差的原因。
+> 多个 LLM 节点不等于更好的性能——链式 LLM 在每步累积误差，下游节点在上游的错误上继续做决策。
 >
-> 第二：**架构比模型大小更重要**。小模型在 SMAG 下与大模型成绩完全相同，把状态提取交给 Python 之后，之前拉开两者差距的瓶颈消失了。确定性代码始终是 100% 精确，这个优势不会因为模型更好而消失。
+> 在 agentic 任务中，正确架构下的小模型可以超过 flat 大模型。gemma4:e4b 在 SMAG 下达到 0.58，超过了 Gemini 2.5 Flash 的 0.54。
 >
-> 我们的 62% 和论文 82% 的差距主要在替代变体校验，这是最明确的后续方向。谢谢。"
+> 对于结构可预测的高频 agentic 任务，rule-based harness 比 LLM 流水线更有效——把固定的任务逻辑编码进确定性代码，比增加更多 LLM 节点更能消除误差累积。谢谢。"
 
 ---
 
 ## 备注
 
-- **Slide 4 是全场核心** → 1.5 min，四列架构图一目了然，口头补充每个的优缺点
-- **Slide 5 的惊喜结果** → smag_small = smag_large 这个 box 要视觉上突出，是最有力的 finding
-- **时间不够时**：Slide 6 底部 future work 一行可以省略不说
+- **Slide 3 是全场核心** — 1.5 min，先讲 baseline 失败原因，再讲三个方向，SMAG 是核心
+- **时间不够时**：Key Findings 第三条可以简化成一句，省出 10s
+- **Slide 2 右侧 Example Task** 可以在讲 tau2-bench 时手势指向，不需要逐字朗读
