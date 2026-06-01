@@ -143,13 +143,13 @@ No shared policy
 │  • 16 tools (same toolset for all tasks) │
 └──────────────────────────────────────────┘
               ↓ per-task variation only
-       User scenario & initial DB state
+              User scenario & expected DB change
 
 1. Task Inputs
-   a. User goal / scenario
+   a. User goal / scenario         ← per-task
       (e.g., return, exchange, cancel, modify)
-   b. Initial DB state (per-task)
-   c. Retail policy ← shared, authoritative
+   b. Retail DB (db.json)          ← shared, fixed
+   c. Retail policy (policy.md)    ← shared, authoritative
 
 2. Agent Actions
    a. Multi-turn conversation (10–20 turns)
