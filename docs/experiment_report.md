@@ -79,21 +79,11 @@
 | 系统 | 模型 | 成功数 | avg reward | 每轮 LLM 调用 |
 |---|---|---|---|---|
 | **smag_large** | Gemini 2.5 Flash | **31/50** | **0.62** | 1-2 |
+| **smag_small** | gemma4:e4b | **29/50** | **0.58** | 1-2 |
 | large_single | Gemini 2.5 Flash | 27/50 | 0.54 | 1 |
 | small_single | gemma4:e4b | 25/50 | 0.50 | 1 |
 | planner_executor | Gemini 2.5 Flash | 19/50 | 0.38 | 1-2 |
 | workflow | Gemini 2.5 Flash | 17/50 | 0.34 | 3-4 |
-
-**前 20 任务（开发集，用于迭代调试 + smag_small 结果）**
-
-| 系统 | 模型 | 成功数 | avg reward |
-|---|---|---|---|
-| **smag_large** | Gemini 2.5 Flash | **13/20** | **0.65** |
-| **smag_small** | gemma4:e4b | **13/20** | **0.65** |
-| large_single | Gemini 2.5 Flash | 10/20 | 0.50 |
-| small_single | gemma4:e4b | 10/20 | 0.50 |
-| workflow | Gemini 2.5 Flash | 9/20 | 0.45 |
-| planner_executor | Gemini 2.5 Flash | 8/20 | 0.40 |
 
 ### 3.2 细粒度指标（前 20 任务，Partial Action Reward）
 
@@ -166,35 +156,37 @@ tau2-bench 对每个工具调用独立评分，可拆分为 read accuracy 和 wr
 | DB_OK_NL_FAIL | 1 | 1 | 3 | 0 | 2 | 2 |
 | TRANSFER_ABORT | 1 | 1 | 5 | 2 | 0 | 2 |
 
-**smag_small 关键发现**：smag_small 与 smag_large 成绩完全相同（13/20 = 0.65），均比对应的 flat single agent（0.50）提升 **+15%**。这说明 SMAG 架构将状态追踪的负担从 LLM 移到 Python 后，模型大小对成功率的影响大幅降低——小模型在 SMAG 架构下能完全追上大模型。
+**smag_small 关键发现（完整 50 任务）**：smag_small 达到 29/50 = **0.58**，smag_large 达到 31/50 = **0.62**。两者均超过 large_single（0.54）和 small_single（0.50）baseline。在前 20 个开发任务上两者持平（均为 0.65），后 30 个任务上 smag_large 略高于 smag_small，说明在更复杂的任务上大模型的语义推理仍有优势。
 
 ### 4.3 完整 50 任务错误分布（最终结果）
 
-| 错误类型 | large_single | small_single | workflow | planner_executor | **smag_large** |
-|---|---|---|---|---|---|
-| **SUCCESS** | **27** | **25** | 17 | 19 | **31** |
-| WRITE_WRONG_ARGS | 11 | 12 | 9 | **17** | 9 |
-| PARTIAL_WRITE | 7 | 5 | 5 | 2 | 3 |
-| DB_OK_NL_FAIL | 1 | 2 | 4 | 0 | 3 |
-| TRANSFER_ABORT | 4 | 6 | **15** | **11** | 4 |
-| NO_WRITE | 0 | 0 | 0 | 1 | 0 |
-| **失败合计** | 23 | 25 | 33 | 31 | **19** |
+| 错误类型 | large_single | small_single | workflow | planner_exec | smag_large | **smag_small** |
+|---|---|---|---|---|---|---|
+| **SUCCESS** | 27 | 25 | 17 | 19 | **31** | **29** |
+| WRITE_WRONG_ARGS | 11 | 12 | 9 | **17** | 9 | 7 |
+| PARTIAL_WRITE | 7 | 5 | 5 | 2 | 3 | 5 |
+| DB_OK_NL_FAIL | 1 | 2 | 4 | 0 | 3 | 4 |
+| TRANSFER_ABORT | 4 | 6 | **15** | **11** | 4 | 5 |
+| NO_WRITE | 0 | 0 | 0 | 1 | 0 | 0 |
+| **失败合计** | 23 | 25 | 33 | 31 | **19** | **21** |
 
-### 4.3 各系统错误特征对比（占失败任务的比例）
+### 4.4 各系统错误特征对比（占失败任务比例）
 
 ```
-large_single:   WRITE_WRONG_ARGS ████████████ 48%  PARTIAL ██████ 30%  TRANSFER ████ 17%  DB_NL ██ 4%
-small_single:   WRITE_WRONG_ARGS ████████████ 48%  PARTIAL ████ 20%  TRANSFER ████████ 24%  DB_NL ██ 8%
-workflow:       TRANSFER_ABORT ██████████████████ 45%  WRITE_WRONG ████████ 27%  PARTIAL ████ 15%  DB_NL ████ 12%
-planner_exec:   WRITE_WRONG_ARGS ████████████████████████ 55%  TRANSFER ████████████ 35%  PARTIAL ██ 6%
-smag:           WRITE_WRONG_ARGS ████████████ 47%  DB_NL ████████ 16%  PARTIAL ████████ 16%  TRANSFER ████████ 21%
+large_single:  WRITE_WRONG ████████████ 48%  PARTIAL ██████ 30%  TRANSFER ████ 17%  DB_NL ██ 4%
+small_single:  WRITE_WRONG ████████████ 48%  PARTIAL ████ 20%  TRANSFER ████████ 24%  DB_NL ██ 8%
+workflow:      TRANSFER ██████████████████ 45%  WRITE_WRONG ████████ 27%  PARTIAL ████ 15%  DB_NL ████ 12%
+planner_exec:  WRITE_WRONG ████████████████████████ 55%  TRANSFER ████████████ 35%  PARTIAL ██ 6%
+smag_large:    WRITE_WRONG ████████████ 47%  DB_NL ████████ 16%  PARTIAL ████████ 16%  TRANSFER ████████ 21%
+smag_small:    WRITE_WRONG ████████ 33%  PARTIAL ████████ 24%  TRANSFER ████████ 24%  DB_NL ████████ 19%
 ```
 
 **关键发现**：
 - **single agent**：WRITE_WRONG_ARGS 是主要失败类型（48%），写参数精度是核心瓶颈
-- **workflow**：TRANSFER_ABORT 异常高（45%），是引入的新失败模式——State Tracker 上下文损耗导致 Reasoner 误判任务无法完成，调用 transfer 放弃
-- **planner_executor**：WRITE_WRONG_ARGS 最高（55%）+ TRANSFER_ABORT（35%），Verifier 弱化导致写参数错更多，同时依然有放弃问题
-- **smag**：WRITE_WRONG_ARGS 降到与 large_single 相同（47%），TRANSFER_ABORT 降至 21%（与 single agent 接近），是所有架构中错误分布最均衡的
+- **workflow**：TRANSFER_ABORT 异常高（45%），LLM State Tracker 上下文损耗导致 Reasoner 误判任务无法完成
+- **planner_executor**：WRITE_WRONG_ARGS 最高（55%）+ TRANSFER_ABORT（35%），Verifier 弱化是主因
+- **smag_large**：TRANSFER_ABORT 降到与 single agent 相近（21%），错误分布最均衡
+- **smag_small**：WRITE_WRONG_ARGS 比所有系统都低（33%），Python 状态机的确定性校验在写参数精度上效果显著；TRANSFER_ABORT 略高于 smag_large，说明小模型在复杂任务中仍更容易放弃
 
 ---
 

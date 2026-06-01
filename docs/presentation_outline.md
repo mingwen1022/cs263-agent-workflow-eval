@@ -244,22 +244,24 @@ Gemini 2.5 Flash          gemma4:e4b
 
 | System | Model | avg reward |
 |---|---|---|
-| **SMAG** | Gemini 2.5 Flash | **0.62** ↑ |
+| **smag_large** | Gemini 2.5 Flash | **0.62** ↑ |
+| **smag_small** | gemma4:e4b | **0.58** ↑ |
 | large_single | Gemini 2.5 Flash | 0.54 |
 | small_single | gemma4:e4b | 0.50 |
 | planner_executor | Gemini 2.5 Flash | 0.38 |
 | workflow | Gemini 2.5 Flash | 0.34 |
 
-**中：突出显示的惊喜结果**
+**中：突出显示的关键结果**
 
 ```
-┌──────────────────────────────────────┐
-│  SMAG + small model (gemma4:e4b)     │
-│  = 0.65   same as SMAG + large model │
-│                                      │
-│  flat small: 0.50  →  SMAG: 0.65    │
-│              +15% with same model    │
-└──────────────────────────────────────┘
+┌──────────────────────────────────────────┐
+│  SMAG架构 vs flat agent（50 tasks）        │
+│                                          │
+│  flat large  0.54  →  smag_large  0.62  │
+│  flat small  0.50  →  smag_small  0.58  │
+│                                          │
+│  Small model under SMAG beats flat large │
+└──────────────────────────────────────────┘
 ```
 
 **右：错误分布条形图（前20任务，按系统）**
@@ -277,15 +279,15 @@ smag_small    ■■■ WRITE   ■■ DB_NL  ■■ TRANSFER
 
 > "The results show a clear progression. The flat large-model baseline achieves 54% on 50 tasks. Workflow drops to 34% — worse than baseline. Planner-Executor recovers to 38%. SMAG with the large model reaches **62% — an 8-point improvement**.
 >
-> But the most striking result: we ran SMAG with the **small local model**, gemma4:e4b. It achieves **exactly the same score**. The small model under SMAG completely matches the large model, while the flat small agent was 15 points behind.
+> Notably, we also ran SMAG with the **small local model**, gemma4:e4b, which achieves **58% — still beating the flat large model**. The small model under SMAG outperforms the flat large model, despite being a fraction of the size.
 >
-> Looking at errors, both SMAG variants nearly eliminated transfer-abort — down from 15 to 0–2 — while keeping write-argument errors low."
+> Looking at errors, both SMAG variants nearly eliminated transfer-abort — down from 15 to 4–5 — while keeping write-argument errors low."
 
 **Script（中文）**：
 
 > "结果呈现清晰趋势。大模型 flat agent 在 50 个任务上达到 54%。Workflow 降到 34%——比 baseline 更差。Planner-Executor 恢复到 38%。大模型 SMAG 达到 **62%——提升 8 个百分点**。
 >
-> 但最引人注目的结果是：我们用**小模型 gemma4:e4b** 跑了 SMAG，成绩**完全一样**。小模型在 SMAG 下完全追上了大模型，而 flat agent 下两者相差 15 个百分点。
+> 值得注意的是，我们用**小模型 gemma4:e4b** 也跑了 SMAG，达到 **58%——同样超过了大模型 flat agent**。小模型在 SMAG 架构下超越了 flat 大模型，尽管参数量只是后者的一小部分。
 >
 > 从错误类型看，两个 SMAG 版本几乎消除了 transfer-abort 问题——从 15 次降到 0–2 次。"
 
@@ -317,8 +319,8 @@ State Tracker misses field
 flat small (gemma4:e4b)    0.50
 flat large (Gemini Flash)  0.54   +4%
 
-SMAG small (gemma4:e4b)    0.65
-SMAG large (Gemini Flash)  0.62   tied
+SMAG small (gemma4:e4b)    0.58   > flat large (0.54)
+SMAG large (Gemini Flash)  0.62   best overall
 
 → Rule-based state tracking removes the bottleneck
 ```
