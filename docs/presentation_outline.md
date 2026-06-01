@@ -81,33 +81,66 @@ User / Tool Result
 
 ### Slide 上展示的内容
 
-**标题**：Setting & Dataset
+**标题**：Dataset
 
-**左上：Scenario（一个简化对话框）**
-```
-User:   I want to exchange my keyboard in order #W2378156.
-Agent:  Could you verify your identity?
-User:   Yusuf Rossi, zip 19122.
-Agent:  [calls find_user_id → get_order_details → exchange_item]
-Agent:  Done! Your keyboard has been exchanged.
-```
-小字注释：16 tools available, 10–20 turns per task
+**布局**：左右两栏，中间箭头 → 从左指向右，表示从 self-built 转向 tau2-bench
 
-**右上：两个模型对比**
+---
+
+**左栏：Self-built Tasks**（灰色/淡色，表示"尝试但放弃"）
+
 ```
-Gemini 2.5 Flash          gemma4:e4b
-(large cloud model)    (local, 4.5B params)
+1. Task Inputs
+   a. Task-specific instruction
+   b. 4–8 source documents (csv / pdf / docx / txt / md)
+
+2. Agent Actions
+   a. Explores sources with tools
+      (list_source / read_csv / read_pdf ...)
+   b. Cross-document reasoning
+
+3. Task Output
+   Structured answer (JSON fields)
+
+4. Evaluation
+   • Exact field match
+   • Numeric tolerance check
+   ⚠ Problem: Instruction ambiguity
+     → multiple valid interpretations
+     → spurious negatives
+     → evaluation validity breaks down
 ```
 
-**左下：Dataset 选择**
-| | Self-built (attempted) | tau2-bench retail (used) |
-|---|---|---|
-| Ground truth | Handcrafted — ambiguous | DB state — programmatic |
-| Problem | Spurious negatives | No ambiguity |
+**中间大箭头** → 加文字：*"Ambiguity → switched to programmatic GT"*
 
-**右下：tau2-bench 数字**
-- **50 tasks**, 1 trial each
-- Pass criteria: DB state ✓ AND NL response ✓
+---
+
+**右栏：Tau2-bench (Retail domain)**（高亮/彩色）
+
+```
+1. Task Inputs
+   a. User goal / scenario
+      (e.g., return, exchange, cancel, modify order)
+   b. Retail database state
+   c. Retail policy document
+
+2. Agent Actions
+   a. Multi-turn conversation (10–20 turns)
+   b. Tool calls: 16 retail tools
+      (find_user / get_order / exchange_items ...)
+   c. Write operations mutate DB state
+
+3. Task Output
+   Final DB state + natural language response
+
+4. Evaluation
+   ✓ DB Check — DB state matches ground truth
+   ✓ NL Assertion — response satisfies semantics
+   ✓ Programmatic GT: no ambiguity
+
+   50 tasks · 2 models
+   Gemini 2.5 Flash (large) · gemma4:e4b (local 4.5B)
+```
 
 ---
 
