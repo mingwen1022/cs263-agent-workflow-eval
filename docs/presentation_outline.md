@@ -161,6 +161,8 @@ No shared policy
 
 ── Example Task ──────────────────────────────
 User:  "Exchange the keyboard in order #W2378156"
+Agent: "Could you verify your identity?"
+User:  "Yusuf Rossi, zip 19122"
 Agent: find_user_id(Yusuf Rossi, 19122)
        → get_order_details(#W2378156)
        → get_product_details(keyboard)
@@ -168,6 +170,7 @@ Agent: find_user_id(Yusuf Rossi, 19122)
            order=#W2378156,
            item_ids=[1151293680],
            new_item_ids=[7706410293])
+Agent: "Done! Your keyboard has been exchanged."
 DB: order status → "exchange_requested" ✓
 ──────────────────────────────────────────────
 
