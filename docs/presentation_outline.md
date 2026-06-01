@@ -107,10 +107,16 @@ User / Tool Result
    Structured answer (JSON fields)
 
 4. Evaluation
-   • Exact field match
-   • Numeric tolerance check
+   Output: structured JSON with multiple fields
+   • Numeric fields: exact match ± tolerance
+     e.g., total_overspend = $56,700 (±$0.01)
+   • Set fields: unordered set match + alias lookup
+     e.g., over_budget_departments = {engineering, marketing}
+          alias: "eng" / "cc_201" / "engineering_dept" all valid
+   • Required tool calls: must call list_sources, read_csv, etc.
+
    ✗ Problem: Instruction ambiguity
-     → multiple valid interpretations exist
+     → edge cases support multiple valid interpretations
      → model's correct answer ≠ gold answer
      → spurious negatives undermine validity
 ```
