@@ -164,11 +164,12 @@ No shared policy
 3. Task Output
    Final DB state + natural language response
 
-4. Evaluation
-   ✓ DB Check — DB state vs ground truth
-   ✓ NL Assertion — response semantics
-   ✓ GT anchored to shared policy: no ambiguity
-      same policy applies to all tasks equally
+4. Evaluation  (binary 0/1 per task)
+   ✓ DB Check — final DB state matches ground truth
+   ✓ NL Assertion — agent response satisfies semantics
+   Both must pass → score 1
+
+   * No ambiguity: shared policy = same GT rules for all tasks
 
    50 tasks · 2 models
    Gemini 2.5 Flash (large) · gemma4:e4b (local 4.5B)
