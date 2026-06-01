@@ -91,8 +91,12 @@ User / Tool Result
 
 ```
 1. Task Inputs
-   a. Task-specific instruction
-   b. 4–8 source documents (csv / pdf / docx / txt / md)
+   a. Task-specific instruction      ← per-task, custom-written
+   b. 4–8 source documents           ← per-task, isolated
+      (csv / pdf / docx / txt / md)
+   ⚠ No shared base across tasks
+     Each task: unique documents, unique instruction
+     → No universal policy to anchor ground truth
 
 2. Agent Actions
    a. Explores sources with tools
@@ -105,38 +109,55 @@ User / Tool Result
 4. Evaluation
    • Exact field match
    • Numeric tolerance check
-   ⚠ Problem: Instruction ambiguity
-     → multiple valid interpretations
-     → spurious negatives
-     → evaluation validity breaks down
+   ✗ Problem: Instruction ambiguity
+     → multiple valid interpretations exist
+     → model's correct answer ≠ gold answer
+     → spurious negatives undermine validity
 ```
 
-**中间大箭头** → 加文字：*"Ambiguity → switched to programmatic GT"*
+**中间大箭头 →**
+```
+No shared policy
+→ ambiguous GT
+→ switched to
+  programmatic GT
+```
 
 ---
 
 **右栏：Tau2-bench (Retail domain)**（高亮/彩色）
 
 ```
+┌──────────────────────────────────────────┐
+│  Shared Base — same across all 50 tasks  │
+│  • Retail Policy (policy.md)             │
+│    single authoritative rule document    │
+│  • Retail DB schema (db.json)            │
+│    consistent data structure             │
+│  • 16 tools (same toolset for all tasks) │
+└──────────────────────────────────────────┘
+              ↓ per-task variation only
+       User scenario & initial DB state
+
 1. Task Inputs
    a. User goal / scenario
-      (e.g., return, exchange, cancel, modify order)
-   b. Retail database state
-   c. Retail policy document
+      (e.g., return, exchange, cancel, modify)
+   b. Initial DB state (per-task)
+   c. Retail policy ← shared, authoritative
 
 2. Agent Actions
    a. Multi-turn conversation (10–20 turns)
    b. Tool calls: 16 retail tools
-      (find_user / get_order / exchange_items ...)
    c. Write operations mutate DB state
 
 3. Task Output
    Final DB state + natural language response
 
 4. Evaluation
-   ✓ DB Check — DB state matches ground truth
-   ✓ NL Assertion — response satisfies semantics
-   ✓ Programmatic GT: no ambiguity
+   ✓ DB Check — DB state vs ground truth
+   ✓ NL Assertion — response semantics
+   ✓ GT anchored to shared policy: no ambiguity
+      same policy applies to all tasks equally
 
    50 tasks · 2 models
    Gemini 2.5 Flash (large) · gemma4:e4b (local 4.5B)
@@ -148,17 +169,17 @@ User / Tool Result
 
 > "To ground this study in a concrete setting, we use **multi-turn customer service** as our application — a domain where agents must handle exchanges, returns, and cancellations across a long conversation while calling tools in the right order.
 >
-> We first tried to **build our own evaluation dataset**, but quickly ran into a fundamental problem: **ambiguity**. Instructions had edge cases supporting multiple valid interpretations, so a model could produce a perfectly reasonable answer and still score zero. This 'spurious negatives' problem undermines evaluation validity.
+> We first tried to **build our own evaluation dataset**. Each task had its own custom source documents and instruction — there was no shared base across tasks, and no universal policy to serve as ground truth. This created a fundamental problem: **ambiguity**. Instructions had edge cases supporting multiple valid interpretations, so a model could produce a perfectly reasonable answer and still score zero. This 'spurious negatives' problem undermines evaluation validity.
 >
-> This led us to identify an existing benchmark instead. We used **tau2-bench retail** — ground truth is determined programmatically by database state, so there's no ambiguity: either the database changed correctly or it didn't. 50 tasks, 16 tools, two models: **Gemini 2.5 Flash** and **gemma4:e4b** running locally."
+> This led us to tau2-bench retail instead. The key difference: all 50 tasks share the **same retail policy document** and the **same database schema**. Ground truth is anchored to a single authoritative policy — no ambiguity, no edge cases. Either the database changed correctly or it didn't. 50 tasks, 16 tools, two models: **Gemini 2.5 Flash** and **gemma4:e4b** running locally."
 
 **Script（中文）**：
 
 > "我们选择了**多轮客服**作为应用场景——agent 需要在长对话中处理换货、退货、取消等操作，按正确顺序调用工具。
 >
-> 我们首先尝试**自己构建评测数据集**，但很快遇到一个根本性问题：**歧义**。instruction 存在边界情况，支持多种合理解读，模型给出完全合理的答案却得零分——这就是"伪负样本"问题，会直接破坏评测有效性。
+> 我们首先尝试**自己构建评测数据集**。每个 task 都有各自独立的 source 文档和 instruction，不同 task 之间没有共享的基础，也没有统一的 policy 作为 ground truth 的权威来源。这导致了根本性问题：**歧义**——instruction 存在边界情况，支持多种合理解读，模型给出完全合理的答案却得零分，"伪负样本"直接破坏了评测有效性。
 >
-> 于是我们转而选用已有 benchmark：**tau2-bench retail**——ground truth 由数据库状态程序化判断，没有歧义：数据库要么改对了，要么没有。50 个任务，16 个工具，两个模型：**Gemini 2.5 Flash** 和本地运行的 **gemma4:e4b**。"
+> 于是我们转向 tau2-bench retail。关键区别在于：所有 50 个 task 共享**同一份 retail policy 文档**和**同一套数据库 schema**——ground truth 由统一的权威 policy 确定，没有歧义。数据库要么改对了，要么没有。50 个任务，16 个工具，两个模型：**Gemini 2.5 Flash** 和本地运行的 **gemma4:e4b**。"
 
 ---
 
