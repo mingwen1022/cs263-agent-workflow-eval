@@ -40,23 +40,23 @@
 
 **Script（英文）**：
 
-> "As LLMs become more capable, a natural question arises: should we use a single model end-to-end, or break the task into a pipeline of specialized agents, each handling a different subtask?
+> "So here's a question a lot of people are asking right now: if you have a complex task for an LLM, is it better to just use one model end-to-end, or split it into a pipeline — one node for planning, one for verification, one for execution?
 >
-> Multi-agent and workflow-based architectures have become popular — the idea being that decomposing complex tasks into smaller steps, with dedicated nodes for planning, verification, and execution, should outperform a single flat agent.
+> Multi-agent workflows are really popular right now. The intuition makes sense: break it down, specialize each part, and you should get better results overall.
 >
-> But does it actually? **When does adding more LLM nodes help, and when does it hurt?** These questions are underexplored, especially in long-horizon, tool-use settings where agents must maintain state and execute precise operations across many steps.
+> But does that actually work? Especially when the agent needs to make tool calls, track state across 15 turns, and get the exact right parameters for a write operation — does adding more LLM nodes help, or does it just create more ways to fail?
 >
-> In this project, we systematically evaluate the limitations of both single agents and agentic workflows in a complex multi-turn tool-use benchmark — and investigate what actually drives the performance gap."
+> That's what we set out to test."
 
 **Script（中文）**：
 
-> "随着 LLM 能力不断增强，一个自然的问题出现了：应该用单个模型端到端处理任务，还是把任务拆成多个专门的 agent 组成的流水线？
+> "现在很多人都在问一个问题：对于复杂任务，是用一个模型端到端跑，还是拆成流水线——一个节点规划、一个节点校验、一个节点执行，效果会更好？
 >
-> 多 agent 和 workflow 架构越来越流行，核心假设是：把复杂任务分解成更小的步骤，让专门的节点各司其职，应该比单个 flat agent 表现更好。
+> 多 agent workflow 现在很流行，直觉上也说得通：分工专业化，每个部分都更专注，整体应该更好。
 >
-> 但事实真的如此吗？**增加 LLM 节点什么时候有帮助，什么时候反而有害？** 这些问题在需要跨多个步骤维护状态、执行精确操作的场景中，还缺乏系统研究。
+> 但真的是这样吗？尤其是在 agent 需要跨十几轮对话追踪状态、精确构造写操作参数的场景下——多加 LLM 节点到底是帮了忙，还是带来了更多出错的地方？
 >
-> 在这个项目里，我们系统评测了单 agent 和 agentic workflow 各自的局限性——并探究是什么真正决定了性能差距。"
+> 这就是我们想搞清楚的问题。"
 
 ---
 
@@ -131,19 +131,19 @@ DB: order status → "exchange_requested" ✓
 
 **Script（英文）**：
 
-> "To ground this study in a concrete setting, we use multi-turn customer service as our application domain.
+> "We used multi-turn customer service as our test setting — the agent has to handle things like exchanges and cancellations across a 15-turn conversation, calling the right tools in the right order.
 >
-> We first tried to build our own evaluation dataset. Each task had its own custom source documents and instruction — no shared base, no universal policy. This created a fundamental problem: ambiguity. Instructions had edge cases supporting multiple valid interpretations, so a model could produce a perfectly reasonable answer and still score zero. This 'spurious negatives' problem undermines evaluation validity.
+> We actually started by building our own dataset. But we quickly ran into a problem: our instructions were ambiguous. A model could give a totally reasonable answer that just happened not to match our gold standard — and score zero. That makes the evaluation itself unreliable.
 >
-> This led us to tau2-bench retail instead. All 50 tasks share the same retail policy document and database — ground truth is anchored to a single authoritative policy. Either the database changed correctly or it didn't. 50 tasks, 16 tools, two models: Gemini 2.5 Flash and gemma4:e4b running locally."
+> So we switched to tau2-bench retail. All 50 tasks share the same policy document and the same database, so the ground truth is unambiguous — either the database changed correctly, or it didn't. We tested two models: Gemini 2.5 Flash via the API, and gemma4:e4b running locally."
 
 **Script（中文）**：
 
-> "我们选择了多轮客服作为应用场景。
+> "我们用多轮客服作为测试场景——agent 需要在十几轮对话里处理换货、取消之类的操作，按正确顺序调用工具。
 >
-> 我们首先尝试自己构建评测数据集——每个 task 都有各自独立的文档和 instruction，没有共享的 policy 作为 ground truth 的权威来源。这导致了根本性问题：歧义。instruction 存在边界情况，模型给出完全合理的答案却得零分——伪负样本直接破坏了评测有效性。
+> 一开始我们自己构建了数据集。但很快发现一个问题：我们的 instruction 有歧义，模型给出了完全合理的答案，却因为和我们定的标准答案不一样得了零分。这让评测本身就不可靠了。
 >
-> 于是我们转向 tau2-bench retail。所有 50 个 task 共享同一份 retail policy 和数据库——ground truth 由统一的权威 policy 确定，没有歧义。数据库要么改对了，要么没有。50 个任务，16 个工具，两个模型：Gemini 2.5 Flash 和本地运行的 gemma4:e4b。"
+> 所以我们换成了 tau2-bench retail。所有 50 个任务共享同一份 policy 文档和同一个数据库，ground truth 没有歧义——数据库要么改对了，要么没有。我们测了两个模型：Gemini 2.5 Flash 走 API，gemma4:e4b 本地跑。"
 
 ---
 
@@ -199,27 +199,27 @@ Score: Gemini: 0.62 ↑ ｜ gemma4: 0.58 ↑（绿色）
 
 **Script（英文）**：
 
-> "We found that both models fail mainly on write operation precision — the agent reads the right information but then passes wrong item IDs or swaps the payment methods between two orders. This accounts for roughly 48% of all failures.
+> "So what's actually going wrong? Both models fail mainly on write precision — the agent gets all the right information, but then passes the wrong item ID, or mixes up the payment methods for two different orders. About 48% of all failures come down to this.
 >
-> So we tried three architectural approaches.
+> We tried three approaches to fix it.
 >
-> First, a four-node linear workflow: State Tracker, Reasoner, Verifier, Action Generator. The Verifier does improve payment-method precision on some tasks — but the State Tracker compresses the conversation into a structured JSON, losing critical context. This creates a new failure mode: the agent gets stuck, gives up, and transfers to a human. Workflow ends up worse than baseline.
+> First, a four-node workflow. We added a Verifier node, and it did help with payment precision on some tasks — but the State Tracker was compressing the full conversation into a JSON object, and losing context in the process. That created a new problem: the agent would get confused, give up, and call for a human transfer. The workflow ended up scoring worse than the baseline.
 >
-> Second, Planner-Executor: the Planner sees the full conversation history, fixing context loss. Variant selection improves, but write validation weakens. Neither approach clearly beats the flat agent — consistent with work showing homogeneous multi-agent pipelines don't outperform a flat agent.
+> Second, Planner-Executor. We gave the Planner the full conversation history, which fixed the context loss. But now the Verifier was weaker, and write errors went back up. Still didn't beat the baseline.
 >
-> Third, SMAG: move state tracking and precondition checking out of the LLM entirely and into deterministic Python code. A state machine parses every tool result and tracks items, orders, and payment methods. Before any write, Python checks: authenticated? correct order status? item IDs valid? The LLM keeps doing what it's good at — reasoning and language. Python enforces what needs precision. This is the design principle: use rule-based code for structurally deterministic tasks; only use LLM where semantic understanding is truly required."
+> Third, SMAG. The key insight here: state tracking isn't a reasoning problem — it's a lookup. So instead of asking an LLM to figure out which item belongs to which order, we just write Python code to do it. A state machine parses every tool result and tracks the exact items, orders, and payment methods. Before any write operation, Python checks the preconditions directly. The LLM only handles the parts that actually need language understanding."
 
 **Script（中文）**：
 
-> "我们发现两个模型失败的主要原因都是写操作参数精度——读对了信息，却传错了 item ID，或者把两个订单的支付方式搞混了。约占所有失败的 48%。
+> "那到底哪里出了问题？两个模型失败的主要原因都是写操作参数精度——信息读对了，但传错了 item ID，或者把两个订单的支付方式搞混了。大概 48% 的失败都是这个原因。
 >
-> 于是我们尝试了三种架构方向。
+> 我们试了三种方向来解决这个问题。
 >
-> 第一，四节点线性流水线。Verifier 在部分任务上改善了支付方式匹配——但 State Tracker 把对话压缩成 JSON 时丢失了关键信息，引入新的失败模式：agent 反复卡住，最终放弃转人工。workflow 反而比 baseline 更差。
+> 第一个是四节点流水线。加了 Verifier 节点确实在部分任务上改善了支付方式的匹配——但 State Tracker 把完整对话压缩成 JSON 的时候，丢失了很多关键信息。结果引入了新问题：agent 反复卡住，最后放弃转人工。分数比 baseline 还低。
 >
-> 第二，Planner-Executor。Planner 保留完整上下文，修复了上下文损耗，但写操作校验弱化，两个方案都没超越 flat agent。
+> 第二个是 Planner-Executor。Planner 保留完整对话历史，上下文损耗的问题修了——但 Verifier 变弱了，写操作错误又上来了。还是没超过 baseline。
 >
-> 第三，SMAG：把状态追踪和前置校验完全从 LLM 里拿出来，交给确定性 Python 代码。状态机解析每条工具返回结果，精确追踪 item、订单、支付方式。每次写操作前 Python 检查：已认证？订单状态正确？item ID 合法？LLM 只负责语义理解，Python 负责需要精确度的部分。"
+> 第三个是 SMAG。核心思路是：状态追踪根本不是推理问题，是查表问题。所以我们不用 LLM 来判断哪个 item 属于哪个订单，直接写 Python 代码做这件事。状态机解析每条工具返回，精确追踪 item、订单、支付方式。每次写操作前 Python 直接检查前置条件。LLM 只负责真正需要语义理解的部分。"
 
 ---
 
@@ -269,19 +269,19 @@ Score: Gemini: 0.62 ↑ ｜ gemma4: 0.58 ↑（绿色）
 
 **Script（英文）**：
 
-> "The results show a clear pattern. The flat large-model baseline achieves 54%. Workflow drops to 34% — worse than baseline. Planner-Executor recovers to 38%. SMAG with the large model reaches 62% — an 8-point improvement.
+> "Looking at the numbers — the flat large-model baseline is 54%. Workflow drops to 34%, which is actually worse. Planner-Executor gets to 38%. And SMAG with Gemini hits 62%.
 >
-> Notably, SMAG with the small local model, gemma4:e4b, achieves 58% — still beating the flat large model. A small model with the right architecture outperforms a larger model with the wrong one.
+> But the most interesting result is the small model. gemma4:e4b running locally on SMAG gets 58% — that's higher than the flat large model at 54%. A 4.5-billion-parameter local model, beating a large cloud model, just by changing the architecture.
 >
-> The error breakdown shows why: LLM-based workflows don't reduce errors — they just shift them. SMAG is the only architecture that reduces failures across all error categories."
+> And if you look at the error table, you can see why the workflows struggled — they didn't actually fix the errors, they just traded one type of failure for another. SMAG is the only one that brought down all error categories at the same time."
 
 **Script（中文）**：
 
-> "结果呈现清晰趋势。大模型 flat agent baseline 达到 54%。Workflow 降到 34%——比 baseline 更差。Planner-Executor 恢复到 38%。大模型 SMAG 达到 62%——提升 8 个百分点。
+> "看数字——大模型 flat agent baseline 是 54%。Workflow 降到 34%，比 baseline 还低。Planner-Executor 到 38%。SMAG 用大模型跑到 62%。
 >
-> 值得注意的是，小模型 gemma4:e4b 跑 SMAG 达到 58%，同样超过了大模型 flat agent。正确的架构让小模型打赢了更大的模型。
+> 但最有意思的结果是小模型。gemma4:e4b 本地跑 SMAG 拿到 58%——比大模型 flat agent 的 54% 还高。一个 45 亿参数的本地模型，只靠换架构，就超过了大的云端模型。
 >
-> 错误分布说明了原因：LLM-based workflow 不是减少了错误，而是把错误从一类转移到另一类。SMAG 是唯一在所有错误类型上都有所降低的架构。"
+> 看错误分布的话，可以看到为什么 workflow 没能提升——它们并没有真正减少错误，只是把错误从一类移到了另一类。SMAG 是唯一一个把所有错误类型都降下来的架构。"
 
 ---
 
@@ -303,23 +303,23 @@ Score: Gemini: 0.62 ↑ ｜ gemma4: 0.58 ↑（绿色）
 
 **Script（英文）**：
 
-> "Three takeaways.
+> "So three things we took away from this.
 >
-> More LLM nodes does not mean better performance — chaining multiple LLMs accumulates errors at each step, and downstream nodes build on upstream mistakes.
+> First, more LLM nodes doesn't mean better. Every node adds its own error rate, and those stack. When the State Tracker gets something wrong, every node after it is working with bad information.
 >
-> In agentic tasks, a small model with the right architecture can outperform a flat large model. gemma4:e4b under SMAG scores 0.58, surpassing Gemini 2.5 Flash as a flat agent at 0.54.
+> Second, in agentic tasks, the right architecture matters more than model size. gemma4:e4b on SMAG hits 0.58 — beating Gemini 2.5 Flash as a flat agent at 0.54. Same task, smaller model, better architecture, better result.
 >
-> For high-frequency agentic tasks with predictable structure, rule-based harness design outperforms LLM pipelines — encoding consistent task logic in deterministic code eliminates error accumulation more reliably than adding more LLM nodes. Thank you."
+> Third, for tasks with predictable, repetitive structure, deterministic code just works better than LLM pipelines. Checking whether an item ID is actually in an order is a lookup — not a reasoning problem. Encode that in Python, and you eliminate a whole class of errors. Thank you."
 
 **Script（中文）**：
 
-> "三条 takeaway。
+> "所以我们有三个主要的收获。
 >
-> 多个 LLM 节点不等于更好的性能——链式 LLM 在每步累积误差，下游节点在上游的错误上继续做决策。
+> 第一，LLM 节点多不等于效果好。每个节点都有自己的错误率，这些错误会叠加。State Tracker 漏掉一个字段，后面所有节点都在基于错误信息做决策。
 >
-> 在 agentic 任务中，正确架构下的小模型可以超过 flat 大模型。gemma4:e4b 在 SMAG 下达到 0.58，超过了 Gemini 2.5 Flash 的 0.54。
+> 第二，在 agentic 任务里，架构比模型大小更重要。gemma4:e4b 跑 SMAG 拿到 0.58，打赢了 Gemini 2.5 Flash 的 flat agent 0.54。同样的任务，更小的模型，更好的架构，更好的结果。
 >
-> 对于结构可预测的高频 agentic 任务，rule-based harness 比 LLM 流水线更有效——把固定的任务逻辑编码进确定性代码，比增加更多 LLM 节点更能消除误差累积。谢谢。"
+> 第三，对于结构可预测、重复性高的任务，确定性代码比 LLM 流水线更可靠。判断一个 item ID 是不是在订单里，这是查表，不是推理。用 Python 写死这个逻辑，直接消灭了一整类错误。谢谢。"
 
 ---
 
