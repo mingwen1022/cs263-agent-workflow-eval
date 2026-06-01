@@ -96,7 +96,6 @@ User / Tool Result
       (csv / pdf / docx / txt / md)
    ⚠ No shared base across tasks
      Each task: unique documents, unique instruction
-     → No universal policy to anchor ground truth
 
 2. Agent Actions
    a. Explores sources with tools
@@ -104,22 +103,22 @@ User / Tool Result
    b. Cross-document reasoning
 
 3. Task Output
-   Structured answer (JSON fields)
+   Structured JSON with multiple fields
 
-4. Evaluation
-   Output: structured JSON with multiple fields
-   Score = correct fields / total fields  (0–100%)
-   • Numeric fields: exact match ± tolerance
-     e.g., total_overspend = $56,700 (±$0.01)
-   • Set fields: unordered match + alias lookup
-     e.g., over_budget_departments = {engineering, marketing}
-          "eng" / "cc_201" / "engineering_dept" all accepted
-   • Required tool calls: must call list_sources, read_csv, etc.
+── Example Task ──────────────────────────────
+Task: Budget Variance Analysis
+Input: actuals.csv, policy.md, transfers.csv ...
+Output: {
+  total_overspend: $56,700,
+  over_budget_departments: [engineering, marketing],
+  approved_transfers: [tr_b01, tr_b02],
+  frozen_categories: [eng_headcount, mktg_campaigns]
+}
 
-   ✗ Problem: Instruction ambiguity
-     → edge cases support multiple valid interpretations
-     → model's correct answer ≠ gold answer
-     → spurious negatives undermine validity
+✗ Problem: "over_budget_departments" — is "eng",
+  "cc_201", or "engineering" the right answer?
+  → ambiguity → spurious negatives
+──────────────────────────────────────────────
 ```
 
 **中间大箭头 →**
@@ -138,9 +137,7 @@ No shared policy
 ┌──────────────────────────────────────────┐
 │  Shared Base — same across all 50 tasks  │
 │  • Retail Policy (policy.md)             │
-│    single authoritative rule document    │
-│  • Retail DB schema (db.json)            │
-│    consistent data structure             │
+│  • Retail DB (db.json) — fixed           │
 │  • 16 tools (same toolset for all tasks) │
 └──────────────────────────────────────────┘
               ↓ per-task variation only
@@ -148,32 +145,34 @@ No shared policy
 
 1. Task Inputs
    a. User goal / scenario         ← per-task
-      (e.g., return, exchange, cancel, modify)
    b. Retail DB (db.json)          ← shared, fixed
    c. Retail policy (policy.md)    ← shared, authoritative
 
 2. Agent Actions
    a. Multi-turn conversation (10–20 turns)
    b. Tool calls: 16 retail tools
-      Read:  find_user_id_by_name_zip / get_order_details /
-             get_product_details / list_all_product_types
+      Read:  find_user_id / get_order_details /
+             get_product_details
       Write: exchange_delivered_order_items /
-             return_delivered_order_items / cancel_pending_order /
-             modify_pending_order_items / modify_user_address
-   c. Write operations mutate DB state
+             return_delivered_order_items / cancel_pending_order
 
 3. Task Output
    Final DB state + natural language response
 
-4. Evaluation  (binary 0/1 per task)
-   ✓ DB Check — final DB state matches ground truth
-   ✓ NL Assertion — agent response satisfies semantics
-   Both must pass → score 1
+── Example Task ──────────────────────────────
+User:  "Exchange the keyboard in order #W2378156"
+Agent: find_user_id(Yusuf Rossi, 19122)
+       → get_order_details(#W2378156)
+       → get_product_details(keyboard)
+       → exchange_delivered_order_items(
+           order=#W2378156,
+           item_ids=[1151293680],
+           new_item_ids=[7706410293])
+DB: order status → "exchange_requested" ✓
+──────────────────────────────────────────────
 
-   * No ambiguity: shared policy = same GT rules for all tasks
-
-   50 tasks · 2 models
-   Gemini 2.5 Flash (large) · gemma4:e4b (local 4.5B)
+50 tasks · 2 models
+Gemini 2.5 Flash (large) · gemma4:e4b (local 4.5B)
 ```
 
 ---
@@ -200,17 +199,20 @@ No shared policy
 
 ### Slide 上展示的内容
 
-**标题**：Evaluation Design
+**标题**：Evaluation Metrics
 
-**左侧：三层指标（图标 + 说明）**
+**左侧：两套评分方式对比**
 
-| Metric | What it checks | Why it matters |
+| | Self-built Tasks | Tau2-bench |
 |---|---|---|
-| ✅ DB Check | Final database state matches ground truth | "Saying" ≠ "Doing" |
-| 💬 NL Assertion | Agent's response satisfies semantic requirements | Execution + communication both required |
-| 🔍 Error Taxonomy | Why did the agent fail? | Turns a number into a diagnosis |
+| Score | correct fields / total fields (0–100%) | binary: 0 or 1 |
+| Numeric | exact match ± tolerance | — |
+| Set fields | unordered + alias lookup | — |
+| DB state | — | ✓ final DB matches GT |
+| NL response | — | ✓ response satisfies semantics |
+| Pass condition | higher = better | **both** must pass |
 
-**右侧：5 类错误（色块标签）**
+**右侧：5 类错误分类（tau2-bench）**
 
 ```
 ■ WRITE_WRONG_ARGS    wrong item IDs or payment method
@@ -219,6 +221,8 @@ No shared policy
 ■ TRANSFER_ABORT      agent gave up, called human
 ■ NO_WRITE            never attempted the write
 ```
+
+小字注释：Error taxonomy turns a single success rate into a diagnostic breakdown
 
 ---
 
