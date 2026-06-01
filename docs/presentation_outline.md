@@ -108,11 +108,12 @@ User / Tool Result
 
 4. Evaluation
    Output: structured JSON with multiple fields
+   Score = correct fields / total fields  (0–100%)
    • Numeric fields: exact match ± tolerance
      e.g., total_overspend = $56,700 (±$0.01)
-   • Set fields: unordered set match + alias lookup
+   • Set fields: unordered match + alias lookup
      e.g., over_budget_departments = {engineering, marketing}
-          alias: "eng" / "cc_201" / "engineering_dept" all valid
+          "eng" / "cc_201" / "engineering_dept" all accepted
    • Required tool calls: must call list_sources, read_csv, etc.
 
    ✗ Problem: Instruction ambiguity
