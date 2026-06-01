@@ -154,6 +154,11 @@ No shared policy
 2. Agent Actions
    a. Multi-turn conversation (10–20 turns)
    b. Tool calls: 16 retail tools
+      Read:  find_user_id_by_name_zip / get_order_details /
+             get_product_details / list_all_product_types
+      Write: exchange_delivered_order_items /
+             return_delivered_order_items / cancel_pending_order /
+             modify_pending_order_items / modify_user_address
    c. Write operations mutate DB state
 
 3. Task Output
