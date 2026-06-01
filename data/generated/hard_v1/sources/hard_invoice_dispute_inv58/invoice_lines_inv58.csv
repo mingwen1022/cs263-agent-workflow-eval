@@ -1,8 +1,0 @@
-line_id,invoice_number,vendor_id,po_reference,description,quantity,unit_price,line_total,delivery_status
-N1,INV-57,V-204,PO-74,Prior month consulting hours,40,155.00,6200.00,delivered
-L1,INV-58,V-204,PO-77,Widget units,550,12.00,6600.00,partially_delivered
-L2,INV-58,V-204,PO-77,Technical consulting hours,200,165.00,33000.00,delivered
-L3,INV-58,V-204,PO-77,Project management fee,1,2500.00,2500.00,delivered
-L4,INV-58,V-204,PO-77,Approved travel reimbursement,1,800.00,800.00,delivered
-L5,INV-58,V-204,PO-78,Platform configuration services,10,350.00,3500.00,delivered
-N2,INV-58,V-301,PO-91,Unrelated vendor line included in batch,1,1200.00,1200.00,pending

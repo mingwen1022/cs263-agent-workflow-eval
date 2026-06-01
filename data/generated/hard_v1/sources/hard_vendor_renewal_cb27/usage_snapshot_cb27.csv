@@ -1,9 +1,0 @@
-account_id,product,environment,metric,value,unit,period
-CB-19,CloudBox,production,active_seats,88,count,2026-05
-CB-27,CloudBox,production,active_seats,132,count,2026-05
-CB-27,CloudBox,sandbox,active_seats,24,count,2026-05
-CB-27,CloudBox,production,storage_tb,8,tb,2026-05
-CB-27,CloudBox,archive,storage_tb,2,tb,2026-05
-CB-27,CloudBox,production,monthly_api_calls,410000,calls,2026-05
-CB-27,CloudBox,production,support_tier_required,gold_response,text,2026-05
-CB-27,CloudBox,production,forecast_active_seats,140,count,2026-06

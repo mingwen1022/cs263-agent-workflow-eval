@@ -1,8 +1,0 @@
-event_id,incident_id,environment,timestamp_pdt,system,severity,event
-S1,IR-42,staging,2026-05-04 08:55,checkout_sandbox,warning,staging checkout sandbox error burst
-A1,IR-42,production,2026-05-04 09:10,checkout_api,critical,primary checkout API error rate above threshold
-A2,IR-42,production,2026-05-04 09:18,retry_queue,major,secondary retry queue saturated
-A3,IR-42,production,2026-05-04 09:38,incident_channel,info,on-call engineer acknowledged incident
-A4,IR-42,production,2026-05-04 10:05,checkout_api,info,checkout API recovered
-N1,IR-41,production,2026-05-03 14:20,billing_api,major,prior incident acknowledgement
-N2,IR-42,production,2026-05-04 10:22,analytics_dashboard,warning,separate analytics dashboard warning

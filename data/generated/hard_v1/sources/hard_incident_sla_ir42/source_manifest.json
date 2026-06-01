@@ -1,9 +1,0 @@
-{
-  "alert_log_ir42": "alert_log_ir42.csv",
-  "ticket_timeline_ir42": "ticket_timeline_ir42.md",
-  "sla_policy_ir42": "sla_policy_ir42.md",
-  "incident_sla_packet_pdf": "incident_sla_packet.pdf",
-  "customer_tiers_ir42": "customer_tiers_ir42.csv",
-  "status_page_note_ir42": "status_page_note_ir42.txt",
-  "incident_ops_notes_ir42_docx": "incident_ops_notes_ir42.docx"
-}

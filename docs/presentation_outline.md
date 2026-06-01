@@ -19,6 +19,8 @@
 
 ## Slide 1 — Motivation（1 min）
 
+**预计讲述时间**：1 min
+
 ### Slide 上展示的内容
 
 **标题**：Motivation
@@ -62,6 +64,8 @@
 
 ## Slide 2 — Evaluation（50s）
 
+**预计讲述时间**：50s
+
 ### Slide 上展示的内容
 
 **标题**：Evaluation
@@ -102,8 +106,8 @@ Output: {
 右上角：tau2-bench logo + GitHub 截图
 
 Task Structure:
-1. Task Inputs: User goal/scenario (varies across task); **Shared Base**: Initial DB state; Retail policy
-2. Agent actions: Multi-turn conversation (10-20 turns with LLM simulate user); Tool calls: 16 retail tools — Read: find user id/get order details; Write: exchange items/cancel orders
+1. Task Inputs: User goal/scenario (varies across task); LLM simulates customer; **Shared Base**: Initial DB state; Retail policy
+2. Agent actions: Multi-turn conversation (10-20 turns with LLM-simulated user); Tool calls: 16 retail tools — Read: find user id/get order details; Write: exchange items/cancel orders
 3. Task Output: Final DB state + natural language response
 
 Evaluation Metrics:
@@ -131,23 +135,25 @@ DB: order status → "exchange_requested" ✓
 
 **Script（英文）**：
 
-> "We started by building our own dataset — enterprise workflow tasks like budget variance analysis or invoice review, where the agent reads multiple documents and produces a structured JSON output. We scored it by checking how many fields matched the gold answer.
+> "We first tried self-built document tasks, where the agent reads several files and outputs structured JSON.
 >
-> But we ran into a fundamental problem: ambiguity. The instructions had edge cases that supported multiple valid interpretations. A model could give a totally reasonable answer and still score zero because it didn't match our specific gold standard. That makes the evaluation unreliable — you're not measuring the model, you're measuring how well it guesses your annotation decisions.
+> The problem was ambiguity: some answers were reasonable but didn't match our hand-written gold. So the evaluation signal was not clean enough.
 >
-> So we switched to tau2-bench retail — a multi-turn customer service benchmark where an agent handles exchanges, returns, and cancellations. The key difference: all 50 tasks share the same retail policy and the same database. Ground truth is unambiguous — either the database changed correctly, or it didn't. 50 tasks, 16 tools, two models: Gemini 2.5 Flash via API, and gemma4:e4b running locally."
+> That's why we switched the main evaluation to tau2-bench retail. Here each task starts from a user goal, and another LLM simulates the customer over a 10-to-20-turn conversation. The agent uses 16 retail tools to read orders, exchange items, cancel orders, and update the database. All 50 tasks share the same policy and DB, and the score is binary: final DB state and final response both have to pass. This gives us a cleaner signal for comparing agent architectures."
 
 **Script（中文）**：
 
-> "我们一开始自己构建了数据集——企业工作流类型的任务，比如预算差异分析、发票审核，agent 需要读多份文档，然后输出一个结构化的 JSON。评分就是看有多少字段和标准答案匹配。
+> "我们一开始自己做了文档任务，agent 读几份文件，然后输出结构化 JSON。
 >
-> 但很快遇到了一个根本性问题：歧义。我们的 instruction 有边界情况，可以支持多种合理的解读。模型给出了完全合理的答案，但和我们手写的标准答案不一样，就得了零分。这其实测的不是模型，而是模型有没有猜中我们标注时的想法。评测本身就不可靠了。
+> 但问题是有歧义：有些答案是合理的，只是和我们手写 gold 不一样。所以这个评测信号不够干净。
 >
-> 所以我们换成了 tau2-bench retail——一个多轮客服的 benchmark，agent 负责处理换货、退货、取消订单这类操作。关键区别在于：所有 50 个任务共享同一份 policy 文档和同一个数据库，ground truth 没有歧义——数据库要么改对了，要么没有。50 个任务，16 个工具，两个模型：Gemini 2.5 Flash 走 API，gemma4:e4b 本地跑。"
+> 所以后面主评测换成 tau2-bench retail。每个任务先给一个用户目标，然后另一个 LLM 模拟 customer，和 agent 进行 10 到 20 轮对话。agent 调 16 个零售工具，查订单、换货、取消订单、更新数据库。50 个任务共享同一份 policy 和 DB，最后二元评分：DB 状态和最终回复都要过。这个更适合比较 agent 架构。"
 
 ---
 
 ## Slide 3 — Approaches（1.5 min） ← 重点
+
+**预计讲述时间**：1.5 min
 
 ### Slide 上展示的内容
 
@@ -199,31 +205,33 @@ Score: Gemini: 0.62 ↑ ｜ gemma4: 0.58 ↑（绿色）
 
 **Script（英文）**：
 
-> "So what's actually going wrong? Both models fail mainly on write precision — the agent gets all the right information, but then passes the wrong item ID, or mixes up the payment methods for two different orders. About 48% of all failures come down to this.
+> "Here are the models and architectures. Gemini 2.5 Flash is the larger Vertex model, and gemma4:e4b is the small local model through Ollama. Gemini runs on all four architectures; gemma runs on Flat Single Agent and SMAG. The user simulator is fixed to Gemini 3 Flash.
 >
-> We tried three approaches to fix it.
+> Flat Single Agent is the baseline: one LLM sees the full conversation and decides whether to call a tool or respond.
 >
-> First, a four-node workflow. We added a Verifier node, and it did help with payment precision on some tasks — but the State Tracker was compressing the full conversation into a JSON object, and losing context in the process. That created a new problem: the agent would get confused, give up, and call for a human transfer. The workflow ended up scoring worse than the baseline.
+> After evaluating the two single-agent baselines, we tried workflow architectures to see whether decomposition improves performance.
 >
-> Second, Planner-Executor. We gave the Planner the full conversation history, which fixed the context loss. But now the Verifier was weaker, and write errors went back up. Still didn't beat the baseline.
+> The 4-node workflow splits one loop into State Tracker, Reasoner, Verifier, and Action Generator. Planner-Executor keeps full history in the Planner and uses a deterministic Executor. Both test whether LLM decomposition helps, instead of just adding one flat model.
 >
-> Third, SMAG. The key insight here: state tracking isn't a reasoning problem — it's a lookup. So instead of asking an LLM to figure out which item belongs to which order, we just write Python code to do it. A state machine parses every tool result and tracks the exact items, orders, and payment methods. Before any write operation, Python checks the preconditions directly. The LLM only handles the parts that actually need language understanding."
+> SMAG is different: state tracking and precondition checks move into Python. The LLM still handles language understanding and next-step choice, but item, order, and payment consistency are checked deterministically."
 
 **Script（中文）**：
 
-> "那到底哪里出了问题？两个模型失败的主要原因都是写操作参数精度——信息读对了，但传错了 item ID，或者把两个订单的支付方式搞混了。大概 48% 的失败都是这个原因。
+> "这里是模型和架构。Gemini 2.5 Flash 是比较大的 Vertex 模型，gemma4:e4b 是本地 Ollama 小模型。Gemini 跑全部四种架构，gemma 跑 Flat Single Agent 和 SMAG。用户模拟器固定用 Gemini 3 Flash。
 >
-> 我们试了三种方向来解决这个问题。
+> Flat Single Agent 是 baseline：一个 LLM 看完整对话，然后决定调用工具还是回复用户。
 >
-> 第一个是四节点流水线。加了 Verifier 节点确实在部分任务上改善了支付方式的匹配——但 State Tracker 把完整对话压缩成 JSON 的时候，丢失了很多关键信息。结果引入了新问题：agent 反复卡住，最后放弃转人工。分数比 baseline 还低。
+> 评完两个 single baseline 之后，我们尝试 workflow 架构，看拆开决策回路能不能提升表现。
 >
-> 第二个是 Planner-Executor。Planner 保留完整对话历史，上下文损耗的问题修了——但 Verifier 变弱了，写操作错误又上来了。还是没超过 baseline。
+> 4-node workflow 把一轮决策拆成 State Tracker、Reasoner、Verifier、Action Generator。Planner-Executor 让 Planner 保留完整历史，再用确定性 Executor 执行。它们测试的是 LLM 分工是否有帮助。
 >
-> 第三个是 SMAG。核心思路是：状态追踪根本不是推理问题，是查表问题。所以我们不用 LLM 来判断哪个 item 属于哪个订单，直接写 Python 代码做这件事。状态机解析每条工具返回，精确追踪 item、订单、支付方式。每次写操作前 Python 直接检查前置条件。LLM 只负责真正需要语义理解的部分。"
+> SMAG 不一样：状态追踪和前置校验放到 Python。LLM 还是负责语义理解和下一步选择，但 item、order、payment 的一致性由确定性代码检查。"
 
 ---
 
 ## Slide 4 — Results（40s）
+
+**预计讲述时间**：40s
 
 ### Slide 上展示的内容
 
@@ -273,7 +281,7 @@ Score: Gemini: 0.62 ↑ ｜ gemma4: 0.58 ↑（绿色）
 >
 > But the most interesting result is the small model. gemma4:e4b running locally on SMAG gets 58% — that's higher than the flat large model at 54%. A 4.5-billion-parameter local model, beating a large cloud model, just by changing the architecture.
 >
-> And if you look at the error table, you can see why the workflows struggled — they didn't actually fix the errors, they just traded one type of failure for another. SMAG is the only one that brought down all error categories at the same time."
+> And if you look at the error table, you can see why the LLM workflows struggled — they didn't reduce failures overall; they mostly shifted failures from one category to another. SMAG is the only one that brought down all error categories at the same time."
 
 **Script（中文）**：
 
@@ -281,11 +289,13 @@ Score: Gemini: 0.62 ↑ ｜ gemma4: 0.58 ↑（绿色）
 >
 > 但最有意思的结果是小模型。gemma4:e4b 本地跑 SMAG 拿到 58%——比大模型 flat agent 的 54% 还高。一个 45 亿参数的本地模型，只靠换架构，就超过了大的云端模型。
 >
-> 看错误分布的话，可以看到为什么 workflow 没能提升——它们并没有真正减少错误，只是把错误从一类移到了另一类。SMAG 是唯一一个把所有错误类型都降下来的架构。"
+> 看错误分布的话，可以看到为什么 LLM workflow 没能提升——它们没有减少总体失败，只是把错误从一类移到了另一类。SMAG 是唯一一个把所有错误类型都降下来的架构。"
 
 ---
 
 ## Slide 5 — Key Findings（30s）
+
+**预计讲述时间**：30s
 
 ### Slide 上展示的内容
 
@@ -325,6 +335,7 @@ Score: Gemini: 0.62 ↑ ｜ gemma4: 0.58 ↑（绿色）
 
 ## 备注
 
-- **Slide 3 是全场核心** — 1.5 min，先讲 baseline 失败原因，再讲三个方向，SMAG 是核心
+- **Slide 3 是全场核心** — 1.5 min，先讲模型设置和 flat baseline，再讲三个 workflow/SMAG 架构，SMAG 是核心
 - **时间不够时**：Key Findings 第三条可以简化成一句，省出 10s
 - **Slide 2 右侧 Example Task** 可以在讲 tau2-bench 时手势指向，不需要逐字朗读
+- **分数口径**：正式讲结果时以 Slide 4 / `docs/experiment_report.md` 为准；Slide 3 只讲架构设计和相对表现，避免在架构页重复报 4-node / Planner-Executor 的具体分数。

@@ -1,4 +1,0 @@
-line_id,po_number,description,quantity,unit_price,line_total,approved
-PO77-1,PO-77,Widget units,500,12.00,6000.00,true
-PO77-2,PO-77,Technical consulting hours,200,150.00,30000.00,true
-PO77-3,PO-77,Approved travel reimbursement,1,800.00,800.00,true

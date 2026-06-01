@@ -1,7 +1,0 @@
-incident_id,date,start_time_pdt,end_time_pdt,system,severity,ack_time_pdt,affected_customers,cause_category
-INC-201,2026-04-03,14:22,15:48,payment_api,P2,14:37,apex_corp;meridian_tech;harbor_school,vendor_outage
-INC-202,2026-04-09,09:05,09:31,auth_service,P3,09:19,meridian_tech,config_error
-INC-203,2026-04-14,02:10,04:55,payment_api,P2,02:41,apex_corp;pinnacle_media,maintenance_window
-INC-204,2026-04-21,11:30,13:05,reporting_api,P3,11:44,pinnacle_media,customer_misconfiguration
-INC-205,2026-04-28,16:00,17:22,payment_api,P2,16:18,apex_corp;meridian_tech,infrastructure_failure
-N1,2026-04-17,08:00,08:45,internal_dashboard,P4,08:12,internal_only,monitoring_gap

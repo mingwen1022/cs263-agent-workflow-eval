@@ -1,0 +1,235 @@
+{
+  "created_at": "2026-05-31T13:45:10",
+  "task_ids": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "6",
+    "7",
+    "8",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24"
+  ],
+  "metrics": {
+    "avg_reward": 0.65,
+    "avg_agent_cost": 0.0,
+    "total_simulations": 20,
+    "total_tasks": 20,
+    "infra_error_count": 0,
+    "pass_hat_1": 0.65
+  },
+  "simulations": [
+    {
+      "task_id": "0",
+      "trial": 0,
+      "reward": 1.0,
+      "success": true,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 44.08037924999371,
+      "agent_cost": 0.0,
+      "user_cost": 0.009649000000000001
+    },
+    {
+      "task_id": "1",
+      "trial": 0,
+      "reward": 1.0,
+      "success": true,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 57.176607500063255,
+      "agent_cost": 0.0,
+      "user_cost": 0.007438500000000001
+    },
+    {
+      "task_id": "2",
+      "trial": 0,
+      "reward": 1.0,
+      "success": true,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 57.04483354196418,
+      "agent_cost": 0.0,
+      "user_cost": 0.0094785
+    },
+    {
+      "task_id": "3",
+      "trial": 0,
+      "reward": 0.0,
+      "success": false,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 74.57732441695407,
+      "agent_cost": 0.0,
+      "user_cost": 0.010251499999999998
+    },
+    {
+      "task_id": "4",
+      "trial": 0,
+      "reward": 0.0,
+      "success": false,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 36.37763770809397,
+      "agent_cost": 0.0,
+      "user_cost": 0.0062815
+    },
+    {
+      "task_id": "6",
+      "trial": 0,
+      "reward": 1.0,
+      "success": true,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 68.28345866606105,
+      "agent_cost": 0.0,
+      "user_cost": 0.012688500000000002
+    },
+    {
+      "task_id": "7",
+      "trial": 0,
+      "reward": 1.0,
+      "success": true,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 52.55499083304312,
+      "agent_cost": 0.0,
+      "user_cost": 0.009458999999999999
+    },
+    {
+      "task_id": "8",
+      "trial": 0,
+      "reward": 1.0,
+      "success": true,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 40.814904082915746,
+      "agent_cost": 0.0,
+      "user_cost": 0.00673
+    },
+    {
+      "task_id": "10",
+      "trial": 0,
+      "reward": 1.0,
+      "success": true,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 55.687052084016614,
+      "agent_cost": 0.0,
+      "user_cost": 0.007227
+    },
+    {
+      "task_id": "11",
+      "trial": 0,
+      "reward": 1.0,
+      "success": true,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 41.32786662504077,
+      "agent_cost": 0.0,
+      "user_cost": 0.009587
+    },
+    {
+      "task_id": "13",
+      "trial": 0,
+      "reward": 0.0,
+      "success": false,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 30.38992233306635,
+      "agent_cost": 0.0,
+      "user_cost": 0.006352
+    },
+    {
+      "task_id": "14",
+      "trial": 0,
+      "reward": 1.0,
+      "success": true,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 35.009828583104536,
+      "agent_cost": 0.0,
+      "user_cost": 0.007332500000000001
+    },
+    {
+      "task_id": "15",
+      "trial": 0,
+      "reward": 0.0,
+      "success": false,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 36.63212291698437,
+      "agent_cost": 0.0,
+      "user_cost": 0.0066395
+    },
+    {
+      "task_id": "16",
+      "trial": 0,
+      "reward": 1.0,
+      "success": true,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 47.945402708952315,
+      "agent_cost": 0.0,
+      "user_cost": 0.009075
+    },
+    {
+      "task_id": "19",
+      "trial": 0,
+      "reward": 0.0,
+      "success": false,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 32.80445887497626,
+      "agent_cost": 0.0,
+      "user_cost": 0.008091
+    },
+    {
+      "task_id": "20",
+      "trial": 0,
+      "reward": 1.0,
+      "success": true,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 154.58671566704288,
+      "agent_cost": 0.0,
+      "user_cost": 0.017632
+    },
+    {
+      "task_id": "21",
+      "trial": 0,
+      "reward": 0.0,
+      "success": false,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 47.773171417065896,
+      "agent_cost": 0.0,
+      "user_cost": 0.015399499999999998
+    },
+    {
+      "task_id": "22",
+      "trial": 0,
+      "reward": 1.0,
+      "success": true,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 38.71431899990421,
+      "agent_cost": 0.0,
+      "user_cost": 0.008448500000000001
+    },
+    {
+      "task_id": "23",
+      "trial": 0,
+      "reward": 0.0,
+      "success": false,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 59.92950379103422,
+      "agent_cost": 0.0,
+      "user_cost": 0.0115675
+    },
+    {
+      "task_id": "24",
+      "trial": 0,
+      "reward": 1.0,
+      "success": true,
+      "termination_reason": "TerminationReason.USER_STOP",
+      "duration": 30.422561625018716,
+      "agent_cost": 0.0,
+      "user_cost": 0.009217
+    }
+  ]
+}
