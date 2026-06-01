@@ -174,8 +174,13 @@ Agent: "Done! Your keyboard has been exchanged."
 DB: order status → "exchange_requested" ✓
 ──────────────────────────────────────────────
 
-50 tasks · 2 models
-Gemini 2.5 Flash (large) · gemma4:e4b (local 4.5B)
+50 tasks
+
+Models evaluated:
+┌─────────────────────────────────────────────────┐
+│  Gemini 2.5 Flash   large cloud model (API)     │
+│  gemma4:e4b         local 4.5B model (Ollama)   │
+└─────────────────────────────────────────────────┘
 ```
 
 ---
@@ -273,12 +278,18 @@ Gemini 2.5 Flash (large) · gemma4:e4b (local 4.5B)
 │ ✓ Full context  │  │ ✓ Verifier helps│  │ ✓ Full context  │  │ ✓ Full context  │
 │ ✗ Write errors  │  │ ✗ Context lost  │  │ ✗ Weak verifier │  │ ✓ Deterministic │
 │                 │  │ ✗ TRANSFER↑↑   │  │                 │  │   validation    │
+├─────────────────┤  ├─────────────────┤  ├─────────────────┤  ├─────────────────┤
+│ Gemini 2.5 Flash│  │ Gemini 2.5 Flash│  │ Gemini 2.5 Flash│  │ Gemini 2.5 Flash│
+│ gemma4:e4b      │  │ only            │  │ only            │  │ gemma4:e4b      │
+│ 0.54 / 0.50     │  │ 0.34            │  │ 0.38            │  │ 0.62 / 0.58 ★  │
 └─────────────────┘  └─────────────────┘  └─────────────────┘  └─────────────────┘
 ```
 
 **底部：Design Principle**
 > Use **rule-based code** for structurally deterministic tasks.
 > Reserve **LLM** for semantic understanding only.
+
+小字注释：★ smag_small (0.58) > flat_large (0.54) — small model beats large model with better architecture
 
 ---
 
